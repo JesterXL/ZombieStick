@@ -38,7 +38,7 @@ function PlayerJXL:new()
 	player.moving = false
 	player.jumping = false
 	player.moveForce = 10
-	player.speed = 6
+	player.speed = 3
 	player.jumpForce = 50
 	player.jumpForwardForce = 52
 	

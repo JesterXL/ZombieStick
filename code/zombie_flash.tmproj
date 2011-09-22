@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>players/PlayerJXL.lua</string>
+	<string>main.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-19T04:44:34Z</date>
+			<date>2011-09-22T03:43:44Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -50,44 +52,65 @@
 			<key>filename</key>
 			<string>zombie_flash.tmproj</string>
 		</dict>
+		<dict>
+			<key>filename</key>
+			<string>config.lua</string>
+			<key>lastUsed</key>
+			<date>2011-09-22T02:03:09Z</date>
+		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>219</integer>
 	<key>metaData</key>
 	<dict>
+		<key>config.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>12</integer>
+				<key>line</key>
+				<integer>9</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>main.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>52</integer>
+				<integer>20</integer>
 				<key>line</key>
-				<integer>67</integer>
+				<integer>18</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>27</integer>
+			<integer>0</integer>
 		</dict>
 		<key>players/PlayerJXL.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>22</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>39</integer>
+				<integer>30</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>18</integer>
+			<integer>7</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>main.lua</string>
 		<string>players/PlayerJXL.lua</string>
+		<string>config.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
