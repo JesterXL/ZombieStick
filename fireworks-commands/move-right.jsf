@@ -1,0 +1,24 @@
+var doc = fw.getDocumentDOM()
+var distance = prompt("Distance: ", 64)
+distance = parseInt(distance)
+doc.selectAll()
+var len = fw.selection.length
+var startX = distance
+for(var index = 1; index < len; index++)
+{
+	var obj = fw.selection[index]
+	obj.left = obj.left + startX
+	startX += distance
+}
+
+var w = doc.width
+var guidesNum = w / distance
+if(guidesNum > 0)
+{
+	var startX = distance
+	for(var index = 1; index < guidesNum; index++)
+	{
+		fw.getDocumentDOM().addGuide(startX, "vertical");
+		startX += distance
+	}
+}

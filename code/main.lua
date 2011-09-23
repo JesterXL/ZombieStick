@@ -1,4 +1,5 @@
 require "players.PlayerJXL"
+require "players.PlayerFreeman"
 require("physics")
 physics.setDrawMode( "normal" )
 physics.start()
@@ -8,12 +9,28 @@ display.setStatusBar( display.HiddenStatusBar )
 
 local stage = display.getCurrentStage()
 
-player = PlayerJXL:new()
-player.x = 100
-player.y = 100
+local background = display.newRect(0, 0, stage.width, stage.height)
+background:setFillColor(255, 255, 255)
 
 local level = display.newGroup()
+
+player = PlayerJXL:new()
+player.x = 100
+player.y = 300
+
+freeman = PlayerFreeman:new()
+freeman.x = 164
+freeman.y = 300
+
+local t = {}
+function t:timer(event)
+	freeman:shoot()
+	--freeman:jump()
+end
+timer.performWithDelay(500, t, 999)
+
 level:insert(player)
+level:insert(freeman)
 
 local function onTouch(event)
 	local target = event.target
@@ -68,7 +85,10 @@ function getFloor(name, x, y, width, height)
 	floor.name = name
 	floor:setReferencePoint(display.TopLeftReferencePoint)
 	floor:setFillColor(0, 255, 0, 100)
-	assert(physics.addBody(floor, "static", {friction=1}), "Floor failed to add to physics.")
+	assert(physics.addBody(floor, "static", 
+		{friction=.3, bounce=0,
+			filter = { categoryBits = 1, maskBits = 6 }}), 
+			"Floor failed to add to physics.")
 	floor.x = x
 	floor.y = y
 	level:insert(floor)
@@ -77,15 +97,20 @@ end
 
 local levelWidth = stage.width * 3
 
-	j = display.newImage("crate.png");
-	j.x = 60 + math.random( 160 )
-	j.y = -100
-	
-	
-local crate = display.newImage("crate.png")
-crate.x = stage.width + 20
-level:insert(crate)
-physics.addBody(crate, { density=3, friction=0.3, bounce=0.2} )
+local function getCrate(x, y)
+	local crate = display.newImage("crate.png")
+	crate.name = "crate"
+	crate.x = x
+	crate.y = y
+	level:insert(crate)
+	physics.addBody(crate, { density=20, friction=0.3, 
+		filter = { categoryBits = 2, maskBits = 7 }} )
+	return crate
+end
+
+local crate1 = getCrate(stage.width - 20, 300)
+local crate2 = getCrate(crate1.x + crate1.width, 300)
+
 
 local bottomFloor = getFloor("floor", 0, stage.height - 50, levelWidth, 50)
 local leftWall = getFloor("leftWall", -25, 0, 50, stage.height - 50)
