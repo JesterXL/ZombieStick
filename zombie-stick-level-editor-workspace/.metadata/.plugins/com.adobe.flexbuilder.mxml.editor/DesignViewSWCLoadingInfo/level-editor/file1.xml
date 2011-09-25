@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<ListDetails label="SWC Loading Details" projectName="level-editor">
+
+
+<LoadedSetList label="LoadedSet List">
+
+
+<LoadingSet label="LoadingSet1:">
+
+
+<item  label="aircore.swc-320031143" path="/Users/jesterxl/Documents/_Projects/ZombieFlash/zombie-stick-level-editor-workspace/.metadata/.plugins/com.adobe.flexbuilder.codemodel/SwcCache/aircore.swc-320031143/library.swf"/>
+
+
+<item  label="applicationupdater.swc1291379417" path="/Users/jesterxl/Documents/_Projects/ZombieFlash/zombie-stick-level-editor-workspace/.metadata/.plugins/com.adobe.flexbuilder.codemodel/SwcCache/applicationupdater.swc1291379417/library.swf"/>
+
+
+<item  label="applicationupdater_ui.swc376286177" path="/Users/jesterxl/Documents/_Projects/ZombieFlash/zombie-stick-level-editor-workspace/.metadata/.plugins/com.adobe.flexbuilder.codemodel/SwcCache/applicationupdater_ui.swc376286177/library.swf"/>
+
+
+<item  label="servicemonitor.swc-439275719" path="/Users/jesterxl/Documents/_Projects/ZombieFlash/zombie-stick-level-editor-workspace/.metadata/.plugins/com.adobe.flexbuilder.codemodel/SwcCache/servicemonitor.swc-439275719/library.swf"/>
+
+
+</LoadingSet>
+
+
+</LoadedSetList>
+
+
+<RemovedSetList label="RemovedSet List">
+
+
+<RemovedSet label="RemovedSet1:">
+
+
+<item  label="No Item present in this set"/>
+
+
+</RemovedSet>
+
+
+</RemovedSetList>
+
+
+</ListDetails>
+
+

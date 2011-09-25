@@ -203,7 +203,7 @@ function PlayerJXL:new()
 		if score >= min then
 			self.jumping = true
 			self:showSprite("jump")
-			self:addEventListener("collision", onJumpCollision)
+			self:addEventListener("collision", player.onJumpCollision)
 			self:applyLinearImpulse(0, self.jumpForce, 40, 32)
 		end	
 	end
@@ -234,7 +234,6 @@ function PlayerJXL:new()
 	end
 	
 	function player.onJumpCollision(event)
-		print("onJumpCollision, tar: ", event, ", self: ", self)
 		local self = player
 		local anime = self.sprite
 		if event.phase == "began" and anime.currentFrame <= 4 then

@@ -1,0 +1,14 @@
+package com.jxl.zombiestick.vo
+{
+	import mx.collections.ArrayCollection;
+
+	public class LevelVO
+	{
+		public var backgroundImage:String;
+		public var terrain:ArrayCollection;
+		public var events:ArrayCollection;
+		public function LevelVO()
+		{
+		}
+	}
+}

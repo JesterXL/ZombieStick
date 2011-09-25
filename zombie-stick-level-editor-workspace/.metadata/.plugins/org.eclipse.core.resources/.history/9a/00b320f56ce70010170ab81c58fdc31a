@@ -1,0 +1,77 @@
+package com.jxl.zombiestick
+{
+	import com.jxl.zombiestick.vo.LevelVO;
+	
+	import mx.core.UIComponent;
+	
+	import spark.components.Image;
+	
+	public class LevelCanvas extends UIComponent
+	{
+		
+		private var _level:LevelVO;
+		private var levelDirty:Boolean = false;
+		
+		private var backgroundImage:Image;
+		
+		public function get level():LevelVO { return _level; }
+		public function set level(value:LevelVO):void
+		{
+			if(_level)
+			{
+				_level.removeEventListener("backgroundImageChanged", onBackgroundImageChanged);
+			}
+			_level = value;
+			if(_level)
+			{
+				//_level.addEventListener("backgroundImageChanged", onBackgroundImageChanged);
+			}
+			levelDirty = true;
+			invalidateProperties();
+		}
+		
+		public function LevelCanvas()
+		{
+			super();
+		}
+		
+		protected override function createChildren():void
+		{
+			super.createChildren();
+			
+			backgroundImage = new Image();
+			addChild(backgroundImage);
+		}
+		
+		protected override function commitProperties():void
+		{
+			super.commitProperties();
+			
+			if(levelDirty)
+			{
+				levelDirty = false;
+				if(_level)
+				{
+					//updateImage();
+				}
+				else
+				{
+					backgroundImage.source = null;
+				}
+			}
+		}
+		
+		private function updateImage():void
+		{
+			Debug.debug("LevelCanvas::updateImage, _level.backgroundImage: " + _level.backgroundImage);
+			backgroundImage.source = _level.backgroundImage;
+		}
+		
+		
+		private function onBackgroundImageChanged():void
+		{
+			updateImage();
+		}
+		
+	}
+}

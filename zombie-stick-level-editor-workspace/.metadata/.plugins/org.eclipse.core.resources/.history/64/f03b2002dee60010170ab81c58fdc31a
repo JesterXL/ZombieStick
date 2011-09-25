@@ -1,0 +1,8 @@
+package com.jxl.planeshooter.constants
+{
+	public class EnemyTypes
+	{
+		public static const Zombie:String 			= "Zombie";
+		
+	}
+}

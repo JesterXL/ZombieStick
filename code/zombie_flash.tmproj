@@ -7,10 +7,44 @@
 	<key>documents</key>
 	<array>
 		<dict>
+			<key>name</key>
+			<string>players</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>players</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui_dialogueview_jesterxl_normal.jpg</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui_dialogue2.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui_dialogue.png</string>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>gamegui</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>gamegui</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>.DS_Store</string>
+		</dict>
+		<dict>
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-23T05:44:43Z</date>
+			<date>2011-09-23T23:11:41Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -51,16 +85,6 @@
 			<string>player_jxl_strike_sheet.png</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>players</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>players</string>
-		</dict>
-		<dict>
 			<key>filename</key>
 			<string>zombie_flash.tmproj</string>
 		</dict>
@@ -68,21 +92,37 @@
 			<key>filename</key>
 			<string>config.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-23T02:35:00Z</date>
+			<date>2011-09-23T22:52:38Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>constants.lua</string>
+			<key>lastUsed</key>
+			<date>2011-09-23T22:43:42Z</date>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>services</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>services</string>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>219</integer>
 	<key>metaData</key>
 	<dict>
-		<key>config.lua</key>
+		<key>constants.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>12</integer>
-				<key>line</key>
 				<integer>9</integer>
+				<key>line</key>
+				<integer>7</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -94,70 +134,40 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>36</integer>
+				<integer>38</integer>
 				<key>line</key>
-				<integer>105</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>80</integer>
-		</dict>
-		<key>players/PlayerFreeman.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>250</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>221</integer>
-		</dict>
-		<key>players/PlayerJXL.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>18</integer>
-				<key>line</key>
-				<integer>206</integer>
+				<integer>32</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>190</integer>
+			<integer>6</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>8</integer>
+				<integer>31</integer>
 				<key>line</key>
-				<integer>206</integer>
+				<integer>32</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>26</integer>
+				<integer>41</integer>
 				<key>line</key>
-				<integer>206</integer>
+				<integer>32</integer>
 			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
+		<string>constants.lua</string>
 		<string>main.lua</string>
-		<string>players/PlayerJXL.lua</string>
-		<string>players/PlayerFreeman.lua</string>
-		<string>config.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{581, 146}, {724, 710}}</string>
+	<string>{{582, 75}, {724, 710}}</string>
 </dict>
 </plist>
