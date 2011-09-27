@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 enabled="false">
+
+	<fx:Script>
+		<![CDATA[
+		import com.jxl.planeshooter.constants.CharacterTypes;
+		import com.jxl.zombiestick.constants.GameObjectTypes;
+		import com.jxl.zombiestick.constants.subtypes.EnemyTypes;
+		import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
+		import com.jxl.zombiestick.vo.GameObjectVO;
+
+		import mx.collections.ArrayCollection;
+
+		private var _gameObject:GameObjectVO;
+		private var typeDirty:Boolean = false;
+		private var gameObjectDirty:Boolean = false;
+		private var gameObjectTypes:ArrayCollection = new ArrayCollection([GameObjectTypes.TERRAIN,
+			GameObjectTypes.PLAYER,
+			GameObjectTypes.ENEMY]);
+		private var file:File;
+		private var gameObjectTerrainTypes:ArrayCollection = new ArrayCollection([
+			TerrainTypes.CRATE,
+			TerrainTypes.FLOOR
+		]);
+		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([
+			CharacterTypes.JXL,
+			CharacterTypes.FREEMAN
+		]);
+		private var gameObjectEnemyTypes:ArrayCollection = new ArrayCollection([
+			EnemyTypes.ZOMBIE
+		]);
+
+		[Bindable]
+		public function get gameObject():GameObjectVO
+		{
+			return _gameObject;
+		}
+
+		public function set gameObject(value:GameObjectVO):void
+		{
+			if(_gameObject)
+			{
+				_gameObject.removeEventListener("typeChanged", onTypeChanged);
+				_gameObject.removeEventListener("subTypeChanged", onSubTypeChanged);
+			}
+			_gameObject = value;
+			if(_gameObject)
+			{
+				_gameObject.addEventListener("typeChanged", onTypeChanged);
+				_gameObject.addEventListener("subTypeChanged", onSubTypeChanged);
+			}
+			gameObjectDirty = true;
+			typeDirty = true;
+			invalidateProperties();
+		}
+
+		protected override function commitProperties():void
+		{
+			super.commitProperties();
+
+			if (gameObjectDirty)
+			{
+				gameObjectDirty = false;
+				if (gameObject)
+				{
+					enabled = true;
+				}
+				else
+				{
+					enabled = false;
+				}
+			}
+
+			if(typeDirty)
+			{
+				typeDirty = false;
+				if(_gameObject)
+				{
+					typeComboBox.selectedItem = _gameObject.type;
+					updateSubTypeComboBox();
+				}
+			}
+		}
+
+		private function onXNumericStepperChanged():void
+		{
+			gameObject.x = xNumericStepper.value;
+		}
+
+		private function onYNumericStepperChanged():void
+		{
+			gameObject.y = yNumericStepper.value;
+		}
+
+		private function onWidthNumericStepperChanged():void
+		{
+			gameObject.width = widthNumericStepper.value;
+		}
+
+		private function onHeightNumericStepperChanged():void
+		{
+			gameObject.height = heightNumericStepper.value;
+		}
+
+		private function onTypeChanged(event:Event):void
+		{
+			typeDirty = true;
+			invalidateProperties();
+		}
+
+		private function onSubTypeChanged(event:Event):void
+		{
+			typeDirty = true;
+			invalidateProperties();
+		}
+
+		private function onTypeComboBoxChanged():void
+		{
+			gameObject.type = typeComboBox.selectedItem;
+			updateSubTypeComboBox();
+		}
+
+		private function updateSubTypeComboBox():void
+		{
+			if(_gameObject)
+			{
+				switch(gameObject.type)
+				{
+					case GameObjectTypes.ENEMY:
+						subTypeComboBox.dataProvider = gameObjectEnemyTypes;
+					break;
+
+					case GameObjectTypes.PLAYER:
+						subTypeComboBox.dataProvider = gameObjectPlayerTypes;
+					break;
+
+					case GameObjectTypes.TERRAIN:
+						subTypeComboBox.dataProvider = gameObjectTerrainTypes;
+					break;
+				}
+
+				if(subTypeComboBox.dataProvider.getItemIndex(_gameObject.subType) != -1)
+				{
+					 subTypeComboBox.selectedItem = _gameObject.subType;
+				}
+				else
+				{
+					_gameObject.subType = subTypeComboBox.dataProvider[0];
+				}
+			}
+		}
+
+		private function onSubTypeComboBoxChange():void
+		{
+			gameObject.subType = subTypeComboBox.selectedItem;
+		}
+
+		private function onBrowseForImage():void
+		{
+			if (file == null)
+			{
+				file = new File();
+				file.addEventListener(Event.SELECT, onImageSelected);
+			}
+			file.browseForOpen("Image", [new FileFilter("JPG", "*.jpg,*.jpeg"), new FileFilter("PNG", "*.png")]);
+		}
+
+		private function onImageSelected(event:Event):void
+		{
+			gameObject.image = file.url;
+		}
+
+		private function onImagePathRelativeChanged():void
+		{
+			gameObject.imageRelativeToLevelPath = imagePathCheckBox.selected;
+		}
+
+		private function onDensityChange():void
+		{
+			gameObject.density = densitySlider.value;
+		}
+
+		private function onFrictionChange():void
+		{
+			gameObject.friction = frictionSlider.value;
+		}
+
+		private function onBounceChange():void
+		{
+			gameObject.bounce = bounceSlider.value;
+		}
+
+
+		]]>
+	</fx:Script>
+
+	<s:Form>
+		<s:layout>
+			<s:FormLayout gap="0"/>
+		</s:layout>
+		<s:FormItem label="X:">
+			<s:NumericStepper id="xNumericStepper" value="{gameObject.x}" change="onXNumericStepperChanged()"
+							  minimum="-100"
+							  maximum="2880"/>
+		</s:FormItem>
+		<s:FormItem label="Y:">
+			<s:NumericStepper id="yNumericStepper" value="{gameObject.y}" change="onYNumericStepperChanged()"
+							  minimum="-100"
+							  maximum="2880"/>
+		</s:FormItem>
+		<s:FormItem label="Width:">
+			<s:NumericStepper id="widthNumericStepper" value="{gameObject.width}"
+							  change="onWidthNumericStepperChanged()"
+							  minimum="-100"
+							  maximum="2880"/>
+		</s:FormItem>
+		<s:FormItem label="Height:">
+			<s:NumericStepper id="heightNumericStepper" value="{gameObject.height}"
+							  change="onHeightNumericStepperChanged()"
+							  minimum="-100"
+							  maximum="2880"/>
+		</s:FormItem>
+		<s:FormItem label="Type:">
+			<s:ComboBox id="typeComboBox" change="onTypeComboBoxChanged()"
+						dataProvider="{gameObjectTypes}"
+					/>
+			<s:ComboBox id="subTypeComboBox" change="onSubTypeComboBoxChange()" />
+		</s:FormItem>
+		<s:FormItem label="Image:">
+			<s:TextInput id="imageTextInput" editable="false" text="{gameObject.image}" toolTip="{gameObject.image}"/>
+			<s:Button label="Browse" click="onBrowseForImage()"/>
+			<s:CheckBox id="imagePathCheckBox" label="Relative To Level" selected="{gameObject.imageRelativeToLevelPath}"
+						change="onImagePathRelativeChanged()"/>
+		</s:FormItem>
+		<s:FormItem label="Density:">
+			<s:HSlider id="densitySlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.density}" change="onDensityChange()" />
+		</s:FormItem>
+		<s:FormItem label="Friction:">
+			<s:HSlider id="frictionSlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.friction}" change="onFrictionChange()" />
+		</s:FormItem>
+		<s:FormItem label="Bounce:">
+			<s:HSlider id="bounceSlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.bounce}" change="onBounceChange()" />
+		</s:FormItem>
+	</s:Form>
+
+</s:Group>

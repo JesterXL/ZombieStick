@@ -1,6 +1,6 @@
 package com.jxl.zombiestick.vo
 {
-	import com.jxl.zombiestick.constants.CharacterTypes;
+	import com.jxl.zombiestick.constants.subtypes.CharacterTypes;
 	import com.jxl.zombiestick.constants.EmotionTypes;
 
 	[Bindable]

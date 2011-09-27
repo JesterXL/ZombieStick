@@ -1,7 +1,7 @@
 require "sprite"
 PlayerFreeman = {}
 
-function PlayerFreeman:new()
+function PlayerFreeman:new(params)
 
 	if PlayerFreeman.moveSheet == nil then
 		local moveRightSheet = sprite.newSpriteSheet("player_freeman_run_sheet.png", 64, 64)
@@ -30,7 +30,8 @@ function PlayerFreeman:new()
 	end
 	
 	local player = display.newGroup()
-	player.name = "PlayerFreeman"
+	player.name = "Freeman"
+	player.classType = "PlayerFreeman"
 	player.sprite = nil
 	player.direction = "right"
 	player.spriteHolder = display.newGroup()
@@ -265,12 +266,15 @@ function PlayerFreeman:new()
 	
 	player:showSprite("stand")
 	
+	player.x = params.x
+	params.y = params.y
+	
 	-- 22, 4, 20, 48
 	local playerShape = {22,4, 42,4, 42,52, 22,52}
 	assert(physics.addBody( player, "dynamic", 
-		{ density=0.8, friction=0.8, bounce=0.1, isBullet=true, shape=playerShape,
+		{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, shape=playerShape,
 			filter = { categoryBits = 4, maskBits = 3 }} ), 
-			"player failed to add to physics.")
+			"PlayerFreeman failed to add to physics.")
 			
 	player.isFixedRotation = true
 	

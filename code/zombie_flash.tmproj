@@ -3,10 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>main.lua</string>
+	<string>gamegui/LevelView.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>players</string>
 			<key>regexFolderFilter</key>
@@ -44,9 +46,7 @@
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-23T23:11:41Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-09-26T00:53:09Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -98,7 +98,7 @@
 			<key>filename</key>
 			<string>constants.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-23T22:43:42Z</date>
+			<date>2011-09-25T20:59:33Z</date>
 		</dict>
 		<dict>
 			<key>expanded</key>
@@ -115,59 +115,59 @@
 	<integer>219</integer>
 	<key>metaData</key>
 	<dict>
-		<key>constants.lua</key>
+		<key>gamegui/LevelView.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>9</integer>
+				<integer>42</integer>
 				<key>line</key>
-				<integer>7</integer>
+				<integer>161</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>148</integer>
 		</dict>
 		<key>main.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>38</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>32</integer>
+				<integer>24</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>6</integer>
+			<integer>58</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>31</integer>
+				<integer>4</integer>
 				<key>line</key>
-				<integer>32</integer>
+				<integer>40</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>41</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>32</integer>
+				<integer>24</integer>
 			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>constants.lua</string>
 		<string>main.lua</string>
+		<string>gamegui/LevelView.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{582, 75}, {724, 710}}</string>
+	<string>{{224, 96}, {724, 710}}</string>
 </dict>
 </plist>

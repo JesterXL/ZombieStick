@@ -1,7 +1,8 @@
 require "sprite"
+require "constants"
 PlayerJXL = {}
 
-function PlayerJXL:new()
+function PlayerJXL:new(params)
 
 	if PlayerJXL.moveSheet == nil then
 		local moveRightSheet = sprite.newSpriteSheet("player_jxl_run_sheet.png", 64, 64)
@@ -30,7 +31,8 @@ function PlayerJXL:new()
 	end
 	
 	local player = display.newGroup()
-	player.name = "PlayerJXL"
+	player.name = "JXL"
+	player.classType = "PlayerJXL"
 	player.sprite = nil
 	player.direction = "right"
 	player.spriteHolder = display.newGroup()
@@ -41,8 +43,8 @@ function PlayerJXL:new()
 	player.strikingTimer = nil
 	player.moveForce = 10
 	player.speed = 3
-	player.jumpForce = 50
-	player.jumpForwardForce = 30
+	player.jumpForce = constants.JUMP_FORCE
+	player.jumpForwardForce = constants.JUMP_FORWARD_FORCE
 	
 	function player:showSprite(name)
 		local spriteAnime
@@ -261,11 +263,14 @@ function PlayerJXL:new()
 	
 	player:showSprite("stand")
 	
+	player.x = params.x
+	player.y = params.y
+	
 	local playerShape = {22,4, 42,4, 42,52, 22,52}
 	assert(physics.addBody( player, "dynamic", 
-		{ density=0.8, friction=0.8, bounce=0.1, isBullet=true, shape=playerShape,
+		{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, shape=playerShape,
 			filter = { categoryBits = 4, maskBits = 3 }} ), 
-			"SizeRect failed to add to physics.")
+			"PlayerJXL failed to add to physics.")
 			
 	player.isFixedRotation = true
 	
