@@ -1,9 +1,0 @@
-package com.jxl.zombiestick.constants
-{
-	public class CharacterTypes
-	{
-		public function CharacterTypes()
-		{
-		}
-	}
-}

@@ -8,7 +8,8 @@ function Floor:new(params)
 	floor:setFillColor(0, 255, 0, 100)
 	assert(physics.addBody(floor, "static", 
 		{friction=.3, bounce=0,
-			filter = { categoryBits = 1, maskBits = 6 }}), 
+			filter = { categoryBits = constants.COLLISION_FILTER_GROUND_CATEGORY,
+			 maskBits = constants.COLLISION_FILTER_GROUND_MASK }}), 
 			"Floor failed to add to physics.")
 	floor.x = params.x
 	floor.y = params.y

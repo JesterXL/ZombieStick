@@ -1,9 +1,0 @@
-package com.jxl.zombiestick.vo
-{
-	public class EnemyVO
-	{
-		public function EnemyVO()
-		{
-		}
-	}
-}

@@ -6,7 +6,7 @@
 
 	<fx:Script>
 		<![CDATA[
-		import com.jxl.planeshooter.constants.CharacterTypes;
+			import com.jxl.zombiestick.constants.subtypes.CharacterTypes;
 		import com.jxl.zombiestick.constants.GameObjectTypes;
 		import com.jxl.zombiestick.constants.subtypes.EnemyTypes;
 		import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
@@ -26,7 +26,7 @@
 			TerrainTypes.FLOOR
 		]);
 		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([
-			CharacterTypes.JXL,
+			CharacterTypes.JESTERXL,
 			CharacterTypes.FREEMAN
 		]);
 		private var gameObjectEnemyTypes:ArrayCollection = new ArrayCollection([
@@ -201,6 +201,9 @@
 		<s:layout>
 			<s:FormLayout gap="0"/>
 		</s:layout>
+		
+		<s:FormHeading label="Properties" />
+		
 		<s:FormItem label="X:">
 			<s:NumericStepper id="xNumericStepper" value="{gameObject.x}" change="onXNumericStepperChanged()"
 							  minimum="-100"

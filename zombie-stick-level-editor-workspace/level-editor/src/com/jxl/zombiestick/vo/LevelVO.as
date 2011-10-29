@@ -21,6 +21,7 @@ package com.jxl.zombiestick.vo
 		}
 		
 		public var events:ArrayCollection = new ArrayCollection();
+		public var movies:ArrayCollection = new ArrayCollection();
 		
 		
 		public function LevelVO()
@@ -49,10 +50,13 @@ package com.jxl.zombiestick.vo
 				obj.backgroundImageShort = _backgroundImage.substring(_backgroundImage.lastIndexOf("/") + 1, _backgroundImage.length);
 				obj.levelDirectory = _levelDirectory;
 				obj.events			= [];
+				obj.movies 			= [];
+				var len:int;
+				var index:int;
 				if(events && events.length > 0)
 				{
-					var len:int = events.length;
-					for(var index:int = 0; index < len; index++)
+					len = events.length;
+					for(index = 0; index < len; index++)
 					{
 						var event:Object = events[index];
 						if(event == null)
@@ -67,6 +71,18 @@ package com.jxl.zombiestick.vo
 						obj.events[index] = eventObject;
 					}
 					obj.events.sortOn("when", Array.NUMERIC);
+				}
+				
+				if(movies && movies.length > 0)
+				{
+					len = movies.length;
+					for(index = 0; index < len; index++)
+					{
+						var movie:MovieVO = movies[index];
+						var movieObject:Object = movie.toObject();
+						obj.movies[index] = movieObject;
+					}
+					obj.movies.sortOn("when", Array.NUMERIC);
 				}
 
 				return obj;
@@ -107,6 +123,7 @@ package com.jxl.zombiestick.vo
 							break;
 						
 						default:
+							flash.debugger.enterDebugger();
 							throw new Error("Uknown type!");
 							break;
 							

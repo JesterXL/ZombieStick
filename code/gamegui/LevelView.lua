@@ -4,6 +4,8 @@ require "gamegui.levelviews.Floor"
 require "players.PlayerJXL"
 require "players.PlayerFreeman"
 
+require "enemies.Zombie"
+
 LevelView = {}
 
 function LevelView:new(x, y, width, height)
@@ -32,6 +34,9 @@ function LevelView:new(x, y, width, height)
 	level:insert(buttonChildren)
 	level.buttonChildren = buttonChildren
 	
+	level.players = {}
+	level.enemies = {}
+	
 	function level:insertChild(child)
 		self.levelChildren:insert(child)
 	end
@@ -46,17 +51,7 @@ function LevelView:new(x, y, width, height)
 		self.levelChildren:toBack()
 		self.background:toBack()
 	end
-
-	--[[
-	player = PlayerJXL:new()
-	player.x = 100
-	player.y = 300
-
-	freeman = PlayerFreeman:new()
-	freeman.x = 164
-	freeman.y = 300
-	]]--
-
+	
 	function level.onTouch(event)
 		local target = event.target
 		local player = level.player
@@ -161,6 +156,7 @@ function LevelView:new(x, y, width, height)
 		while events[i] do
 			local event = events[i]
 			local type = event.type
+			print("type: ", type)
 			if type == "Terrain" then
 				self:createTerrain(event)
 			elseif type == "Player" then
@@ -174,6 +170,8 @@ function LevelView:new(x, y, width, height)
 		--self.background:toBack()
 		--self.levelChildren:toFront()
 		--self.buttonChildren:toFront()
+		
+		self:updateEnemyTargets()
 	end
 	
 	function level:setBackgroundImage(filename)
@@ -218,15 +216,46 @@ function LevelView:new(x, y, width, height)
 							density = event.density,
 							friction = event.friction,
 							bounce=event.bounce}
-		if subType == "JXL" or subType == "JesterXL" then
+		if subType == "JesterXL" then
 			player = PlayerJXL:new(params)
 		elseif subType == "Freeman" then
 			player = PlayerFreeman:new(params)
 		end
+		
+		table.insert(self.players, player)
+		
+		print("player.classType: ", player.classType)
 		if self.player == nil and player.classType == "PlayerJXL" then
 			self.player = player
 		end
-		self:insertChild(player)	
+		self:insertChild(player)
+	end
+	
+	function level:createEnemy(event)
+		local zombie = Zombie:new()
+		zombie.x = 100
+		zombie.y = 100
+		self:insertChild(zombie)
+		table.insert(self.enemies, zombie)
+	end
+	
+	function level:updateEnemyTargets()
+		local players = self.players
+		if players == nil then
+			return true
+		end
+		
+		local enemies = self.enemies
+		if enemies == nil then
+			return true
+		end
+		
+		local i = 1
+		while enemies[i] do
+			local enemy = enemies[i]
+			enemy:setTargets(players)
+			i = i + 1
+		end
 	end
 	
 	return level

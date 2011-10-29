@@ -1,5 +1,4 @@
-require "gamegui_DialogueView"
-local gtween = require("gtween")
+require "gamegui.DialogueView"
 
 MoviePlayerView = {}
 
@@ -67,7 +66,7 @@ function MoviePlayerView:new()
 	end
 	
 	function group.onShowDialogueComplete(dialogueView)
-		dialogueView:showLights()
+		--dialogueView:showLights()
 	end
 	
 	function group.onHideDialogueComplete(dialogueView)

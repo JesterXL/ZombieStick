@@ -273,7 +273,8 @@ function PlayerFreeman:new(params)
 	local playerShape = {22,4, 42,4, 42,52, 22,52}
 	assert(physics.addBody( player, "dynamic", 
 		{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, shape=playerShape,
-			filter = { categoryBits = 4, maskBits = 3 }} ), 
+			filter = { categoryBits = constants.COLLISION_FILTER_PLAYER_CATEGORY, 
+			maskBits = constants.COLLISION_FILTER_PLAYER_MASK }} ), 
 			"PlayerFreeman failed to add to physics.")
 			
 	player.isFixedRotation = true

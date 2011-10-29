@@ -2,7 +2,7 @@
 <s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx" 
-		  width="720" height="800"
+		  width="1024" height="800"
 		  xmlns:zombiestick="com.jxl.zombiestick.*" xmlns:levelviews="com.jxl.zombiestick.views.levelviews.*">
 	
 	<fx:Script>
@@ -53,26 +53,36 @@
 		]]>
 	</fx:Script>
 	
-	<s:HGroup>
-		<s:Label text="Background:" />
-		<s:TextInput id="backgroundImagePath" editable="false" text="{level.backgroundImage}" toolTip="{level.backgroundImage}" />
-		<s:Button label="Browse" click="onBrowseForBackgroundImage()" />
-        <s:Button label="New" click="onNew()" />
-		<s:Button label="Save" click="onSave()" />
-	</s:HGroup>
+	<s:VGroup>
+		<s:HGroup>
+			<s:Label text="Background:" />
+			<s:TextInput id="backgroundImagePath" editable="false" text="{level.backgroundImage}" toolTip="{level.backgroundImage}" />
+			<s:Button label="Browse" click="onBrowseForBackgroundImage()" />
+			<s:Button label="New" click="onNew()" />
+			<s:Button label="Save" click="onSave()" />
+		</s:HGroup>
+		
+		<s:HGroup>
+			<s:Group>
+				<s:Image source="@Embed(source='/assets/images/iphone.png')"
+						 top="30" left="10"/>
+				
+				<s:Scroller top="162" left="43"
+							width="320" height="320">
+					<s:Group>
+						<zombiestick:LevelCanvas id="levelCanvas" level="{level}" />
+					</s:Group>
+				</s:Scroller>
+			</s:Group>
+			
+			<levelviews:PropertiesPanel gameObject="{levelCanvas.selected}" />
+			
+			<levelviews:MoviePanel movies="{level.movies}" />
+			
+			
+		</s:HGroup>
+	</s:VGroup>
 	
-	<s:Image source="@Embed(source='/assets/images/iphone.png')"
-			 top="30" left="10"/>
-
-	<s:Scroller top="162" left="43"
-				width="320" height="320">
-		<s:Group>
-			<zombiestick:LevelCanvas id="levelCanvas" level="{level}" />
-		</s:Group>
-	</s:Scroller>
 	
-
-
-	<levelviews:PropertiesPanel top="0" right="0" gameObject="{levelCanvas.selected}" />
 	
 </s:Window>

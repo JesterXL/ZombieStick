@@ -2,19 +2,69 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>gamegui/LevelView.lua</string>
 	<key>documents</key>
 	<array>
+		<dict>
+			<key>filename</key>
+			<string>.DS_Store</string>
+		</dict>
 		<dict>
 			<key>expanded</key>
 			<true/>
 			<key>name</key>
-			<string>players</string>
+			<string>core</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 			<key>sourceDirectory</key>
-			<string>players</string>
+			<string>core</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>constants.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>main.lua</string>
+			<key>lastUsed</key>
+			<date>2011-10-24T16:39:13Z</date>
+			<key>selected</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>gamegui</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>gamegui</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>enemies</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>enemies</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>sample.json</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>zombie_flash.tmproj</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>services</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>services</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui_dialogueview_freeman_normal.png</string>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -22,43 +72,39 @@
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>gamegui_dialogue2.png</string>
+			<string>00000002</string>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>gamegui_dialogue.png</string>
+			<string>player_jxl_strike_sheet.png</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
+			<key>filename</key>
+			<string>player_jxl_stand_sheet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_jxl_run_sheet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_jxl_jump_sheet.png</string>
+		</dict>
+		<dict>
 			<key>name</key>
-			<string>gamegui</string>
+			<string>players</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 			<key>sourceDirectory</key>
-			<string>gamegui</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>.DS_Store</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>main.lua</string>
-			<key>lastUsed</key>
-			<date>2011-09-26T00:53:09Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>crate.png</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>player_freeman_jump_sheet.png</string>
+			<string>players</string>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>player_freeman_run_sheet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_freeman_jump_sheet.png</string>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -70,104 +116,38 @@
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>player_jxl_jump_sheet.png</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>player_jxl_run_sheet.png</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>player_jxl_stand_sheet.png</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>player_jxl_strike_sheet.png</string>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>zombie_flash.tmproj</string>
+			<string>crate.png</string>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>config.lua</string>
-			<key>lastUsed</key>
-			<date>2011-09-23T22:52:38Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>constants.lua</string>
+			<string>level.json</string>
 			<key>lastUsed</key>
-			<date>2011-09-25T20:59:33Z</date>
+			<date>2011-09-30T16:03:19Z</date>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>services</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>services</string>
+			<key>filename</key>
+			<string>gamegui_dialogue2.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui_dialogue.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>5908.jpg</string>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>219</integer>
 	<key>metaData</key>
-	<dict>
-		<key>gamegui/LevelView.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>42</integer>
-				<key>line</key>
-				<integer>161</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>148</integer>
-		</dict>
-		<key>main.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>24</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>58</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>4</integer>
-				<key>line</key>
-				<integer>40</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>24</integer>
-			</dict>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>main.lua</string>
-		<string>gamegui/LevelView.lua</string>
-	</array>
+	<dict/>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{224, 96}, {724, 710}}</string>
+	<string>{{668, 168}, {724, 710}}</string>
 </dict>
 </plist>

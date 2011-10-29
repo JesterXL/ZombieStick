@@ -3,11 +3,14 @@ require "players.PlayerFreeman"
 
 require "gamegui.DialogueView"
 require "gamegui.LevelView"
+require "gamegui.MoviePlayerView"
+
+require "enemies.Zombie"
 
 require "services.LoadLevelService"
 
 require("physics")
-physics.setDrawMode( "normal" )
+physics.setDrawMode( "hybrid" )
 physics.start()
 physics.setGravity(0, 9.8)
 
@@ -19,7 +22,7 @@ local function testDialogueView()
 	local view = DialogueView:new()
 	--view:setText("Testing.")
 	view:setCharacter(constants.CHARACTER_JESTERXL)
-	view:show()
+	--view:show()
 	--view:setCharacter(constants.CHARACTER_FREEMAN)
 end
 --testDialogueView()
@@ -28,7 +31,8 @@ local function testLoadLevelService()
 	local level = LoadLevelService:new("sample.json")
 	print("level: ", level)
 	print("backgroundImageShort: ", level.backgroundImageShort)
-	print("events: ", level.events, "length: ", #(level.events))
+	print("events: ", level.events, ", length: ", #(level.events))
+	print("movies: ", level.movies, ", length: ", #(level.movies))
 	local i = 1
 	while level.events[i] do
 		local event = level.events[i]
@@ -41,6 +45,25 @@ local function testLoadLevelService()
 		print("\trotation: ", event.rotation)
 		print("\twhen: ", event.when)
 		print("\tpause: ", event.pause)
+		i = i + 1
+	end
+	
+	i = 1
+	while level.movies[i] do
+		local movie = level.movies[i]
+		print("\t>>>>>>>>>>>>>>>>>")
+		print("\tdialogues: ", movie.dialogues, ", length: ", #(movie.dialogues))
+		local d = 1
+		while movie.dialogues[d] do
+			local dialogue = movie.dialogues[d]
+			print("\t\t=================")
+			print("\t\tcharacterName: ", dialogue.characterName)
+			print("\t\temotion: ", dialogue.emotion)
+			print("\t\taudioName: ", dialogue.audioName)
+			print("\t\taudioFile: ", dialogue.audioFile)
+			print("\t\tmessage: ", dialogue.message)
+			d = d + 1
+		end
 		i = i + 1
 	end
 end
@@ -56,6 +79,14 @@ local function testMoviePlayerView()
 end
 --testMoviePlayerView()
 
+local function testMoviePlayerViewForLevel()
+	local level = LoadLevelService:new("sample.json")
+	local moviePlayer = MoviePlayerView:new()
+	--moviePlayer:startMovie(level.movies[1])
+	moviePlayer:startMovie(level.movies[2])
+end
+--testMoviePlayerViewForLevel()
+
 local function testLevelView()
 	local stage = display.getCurrentStage()
 	local levelView = LevelView:new(0, 0, stage.width, stage.height)
@@ -65,7 +96,8 @@ end
 local function testLevelViewBuildFromJSON()
 	local stage = display.getCurrentStage()
 	local levelView = LevelView:new(0, 0, stage.width, stage.height)
-	local level = LoadLevelService:new("sample.json")
+	--local level = LoadLevelService:new("sample.json")
+	local level = LoadLevelService:new("level-test.json")
 	levelView:drawLevel(level)
 	levelView:startScrolling()
 end
@@ -80,4 +112,11 @@ local function testLevelViewBuildFromJSONBuildTwice()
 	levelView:startScrolling()
 end
 --testLevelViewBuildFromJSONBuildTwice()
+
+local function testZombie()
+	local zombie = Zombie:new()
+	zombie.x = 100
+	zombie.y = 100
+end
+--testZombie()
 
