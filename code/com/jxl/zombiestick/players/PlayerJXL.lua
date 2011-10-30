@@ -221,10 +221,11 @@ function PlayerJXL:new(params)
 	
 	function player:canJump()
 		local score = 0
-		local min = 3
+		local min = 4
 		if self.striking == false then score = score + 1 end
 		if self.moving == false then score = score + 1 end
 		if self.jumping == false then score = score + 1 end
+		if self.stamina >= self.jumpStamina then score = score + 1 end
 		
 		if score >= min then
 			return true
@@ -244,27 +245,22 @@ function PlayerJXL:new(params)
 	end
 	
 	function player:jumpForward()
-		if self.striking == false and self.moving == false and self.jumping == false then
-			self.jumping = true
-			self:showSprite("jump")
-			self:performedAction("jump")
-			
-			local xForce
-			if self.direction == "right" then
-				xForce = self.jumpForwardForce
-			else
-				xForce = -self.jumpForwardForce
-			end
-			--[[
-			self:applyLinearImpulse(xForce, self.jumpForce, 40, 32)
-			]]--
-			--print("--------------")
-			--self.jumpStartTime = system.getTimer()
-			--Runtime:addEventListener("enterFrame", onJumpForward)
-			self:addEventListener("collision", player.onJumpCollision)
-			local multiplier = 60
-			self:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
+		if self:canJump() == false then return false end
+		
+		self.jumping = true
+		self:showSprite("jump")
+		self:performedAction("jump")
+		
+		local xForce
+		if self.direction == "right" then
+			xForce = self.jumpForwardForce
+		else
+			xForce = -self.jumpForwardForce
 		end
+		
+		self:addEventListener("collision", player.onJumpCollision)
+		local multiplier = 60
+		self:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
 	end
 	
 	function player.onJumpCollision(event)
@@ -321,7 +317,7 @@ function PlayerJXL:new(params)
 	function player:setStamina(value)
 		self.stamina = value
 		self.staminaBar:setStamina(value, self.maxStamina)
-		if self.stamina <= 0 then
+		if self.stamina <= 1 then
 			self.speed = self.tiredSpeed
 		else
 			self.speed = self.maxSpeed
