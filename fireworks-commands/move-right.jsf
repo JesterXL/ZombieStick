@@ -1,7 +1,7 @@
 var doc = fw.getDocumentDOM()
 var distance = prompt("Distance: ", 64)
 distance = parseInt(distance)
-doc.selectAll()
+//doc.selectAll()
 var len = fw.selection.length
 var startX = distance
 for(var index = 1; index < len; index++)

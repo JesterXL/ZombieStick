@@ -1,17 +1,23 @@
 var doc = fw.getDocumentDOM()
+var len = fw.selection.length
+var selections = fw.selection
 var distance = prompt("Distance: ", 64)
 distance = parseInt(distance)
-doc.selectAll()
-var len = fw.selection.length
+
+
 var posArray = []
 for(var index = 0; index < len; index++)
 {
 	var obj = fw.selection[index]
-	posArray[index] = obj.left
+	var newLeft = obj.left - (distance * index)
+	alert("newLeft: " + newLeft)
+	posArray[index] = {left: newLeft, col: index, target: obj}
 }
 posArray.reverse()
+
 for(var index = 0; index < len; index++)
 {
-	var obj = fw.selection[index]
-	obj.left = posArray[index]
+	var obj = posArray[index]
+	alert("current: " + obj.target.left + ", distance: " + distance * index + ", l: " + obj.left)
+	obj.target.left = obj.left + distance * index
 }

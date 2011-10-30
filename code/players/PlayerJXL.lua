@@ -1,32 +1,25 @@
 require "sprite"
 require "constants"
+require "gamegui.StaminaBar"
 PlayerJXL = {}
 
 function PlayerJXL:new(params)
 
-	if PlayerJXL.moveSheet == nil then
-		local moveRightSheet = sprite.newSpriteSheet("player_jxl_run_sheet.png", 64, 64)
-		local moveRightSet = sprite.newSpriteSet(moveRightSheet, 1, 8)
-		sprite.add(moveRightSet, "jxlMoveRight", 1, 8, 500, 0)
-		PlayerJXL.moveRightSheet = moveRightSheet
-		PlayerJXL.moveRightSet = moveRightSet
+	if PlayerJXL.sheet == nil then
+		local sheet = sprite.newSpriteSheet("player_jesterxl_sheet.png", 64, 64)
+		local standSet = sprite.newSpriteSet(sheet, 1, 6)
+		sprite.add(standSet, "PlayerJXLStand", 1, 6, 1000, 0)
+		local moveSet = sprite.newSpriteSet(sheet, 9, 8)
+		sprite.add(moveSet, "PlayerJXLMove", 1, 8, 500, 0)
+		local jumpSet = sprite.newSpriteSet(sheet, 17, 6)
+		sprite.add(jumpSet, "PlayerJXLJump", 1, 6, 600, 1)
+		local strikeSet = sprite.newSpriteSet(sheet, 25, 6)
+		sprite.add(strikeSet, "PlayerJXLStrike", 1, 6, 300, 1)
 		
-		local jumpRightSheet = sprite.newSpriteSheet("player_jxl_jump_sheet.png", 64, 64)
-		local jumpRightSet = sprite.newSpriteSet(jumpRightSheet, 1, 6)
-		sprite.add(jumpRightSet, "jxlJumpRight", 1, 6, 500, 1)
-		PlayerJXL.jumpRightSheet = jumpRightSheet
-		PlayerJXL.jumpRightSet = jumpRightSet
-		
-		local standSheet = sprite.newSpriteSheet("player_jxl_stand_sheet.png", 64, 64)
-		local standSet = sprite.newSpriteSet(standSheet, 1, 6)
-		sprite.add(standSet, "jxlStand", 1, 6, 1000, 0)
-		PlayerJXL.standSheet = standSheet
+		PlayerJXL.sheet = sheet
 		PlayerJXL.standSet = standSet
-		
-		local strikeSheet = sprite.newSpriteSheet("player_jxl_strike_sheet.png", 64, 64)
-		local strikeSet = sprite.newSpriteSet(strikeSheet, 1, 6)
-		sprite.add(strikeSet, "jxlStrike", 1, 6, 300, 1)
-		PlayerJXL.strikeSheet = strikeSheet
+		PlayerJXL.moveSet = moveSet
+		PlayerJXL.jumpSet = jumpSet
 		PlayerJXL.strikeSet = strikeSet
 	end
 	
@@ -37,6 +30,8 @@ function PlayerJXL:new(params)
 	player.direction = "right"
 	player.spriteHolder = display.newGroup()
 	player:insert(player.spriteHolder)
+	player.staminaBar = StaminaBar:new()
+	player:insert(player.staminaBar)
 	player.moving = false
 	player.jumping = false
 	player.striking = false
@@ -45,22 +40,30 @@ function PlayerJXL:new(params)
 	player.speed = 3
 	player.jumpForce = constants.JUMP_FORCE
 	player.jumpForwardForce = constants.JUMP_FORWARD_FORCE
+	player.stamina = 10
+	player.maxStamina = 10
+	player.strikeStamina = 1
+	player.staminaRechargeTimer = nil
+	
+	function player:getBounds()
+		return {22,4, 42,4, 42,55, 22,55}
+	end
 	
 	function player:showSprite(name)
 		local spriteAnime
 		if name == "move" then
-			spriteAnime = sprite.newSprite(PlayerJXL.moveRightSet)
-			spriteAnime:prepare("jxlMoveRight")
+			spriteAnime = sprite.newSprite(PlayerJXL.moveSet)
+			spriteAnime:prepare("PlayerJXLMove")
 		elseif name == "jump" then
-			spriteAnime = sprite.newSprite(PlayerJXL.jumpRightSet)
-			spriteAnime:prepare("jxlJumpRight")
+			spriteAnime = sprite.newSprite(PlayerJXL.jumpSet)
+			spriteAnime:prepare("PlayerJXLJump")
 			spriteAnime:addEventListener("sprite", player.onJumpCompleted)
 		elseif name == "stand" then
 			spriteAnime = sprite.newSprite(PlayerJXL.standSet)
-			spriteAnime:prepare("jxlStand")
+			spriteAnime:prepare("PlayerJXLStand")
 		elseif name == "strike" then
 			spriteAnime = sprite.newSprite(PlayerJXL.strikeSet)
-			spriteAnime:prepare("jxlStrike")
+			spriteAnime:prepare("PlayerJXLStrike")
 		end
 		spriteAnime:setReferencePoint(display.TopLeftReferencePoint)
 		spriteAnime:play()
@@ -113,18 +116,25 @@ function PlayerJXL:new(params)
 	end
 	
 	function player:strike()
-		if self.striking == true or self.jumping == true then
-			return
-		end
+		if self:canStrike() == false then return false end
 		
 		self.striking = true
 		self:showSprite("strike")
+		self:performedAction("strike")
 		if self.strikingTimer ~= nil then
 			timer.cancel(self.strikingTimer)
 		end
 		self.strikingTimer = timer.performWithDelay(500, onStrikeComplete)
+		return true
 	end
 	
+	function player:canStrike()
+		if self.striking == true then return false end
+		if self.jumping == true then return false end
+		if self.stamina == 0 then return false end
+		if self.stamina - self.strikeStamina >= 0 then return true end
+		return true
+	end
 	
 	function onStrikeComplete(event)
 		local self = player
@@ -261,14 +271,44 @@ function PlayerJXL:new(params)
 		end
 	end
 	
+	function player:performedAction(actionType)
+		if actionType == "strike" then
+			self:reduceStamina(self.strikeStamina)
+		end
+	end
+	
+	function player:reduceStamina(amount)
+		self:setStamina(self.stamina - amount)
+		if self.stamina < 0 then
+			self:setStamina(0)
+			print("Warning, someone is writing checks he can't cash.")
+		end
+	end
+	
+	function player.rechargeStamina()
+		print("rechargeStamina")
+		local self = player
+		if self.stamina ~= self.maxStamina then
+			self:setStamina(self.stamina + 1)
+		end
+	end
+	
+	function player:setStamina(value)
+		self.stamina = value
+		self.staminaBar:setStamina(value, self.maxStamina)
+	end
+	
 	player:showSprite("stand")
 	
 	player.x = params.x
 	player.y = params.y
 	
-	local playerShape = {22,4, 42,4, 42,52, 22,52}
+	player.staminaRechargeTimer = timer.performWithDelay(5000, player.rechargeStamina, 0)
+	
+	local playerShape = player:getBounds()
 	assert(physics.addBody( player, "dynamic", 
-		{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, shape=playerShape,
+		{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, 
+			shape=playerShape,
 			filter = { categoryBits = constants.COLLISION_FILTER_PLAYER_CATEGORY, 
 			maskBits = constants.COLLISION_FILTER_PLAYER_MASK }} ), 
 			"PlayerJXL failed to add to physics.")

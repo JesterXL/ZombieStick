@@ -10,7 +10,7 @@ require "enemies.Zombie"
 require "services.LoadLevelService"
 
 require("physics")
-physics.setDrawMode( "hybrid" )
+physics.setDrawMode( "normal" )
 physics.start()
 physics.setGravity(0, 9.8)
 
@@ -120,3 +120,28 @@ local function testZombie()
 end
 --testZombie()
 
+local function testGroupCollisions()
+	require "gamegui.levelviews.Floor"
+	local floor = Floor:new({x = -50, 
+							y = 400, 
+							width = 600,
+							height = 72})
+	local crate1 = display.newImage("crate.png")
+	local crate2 = display.newImage("crate.png")
+	crate1.x = 100
+	crate2.x = 100
+	crate2.y = -50
+	local group1 = display.newGroup()
+	group1:insert(crate1)
+	
+	physics.addBody(crate1)
+	physics.addBody(crate2)
+end
+
+--testGroupCollisions()
+
+local function testSwordPolygon()
+	require "players.weapons.SwordPolygon"
+	local sword = SwordPolygon:new(100, 100, 20, 2)
+end
+--testSwordPolygon()

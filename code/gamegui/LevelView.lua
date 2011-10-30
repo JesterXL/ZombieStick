@@ -3,6 +3,7 @@ require "gamegui.levelviews.Floor"
 
 require "players.PlayerJXL"
 require "players.PlayerFreeman"
+require "players.weapons.SwordPolygon"
 
 require "enemies.Zombie"
 
@@ -20,6 +21,7 @@ function LevelView:new(x, y, width, height)
 	level.name = "level"
 	level.player = nil
 	level.backgroundImage = nil
+	level.lastStrike = nil
 	
 	local background = display.newRect(0, 0, width, height)
 	background:setFillColor(255, 255, 255, 100)
@@ -34,8 +36,8 @@ function LevelView:new(x, y, width, height)
 	level:insert(buttonChildren)
 	level.buttonChildren = buttonChildren
 	
-	level.players = {}
-	level.enemies = {}
+	level.players = nil
+	level.enemies = nil
 	
 	function level:insertChild(child)
 		self.levelChildren:insert(child)
@@ -75,7 +77,7 @@ function LevelView:new(x, y, width, height)
 			end
 		elseif event.phase == "ended" then
 			if target.name == "strike" then
-				player:strike()
+				level:strike()
 				return true
 			elseif target.name == "right" then
 				player:stand()
@@ -139,6 +141,8 @@ function LevelView:new(x, y, width, height)
 		assert(levelVO, "You cannot pass in a nil levelVO.")
 		
 		self:removeLevelChildren()
+		self.players = {}
+		self.enemies = {}
 		
 		self:setBackgroundImage(levelVO.backgroundImageShort)
 		
@@ -149,6 +153,11 @@ function LevelView:new(x, y, width, height)
 			self.leftButton = self:getButton("left", 160, 100)
 			self.jumpButton = self:getButton("jump", 200, 140)
 			self.jumpForward = self:getButton("jumpForward", 240, 140)
+		end
+		
+		if self.swordPolygon == nil then
+			self.swordPolygon = SwordPolygon:new(-99, -99, 20, 2)
+			self:insertChild(self.swordPolygon)
 		end
 		
 		local events = levelVO.events
@@ -233,8 +242,8 @@ function LevelView:new(x, y, width, height)
 	
 	function level:createEnemy(event)
 		local zombie = Zombie:new()
-		zombie.x = 100
-		zombie.y = 100
+		zombie.x = event.x
+		zombie.y = event.y
 		self:insertChild(zombie)
 		table.insert(self.enemies, zombie)
 	end
@@ -256,6 +265,58 @@ function LevelView:new(x, y, width, height)
 			enemy:setTargets(players)
 			i = i + 1
 		end
+	end
+	
+	function level:strike()
+		local player = self.player
+		if player:strike() == false then return false end
+		
+		if self.lastStrike ~= nil then
+			local et = system.getTimer() - self.lastStrike
+			if et < 300 then
+				return true
+			else
+				self.lastStrike = system.getTimer()
+			end
+		else
+			self.lastStrike = system.getTimer()
+		end
+		
+		local sword = self.swordPolygon
+		
+		
+		sword.y = player.y + (player.height / 2)
+		
+		local targetX
+		local playerBounds = player:getBounds()
+		if player.direction == "left" then
+			sword.x = player.x + playerBounds[1]
+			targetX = sword.x - sword.width
+		else
+			sword.x = player.x + playerBounds[1] + playerBounds[3] + sword.width
+			targetX = sword.x + sword.width
+		end
+		
+		if sword.tween ~= nil then
+			transition.cancel(sword.tween)
+		end
+		if sword.onComplete == nil then
+			function sword:onComplete(event)
+				sword.x = -999
+				sword.y = -999
+				sword.tween = nil
+			end
+			function sword:collision(event)
+				if event.phase == "began" then
+					if event.other.name == "Zombie" then
+						event.other:applyDamage(2)
+					end
+				end
+			end
+			sword:addEventListener("collision", sword)
+		end
+		
+		sword.tween = transition.to(sword, {time=100, x=targetX, onComplete=sword})
 	end
 	
 	return level
