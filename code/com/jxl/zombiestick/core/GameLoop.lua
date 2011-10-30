@@ -14,6 +14,7 @@ function GameLoop:new()
 	function gameLoop:addLoop(o)
 		--print("GameLoop::addLoop", o)
 		assert(o ~= nil, "You cannot pass nil values to the game loop")
+		assert(o.tick ~= nil, "Objects added to the GameLoop must implement a tick method.")
 		local tickers = self.tickers
 		local index = table.indexOf(tickers, o)
 		if(index == nil) then

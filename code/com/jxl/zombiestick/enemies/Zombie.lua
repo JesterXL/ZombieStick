@@ -131,6 +131,10 @@ function Zombie:new()
 		zombie:play()
 	end
 	
+	function zombie:tick(time)
+		
+	end
+	
 	function zombie:destroy()
 		self:stopMoving()
 		local t = {zombie = self}

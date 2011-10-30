@@ -1,4 +1,4 @@
-require "constants"
+require "com.jxl.zombiestick.constants"
 
 Crate = {}
 

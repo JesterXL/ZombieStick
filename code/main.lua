@@ -1,13 +1,13 @@
-require "players.PlayerJXL"
-require "players.PlayerFreeman"
+require "com.jxl.zombiestick.players.PlayerJXL"
+require "com.jxl.zombiestick.players.PlayerFreeman"
 
-require "gamegui.DialogueView"
-require "gamegui.LevelView"
-require "gamegui.MoviePlayerView"
+require "com.jxl.zombiestick.gamegui.DialogueView"
+require "com.jxl.zombiestick.gamegui.LevelView"
+require "com.jxl.zombiestick.gamegui.MoviePlayerView"
 
-require "enemies.Zombie"
+require "com.jxl.zombiestick.enemies.Zombie"
 
-require "services.LoadLevelService"
+require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
 physics.setDrawMode( "normal" )

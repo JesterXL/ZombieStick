@@ -1,4 +1,4 @@
-
+require "com.jxl.zombiestick.constants"
 Floor = {}
 
 function Floor:new(params)

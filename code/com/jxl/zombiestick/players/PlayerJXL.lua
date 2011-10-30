@@ -1,6 +1,8 @@
 require "sprite"
-require "constants"
-require "gamegui.StaminaBar"
+require "com.jxl.zombiestick.constants"
+require "com.jxl.zombiestick.gamegui.StaminaBar"
+require "com.jxl.zombiestick.states.StateMachine"
+require "com.jxl.zombiestick.states.ReadyState"
 PlayerJXL = {}
 
 function PlayerJXL:new(params)
@@ -38,12 +40,35 @@ function PlayerJXL:new(params)
 	player.strikingTimer = nil
 	player.moveForce = 10
 	player.speed = 3
+	player.maxSpeed = 3
+	player.tiredSpeed = 1
 	player.jumpForce = constants.JUMP_FORCE
 	player.jumpForwardForce = constants.JUMP_FORWARD_FORCE
 	player.stamina = 10
 	player.maxStamina = 10
 	player.strikeStamina = 1
-	player.staminaRechargeTimer = nil
+	player.jumpStamina = 2
+	player.moveStamina = 1
+	player.startMoveTime = nil
+	player.MOVE_STAMINA_TIME = 1000
+	player.fsm = StateMachine:new()
+	
+	function player:getStateMachine()
+		return self.fsm
+	end
+	
+	function player:tick(time)
+		if self.moving == true then
+			if system.getTimer() - self.startMoveTime >= self.MOVE_STAMINA_TIME then
+				self:reduceStamina(self.moveStamina)
+				self.startMoveTime = system.getTimer()
+			end
+		end
+			
+		if self.fsm ~= nil then
+			self.fsm:tick(time)
+		end
+	end
 	
 	function player:getBounds()
 		return {22,4, 42,4, 42,55, 22,55}
@@ -93,6 +118,7 @@ function PlayerJXL:new(params)
 		if self.striking == false and self.jumping == false then
 			self:setDirection("right")
 			self:showSprite("move")
+			self:performedAction("move")
 			self:startMoving()
 			return true
 		end
@@ -103,6 +129,7 @@ function PlayerJXL:new(params)
 		if self.striking == false and self.jumping == false then
 			self:setDirection("left")
 			self:showSprite("move")
+			self:performedAction("move")
 			self:startMoving()
 			return true
 		end
@@ -147,6 +174,7 @@ function PlayerJXL:new(params)
 	function player:startMoving()
 		if self.moving == false and self.jumping == false then
 			self.moving = true
+			self.startMoveTime = system.getTimer()
 			Runtime:addEventListener("enterFrame", self)
 		end
 	end
@@ -161,23 +189,10 @@ function PlayerJXL:new(params)
 			force = -self.speed
 		end
 		self:applyLinearImpulse(force / 3, 0, 40, 32)
+		self:dispatchEvent({name="onMoveCompleted", target=self})
 	end
 	
 	function player:enterFrame()
-		-- using physics
-		--[[
-		local force
-		if self.direction == "right" then
-			force = self.moveForce
-		elseif self.direction == "left" then
-			force = -self.moveForce
-		else
-			force = 0
-		end
-		self:applyForce(force, 0, 40, 32)
-		]]--
-		
-		-- using good ole' x en whuy
 		local speed = self.speed
 		local targetX
 		local targetY = self.y
@@ -188,7 +203,6 @@ function PlayerJXL:new(params)
 		else
 			targetX = 0
 		end
-		
 		
 		local deltaX = self.x - targetX
 		local deltaY = self.y - targetY
@@ -205,7 +219,7 @@ function PlayerJXL:new(params)
 		end
 	end
 	
-	function player:jump()
+	function player:canJump()
 		local score = 0
 		local min = 3
 		if self.striking == false then score = score + 1 end
@@ -213,19 +227,27 @@ function PlayerJXL:new(params)
 		if self.jumping == false then score = score + 1 end
 		
 		if score >= min then
-			self.jumping = true
-			self:showSprite("jump")
-			self:addEventListener("collision", player.onJumpCollision)
-			self:applyLinearImpulse(0, self.jumpForce, 40, 32)
-		end	
+			return true
+		else
+			return false
+		end
+	end
+	
+	function player:jump()
+		if self:canJump() == false then return false end
+		
+		self.jumping = true
+		self:showSprite("jump")
+		self:performedAction("jump")
+		self:addEventListener("collision", player.onJumpCollision)
+		self:applyLinearImpulse(0, self.jumpForce, 40, 32)
 	end
 	
 	function player:jumpForward()
 		if self.striking == false and self.moving == false and self.jumping == false then
 			self.jumping = true
 			self:showSprite("jump")
-			
-			
+			self:performedAction("jump")
 			
 			local xForce
 			if self.direction == "right" then
@@ -264,6 +286,7 @@ function PlayerJXL:new(params)
 			event.target:removeEventListener("sprite", player.onJumpCompleted)
 			self:showSprite("stand")
 			self.jumping = false
+			self:dispatchEvent({name="onJumpCompleted", target=self})
 		else
 			if event.target.currentFrame == 4 then
 				event.target:pause()
@@ -272,9 +295,13 @@ function PlayerJXL:new(params)
 	end
 	
 	function player:performedAction(actionType)
+		print("PlayerJXL::performedAction: ", actionType)
 		if actionType == "strike" then
 			self:reduceStamina(self.strikeStamina)
+		elseif actionType == "jump" then
+			self:reduceStamina(self.jumpStamina)
 		end
+		self:dispatchEvent({name="onPerformedAction", target=self, action=actionType})
 	end
 	
 	function player:reduceStamina(amount)
@@ -285,9 +312,7 @@ function PlayerJXL:new(params)
 		end
 	end
 	
-	function player.rechargeStamina()
-		print("rechargeStamina")
-		local self = player
+	function player:rechargeStamina()
 		if self.stamina ~= self.maxStamina then
 			self:setStamina(self.stamina + 1)
 		end
@@ -296,14 +321,17 @@ function PlayerJXL:new(params)
 	function player:setStamina(value)
 		self.stamina = value
 		self.staminaBar:setStamina(value, self.maxStamina)
+		if self.stamina <= 0 then
+			self.speed = self.tiredSpeed
+		else
+			self.speed = self.maxSpeed
+		end
 	end
 	
 	player:showSprite("stand")
 	
 	player.x = params.x
 	player.y = params.y
-	
-	player.staminaRechargeTimer = timer.performWithDelay(5000, player.rechargeStamina, 0)
 	
 	local playerShape = player:getBounds()
 	assert(physics.addBody( player, "dynamic", 
@@ -314,6 +342,8 @@ function PlayerJXL:new(params)
 			"PlayerJXL failed to add to physics.")
 			
 	player.isFixedRotation = true
+	
+	player.fsm:changeState(ReadyState:new(player))
 	
 	return player
 end

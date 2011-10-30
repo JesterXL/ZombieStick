@@ -1,11 +1,13 @@
-require "gamegui.levelviews.Crate"
-require "gamegui.levelviews.Floor"
+require "com.jxl.zombiestick.gamegui.levelviews.Crate"
+require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 
-require "players.PlayerJXL"
-require "players.PlayerFreeman"
-require "players.weapons.SwordPolygon"
+require "com.jxl.zombiestick.players.PlayerJXL"
+require "com.jxl.zombiestick.players.PlayerFreeman"
+require "com.jxl.zombiestick.players.weapons.SwordPolygon"
 
-require "enemies.Zombie"
+require "com.jxl.zombiestick.enemies.Zombie"
+
+require "com.jxl.zombiestick.core.GameLoop"
 
 LevelView = {}
 
@@ -22,6 +24,7 @@ function LevelView:new(x, y, width, height)
 	level.player = nil
 	level.backgroundImage = nil
 	level.lastStrike = nil
+	level.gameLoop = GameLoop:new()
 	
 	local background = display.newRect(0, 0, width, height)
 	background:setFillColor(255, 255, 255, 100)
@@ -165,7 +168,6 @@ function LevelView:new(x, y, width, height)
 		while events[i] do
 			local event = events[i]
 			local type = event.type
-			print("type: ", type)
 			if type == "Terrain" then
 				self:createTerrain(event)
 			elseif type == "Player" then
@@ -181,6 +183,8 @@ function LevelView:new(x, y, width, height)
 		--self.buttonChildren:toFront()
 		
 		self:updateEnemyTargets()
+		self.gameLoop:reset()
+		self.gameLoop:start()
 	end
 	
 	function level:setBackgroundImage(filename)
@@ -238,6 +242,7 @@ function LevelView:new(x, y, width, height)
 			self.player = player
 		end
 		self:insertChild(player)
+		self.gameLoop:addLoop(player)
 	end
 	
 	function level:createEnemy(event)
@@ -246,6 +251,7 @@ function LevelView:new(x, y, width, height)
 		zombie.y = event.y
 		self:insertChild(zombie)
 		table.insert(self.enemies, zombie)
+		self.gameLoop:addLoop(zombie)
 	end
 	
 	function level:updateEnemyTargets()

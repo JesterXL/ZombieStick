@@ -1,4 +1,4 @@
-require "gamegui.DialogueView"
+require "com.jxl.zombiestick.gamegui.DialogueView"
 
 MoviePlayerView = {}
 
