@@ -8,6 +8,9 @@ require "com.jxl.zombiestick.players.weapons.SwordPolygon"
 require "com.jxl.zombiestick.enemies.Zombie"
 
 require "com.jxl.zombiestick.core.GameLoop"
+require "com.jxl.zombiestick.states.StateMachine"
+require "com.jxl.zombiestick.states.level.PlayerJXLState"
+require "com.jxl.zombiestick.gamegui.CharacterSelectView"
 
 LevelView = {}
 
@@ -23,8 +26,8 @@ function LevelView:new(x, y, width, height)
 	level.name = "level"
 	level.player = nil
 	level.backgroundImage = nil
-	level.lastStrike = nil
 	level.gameLoop = GameLoop:new()
+	level.fsm = StateMachine:new()
 	
 	local background = display.newRect(0, 0, width, height)
 	background:setFillColor(255, 255, 255, 100)
@@ -38,6 +41,10 @@ function LevelView:new(x, y, width, height)
 	local buttonChildren = display.newGroup()
 	level:insert(buttonChildren)
 	level.buttonChildren = buttonChildren
+	
+	local characterSelectView = CharacterSelectView:new(0, 0)
+	level:insert(characterSelectView)
+	characterSelectView:addEventListener("onSelect", level)
 	
 	level.players = nil
 	level.enemies = nil
@@ -57,39 +64,9 @@ function LevelView:new(x, y, width, height)
 		self.background:toBack()
 	end
 	
-	function level.onTouch(event)
-		local target = event.target
-		local player = level.player
-		if player == nil then
-			return
-		end
-		
-		if event.phase == "began" then
-			if target.name == "jump" then
-				player:jump()
-				return true
-			elseif target.name == "jumpForward" then
-				player:jumpForward()
-				return true
-			elseif target.name == "right" then
-				player:moveRight()
-				return true
-			elseif target.name == "left" then
-				player:moveLeft()
-				return true
-			end
-		elseif event.phase == "ended" then
-			if target.name == "strike" then
-				level:strike()
-				return true
-			elseif target.name == "right" then
-				player:stand()
-				return true
-			elseif target.name == "left" then
-				player:stand()
-				return true
-			end
-		end
+	function level:touch(event)
+		self:dispatchEvent({name="onTouch", target=self, target=event.target, phase=event.phase})
+		return true
 	end
 
 	function level:getButton(name, x, y)
@@ -99,7 +76,7 @@ function LevelView:new(x, y, width, height)
 		button.strokeWidth = 1
 		button:setFillColor(255, 0, 0, 100)
 		button:setStrokeColor(255, 0, 0)
-		button:addEventListener("touch", level.onTouch)
+		button:addEventListener("touch", self)
 		button.x = x
 		button.y = y
 		return button
@@ -156,11 +133,6 @@ function LevelView:new(x, y, width, height)
 			self.leftButton = self:getButton("left", 160, 100)
 			self.jumpButton = self:getButton("jump", 200, 140)
 			self.jumpForward = self:getButton("jumpForward", 240, 140)
-		end
-		
-		if self.swordPolygon == nil then
-			self.swordPolygon = SwordPolygon:new(-99, -99, 20, 2)
-			self:insertChild(self.swordPolygon)
 		end
 		
 		local events = levelVO.events
@@ -239,10 +211,41 @@ function LevelView:new(x, y, width, height)
 		
 		print("player.classType: ", player.classType)
 		if self.player == nil and player.classType == "PlayerJXL" then
-			self.player = player
+			self:setPlayer(player)
 		end
 		self:insertChild(player)
 		self.gameLoop:addLoop(player)
+	end
+	
+	function level:setPlayer(target)
+		assert(target ~= nil, "You cannot set player to a nil target.")
+		self.player = target
+		if self.player.classType == "PlayerJXL" then
+			level.fsm:changeState(PlayerJXLState:new(level))
+		elseif self.player.classType == "PlayerFreeman" then
+			level.fsm:changeState(PlayerFreemanState:new(level))
+		end
+	end
+	
+	function level:getPlayerType(classType)
+		local i = 1
+		local players = self.players
+		while players[i] do
+			local player = players[i]
+			if player.classType == classType then
+				return player
+			end
+			i = i + 1
+		end
+		return nil
+	end
+	
+	function level:onSelect(event)
+		if event.classType == "PlayerJXL" and (self.player ~= nil and self.player.classType ~= "PlayerJXL") then
+			self:setPlayer(self:getPlayerType("PlayerJXL"))
+		elseif event.classType == "PlayerFreeman" and (self.player ~= nil and self.player.classType ~= "PlayerFreeman") then
+			self:setPlayer(self:getPlayerType("PlayerFreeman"))
+		end
 	end
 	
 	function level:createEnemy(event)
@@ -273,57 +276,11 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	function level:strike()
-		local player = self.player
-		if player:strike() == false then return false end
-		
-		if self.lastStrike ~= nil then
-			local et = system.getTimer() - self.lastStrike
-			if et < 300 then
-				return true
-			else
-				self.lastStrike = system.getTimer()
-			end
-		else
-			self.lastStrike = system.getTimer()
-		end
-		
-		local sword = self.swordPolygon
-		
-		
-		sword.y = player.y + (player.height / 2)
-		
-		local targetX
-		local playerBounds = player:getBounds()
-		if player.direction == "left" then
-			sword.x = player.x + playerBounds[1]
-			targetX = sword.x - sword.width
-		else
-			sword.x = player.x + playerBounds[1] + playerBounds[3] + sword.width
-			targetX = sword.x + sword.width
-		end
-		
-		if sword.tween ~= nil then
-			transition.cancel(sword.tween)
-		end
-		if sword.onComplete == nil then
-			function sword:onComplete(event)
-				sword.x = -999
-				sword.y = -999
-				sword.tween = nil
-			end
-			function sword:collision(event)
-				if event.phase == "began" then
-					if event.other.name == "Zombie" then
-						event.other:applyDamage(2)
-					end
-				end
-			end
-			sword:addEventListener("collision", sword)
-		end
-		
-		sword.tween = transition.to(sword, {time=100, x=targetX, onComplete=sword})
+	function level:getStateMachine()
+		return self.fsm
 	end
+	
+	
 	
 	return level
 end

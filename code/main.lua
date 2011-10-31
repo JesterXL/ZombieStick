@@ -10,7 +10,7 @@ require "com.jxl.zombiestick.enemies.Zombie"
 require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
-physics.setDrawMode( "normal" )
+physics.setDrawMode("normal")
 physics.start()
 physics.setGravity(0, 9.8)
 
