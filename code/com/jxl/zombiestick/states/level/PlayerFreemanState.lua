@@ -5,14 +5,15 @@ function PlayerFreemanState:new(levelView)
 	local state = {}
 	state.levelView = levelView
 	state.fsm = levelView:getStateMachine()
-	state.lastAttack = nil -- milliseconds
 	
 	function state:enter()
 		levelView:addEventListener("onTouch", self)
+		Runtime:addEventListener("touch", self)
 	end
 	
 	function state:exit()	
 		levelView:removeEventListener("onTouch", self)
+		Runtime:removeEventListener("touch", self)
 	end
 	
 	function state:tick(time)
@@ -40,10 +41,7 @@ function PlayerFreemanState:new(levelView)
 				return true
 			end
 		elseif event.phase == "ended" then
-			if target.name == "strike" then
-				state:attack(event)
-				return true
-			elseif target.name == "right" then
+			if target.name == "right" then
 				player:stand()
 				return true
 			elseif target.name == "left" then
@@ -53,33 +51,37 @@ function PlayerFreemanState:new(levelView)
 		end
 	end
 	
+	function state:touch(event)
+		if event.phase == "began" then
+			self:attack(event)
+			return true
+		end
+	end
+	
 	function state:attack(event)
 		local player = levelView.player
 		if player:attack() == false then return false end
 		
-		if self.lastAttack ~= nil then
-			local et = system.getTimer() - self.lastAttack
-			if et < 1200 then
-				return true
-			else
-				self.lastAttack = system.getTimer()
-			end
-		else
-			self.lastAttack = system.getTimer()
-		end
-		
+		local lc = levelView.levelChildren
 		local targetX, targetY
-		if player.direction == "left" then
-			targetX = -4
-		else
-			targetX = display.getCurrentStage().width + 4
+		local localX, localY = levelView:localToContent(event.x, event.y)
+		local variance = 80
+		targetX = localX + (lc.x * -1) + (math.random() * variance) - (variance / 2)
+		targetY = localY + (lc.y * -1) + (math.random() * variance) - (variance / 2)
+		if targetX > player.x and player.direction == "left" then
+			player:setDirection("right")
+		elseif player.direction == "right" then
+			player:setDirection("left")
 		end
-		targetY = player.y
+			
 		
-		local bullet = Freeman9mmBullet:new(player.x + 4, player.y + 4, targetX, targetY, self.direction)
+		--print("event.x: ", event.x, ", levelView.x: ", levelView.x, ", targetX: ", targetX)
+		local bullet = Freeman9mmBullet:new(player.x + 4, player.y + 4, targetX, targetY)
+		
 		bullet:addEventListener("onRemoveFromGameLoop", self)
 		levelView:insertChild(bullet)
 		levelView.gameLoop:addLoop(bullet)
+		--print("x: ", event.x, ", y: ", event.y, ", bx: ", bullet.x, ", by: ", bullet.y, ", tx: ", targetX, ", ty: ", targetY)
 	end
 	
 	function state:onRemoveFromGameLoop(event)

@@ -13,7 +13,7 @@ function PlayerFreeman:new(params)
 		local jumpSet = sprite.newSpriteSet(sheet, 15, 6)
 		sprite.add(jumpSet, "PlayerJXLJump", 1, 6, 600, 1)
 		local attackSet = sprite.newSpriteSet(sheet, 22, 6)
-		sprite.add(attackSet, "PlayerFreemanAttack", 1, 6, 300, 1)
+		sprite.add(attackSet, "PlayerFreemanAttack", 1, 5, 300, 1)
 
 		PlayerFreeman.sheet = sheet
 		PlayerFreeman.standSet = standSet
@@ -43,6 +43,7 @@ function PlayerFreeman:new(params)
 	player.moveStamina = 1
 	player.startMoveTime = nil
 	player.MOVE_STAMINA_TIME = 1000
+	player.ATTACK_INTERVAL = 500
 	
 	function player:getBounds()
 		return {22,4, 42,4, 42,55, 22,55}
@@ -63,6 +64,9 @@ function PlayerFreeman:new(params)
 		elseif name == "attack" then
 			spriteAnime = sprite.newSprite(PlayerFreeman.attackSet)
 			spriteAnime:prepare("PlayerFreemanAttack")
+		else
+			assert("Unknown sprite name: ", name)
+			return false
 		end
 		spriteAnime:setReferencePoint(display.TopLeftReferencePoint)
 		spriteAnime:play()

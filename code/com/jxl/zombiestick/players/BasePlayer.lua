@@ -22,6 +22,7 @@ function BasePlayer:new()
 	
 	function player:tick(time)
 		if self.moving == true then
+			self:handleMove(time)
 			if system.getTimer() - self.startMoveTime >= self.MOVE_STAMINA_TIME then
 				self:reduceStamina(self.moveStamina)
 				self.startMoveTime = system.getTimer()
@@ -34,6 +35,33 @@ function BasePlayer:new()
 			
 		if self.fsm ~= nil then
 			self.fsm:tick(time)
+		end
+	end
+	
+	function player:handleMove(time)
+		local speed = self.speed
+		local targetX
+		local targetY = self.y
+		if self.direction == "right" then
+			targetX = self.x + speed
+		elseif self.direction == "left" then
+			targetX = self.x - speed
+		else
+			targetX = 0
+		end
+
+		local deltaX = self.x - targetX
+		local deltaY = self.y - targetY
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+		local moveX = speed * (deltaX / dist) * time
+		local moveY = speed * (deltaY / dist) * time
+
+		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
+			self.x = targetX
+			self.y = targetY
+		else
+			self.x = self.x - moveX
+			self.y = self.y - moveY
 		end
 	end
 	
@@ -80,13 +108,12 @@ function BasePlayer:new()
 	end
 	
 	function player:attack()
-		print("BasePlayer::attack")
 		if self:canAttack() == false then return false end
 		
 		self.attacking = true
 		self:showSprite("attack")
-		self:performedAction("attack")
 		self.lastAttack = system.getTimer()
+		self:performedAction("attack")
 		return true
 	end
 	
@@ -107,13 +134,11 @@ function BasePlayer:new()
 		if self.moving == false and self.jumping == false then
 			self.moving = true
 			self.startMoveTime = system.getTimer()
-			Runtime:addEventListener("enterFrame", self)
 		end
 	end
 	
 	function player:stopMoving()
 		self.moving = false
-		Runtime:removeEventListener("enterFrame", self)
 		local force
 		if self.direction == "right" then
 			force = self.speed
@@ -122,33 +147,6 @@ function BasePlayer:new()
 		end
 		self:applyLinearImpulse(force / 3, 0, 40, 32)
 		self:dispatchEvent({name="onMoveCompleted", target=self})
-	end
-	
-	function player:enterFrame()
-		local speed = self.speed
-		local targetX
-		local targetY = self.y
-		if self.direction == "right" then
-			targetX = self.x + speed
-		elseif self.direction == "left" then
-			targetX = self.x - speed
-		else
-			targetX = 0
-		end
-		
-		local deltaX = self.x - targetX
-		local deltaY = self.y - targetY
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-		local moveX = speed * (deltaX / dist)
-		local moveY = speed * (deltaY / dist)
-			
-		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-			self.x = targetX
-			self.y = targetY
-		else
-			self.x = self.x - moveX
-			self.y = self.y - moveY
-		end
 	end
 	
 	function player:canJump()

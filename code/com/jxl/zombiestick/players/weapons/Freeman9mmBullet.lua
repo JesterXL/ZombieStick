@@ -1,6 +1,6 @@
 Freeman9mmBullet = {}
 
-function Freeman9mmBullet:new(x, y, targetX, targetY, direction)
+function Freeman9mmBullet:new(x, y, targetX, targetY)
 	
 	assert(targetX ~= nil, "You cannot pass in a nil targetX.")
 	assert(targetY ~= nil, "You cannot pass in a nil targetY.")
@@ -9,8 +9,17 @@ function Freeman9mmBullet:new(x, y, targetX, targetY, direction)
 	bullet.y = y
 	bullet.targetX = targetX
 	bullet.targetY = targetY
+	-- TODO: use math.deg vs. manual conversion
+	bullet.rot = math.atan2(bullet.y - bullet.targetY, bullet.x - bullet.targetX) / math.pi * 180 -90;
+	bullet.angle = (bullet.rot -90) * math.pi / 180;
 	bullet.speed = .6
-	bullet.direction = direction
+	bullet.destroying = false
+	
+	if targetX > x then
+		bullet.direction = "right"
+	else
+		bullet.direction = "left"
+	end
 	
 	function bullet:collision(event)
 		if self.destroying == true then return true end
@@ -25,7 +34,7 @@ function Freeman9mmBullet:new(x, y, targetX, targetY, direction)
 				else
 					xPower = -force
 				end
-				event.other:applyLinearImpulse(xPower, 0, self.x, self.y)
+				--event.other:applyLinearImpulse(xPower, 0, self.x, self.y)
 				self:destroy()
 			end
 		end
@@ -34,7 +43,8 @@ function Freeman9mmBullet:new(x, y, targetX, targetY, direction)
 	function bullet:destroy()
 		if self.destroying == false then
 			self.destroying = true
-			self:removeEventListener("postCollision", self)
+			self.isVisible = false
+			self:removeEventListener("collision", self)
 			local t = {}
 			t.bullet = self
 			function t:timer(event)
@@ -48,19 +58,8 @@ function Freeman9mmBullet:new(x, y, targetX, targetY, direction)
 	function bullet:tick(time)
 		if self.destroying == true then return true end
 		
-		local deltaX = self.x - self.targetX
-		local deltaY = self.y - self.targetY
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-		local moveX = self.speed * (deltaX / dist) * time
-		local moveY = self.speed * (deltaY / dist) * time
-		
-		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-			self:destroy()
-		else
-			self.x = self.x - moveX
-			self.y = self.y - moveY
-		end
+		self.x = self.x + math.cos(self.angle) * self.speed * time
+	   	self.y = self.y + math.sin(self.angle) * self.speed * time
 	end
 	
 	bullet:addEventListener("collision", bullet)

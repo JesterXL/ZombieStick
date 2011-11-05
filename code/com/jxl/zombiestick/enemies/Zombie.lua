@@ -17,7 +17,7 @@ function Zombie:new()
 	zombie.classType = "Zombie"
 	zombie.targets = nil
 	zombie.moving = false
-	zombie.speed = .5
+	zombie.speed = .01
 	zombie.hitPoints = 4
 	zombie.maxHitPoints = 4
 	zombie.dead = false
@@ -51,24 +51,16 @@ function Zombie:new()
 	function zombie:startMoving()
 		if self.moving == false then
 			self.moving = true
-			Runtime:addEventListener("enterFrame", self)
 		end
 	end
 	
 	function zombie:stopMoving()
 		if self.moving == true then
 			self.moving = false
-			Runtime:removeEventListener("enterFrame", self)
 		end
 	end
 	
-	function zombie:enterFrame(event)
-		if self.moving == true then
-			self:moveTowardTargets()
-		end
-	end
-	
-	function zombie:moveTowardTargets()
+	function zombie:moveTowardTargets(time)
 		--print("Zombie::moveTowardTargets")
 		if self.targets == nil then
 			return true
@@ -103,11 +95,11 @@ function Zombie:new()
 		local closest = dTable[1]
 		target = closest.target
 	 	distance = closest.distance
-		local moveX = self.speed * (deltaX / distance)
-		local moveY = self.speed * (deltaY / distance)
+		local moveX = self.speed * (deltaX / distance) * time
+		local moveY = self.speed * (deltaY / distance) * time
 
 		if (math.abs(moveX) > distance or math.abs(moveY) > distance) then
-			self.x = self.player.x
+			self.x = target.x
 			--self.y = self.player.y
 			
 		else
@@ -132,7 +124,9 @@ function Zombie:new()
 	end
 	
 	function zombie:tick(time)
-		
+		if self.moving == true then
+			self:moveTowardTargets(time)
+		end
 	end
 	
 	function zombie:destroy()

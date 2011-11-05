@@ -149,9 +149,14 @@ end
 local function testFreemanBullet()
 	require "com.jxl.zombiestick.players.weapons.Freeman9mmBullet"
 	require "com.jxl.zombiestick.core.GameLoop"
-	local bullet = Freeman9mmBullet:new(100, 100, 110, 400)
+	function makeBullet(event)
+		if event.phase == "began" then
+			local bullet = Freeman9mmBullet:new(100, 100, event.x, event.y)
+			gameLoop:addLoop(bullet)
+		end
+	end
 	gameLoop = GameLoop:new()
 	gameLoop:start()
-	gameLoop:addLoop(bullet)
+	Runtime:addEventListener("touch", makeBullet)
 end
 --testFreemanBullet()
