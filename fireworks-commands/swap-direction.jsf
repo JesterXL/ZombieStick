@@ -10,7 +10,7 @@ for(var index = 0; index < len; index++)
 {
 	var obj = fw.selection[index]
 	var newLeft = obj.left - (distance * index)
-	alert("newLeft: " + newLeft)
+	//alert("newLeft: " + newLeft)
 	posArray[index] = {left: newLeft, col: index, target: obj}
 }
 posArray.reverse()
@@ -18,6 +18,6 @@ posArray.reverse()
 for(var index = 0; index < len; index++)
 {
 	var obj = posArray[index]
-	alert("current: " + obj.target.left + ", distance: " + distance * index + ", l: " + obj.left)
+	//alert("current: " + obj.target.left + ", distance: " + distance * index + ", l: " + obj.left)
 	obj.target.left = obj.left + distance * index
 }

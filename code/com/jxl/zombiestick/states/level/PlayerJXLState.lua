@@ -15,7 +15,6 @@ function PlayerJXLState:new(levelView)
 	
 	function state:exit()	
 		levelView:removeEventListener("onTouch", self)
-		levelView:removeChild(self.swordPolygon)
 		self.swordPolygon:removeSelf()
 		self.swordPolyon = nil
 	end

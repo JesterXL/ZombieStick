@@ -149,9 +149,11 @@ function Zombie:new()
 	assert(physics.addBody( zombie, "dynamic", 
 		{ density=.7, friction=.2, bounce=.2, isBullet=true, shape=shape,
 			filter = { categoryBits = constants.COLLISION_FILTER_ENEMY_CATEGORY, 
-			maskBits = constants.COLLISION_FILTER_ENEMY_MASK }} ), 
+			maskBits = constants.COLLISION_FILTER_ENEMY_MASK,
+			}} ), 
 			"Zombie failed to add to physics.")
 	
+	zombie.isFixedRotation=true
 	zombie:showSprite("move")
 	
 	return zombie

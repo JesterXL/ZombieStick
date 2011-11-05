@@ -22,7 +22,6 @@ function RestingState:new(playerJXL)
 	function state:tick(time)
 		self.elapsedTime = self.elapsedTime + time
 		if self.elapsedTime >= self.REST_TIME then
-			print("RestingState::tick, recharging...")
 			playerJXL:rechargeStamina()
 			self:reset()
 		end

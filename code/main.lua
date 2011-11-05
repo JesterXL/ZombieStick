@@ -145,3 +145,13 @@ local function testSwordPolygon()
 	local sword = SwordPolygon:new(100, 100, 20, 2)
 end
 --testSwordPolygon()
+
+local function testFreemanBullet()
+	require "com.jxl.zombiestick.players.weapons.Freeman9mmBullet"
+	require "com.jxl.zombiestick.core.GameLoop"
+	local bullet = Freeman9mmBullet:new(100, 100, 110, 400)
+	gameLoop = GameLoop:new()
+	gameLoop:start()
+	gameLoop:addLoop(bullet)
+end
+--testFreemanBullet()

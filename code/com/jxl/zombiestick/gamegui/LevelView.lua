@@ -10,6 +10,7 @@ require "com.jxl.zombiestick.enemies.Zombie"
 require "com.jxl.zombiestick.core.GameLoop"
 require "com.jxl.zombiestick.states.StateMachine"
 require "com.jxl.zombiestick.states.level.PlayerJXLState"
+require "com.jxl.zombiestick.states.level.PlayerFreemanState"
 require "com.jxl.zombiestick.gamegui.CharacterSelectView"
 
 LevelView = {}
@@ -42,14 +43,13 @@ function LevelView:new(x, y, width, height)
 	level:insert(buttonChildren)
 	level.buttonChildren = buttonChildren
 	
-	local characterSelectView = CharacterSelectView:new(0, 0)
-	level:insert(characterSelectView)
-	characterSelectView:addEventListener("onSelect", level)
-	
 	level.players = nil
 	level.enemies = nil
 	
 	function level:insertChild(child)
+		assert(child ~= nil, "Child cannot be nil.")
+		assert(self.levelChildren ~= nil, "Cannot insert children because levelChildren is nil.")
+		assert(self.levelChildren.insert ~= nil, "insert method cannot be nil.")
 		self.levelChildren:insert(child)
 	end
 	
@@ -65,7 +65,8 @@ function LevelView:new(x, y, width, height)
 	end
 	
 	function level:touch(event)
-		self:dispatchEvent({name="onTouch", target=self, target=event.target, phase=event.phase})
+		self:dispatchEvent({name="onTouch", target=self, target=event.target, phase=event.phase,
+							x=event.x, y=event.y})
 		return true
 	end
 
@@ -153,6 +154,15 @@ function LevelView:new(x, y, width, height)
 		--self.background:toBack()
 		--self.levelChildren:toFront()
 		--self.buttonChildren:toFront()
+		
+		if self.characterSelectView == nil then
+			local characterSelectView = CharacterSelectView:new(0, 0)
+			self:insert(characterSelectView)
+			characterSelectView:addEventListener("onSelect", self)
+			self.characterSelectView = characterSelectView
+		end
+		self.characterSelectView:redraw(self.players)
+		
 		
 		self:updateEnemyTargets()
 		self.gameLoop:reset()

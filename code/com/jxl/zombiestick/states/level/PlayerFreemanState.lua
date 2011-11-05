@@ -1,7 +1,7 @@
 require "com.jxl.zombiestick.players.weapons.Freeman9mmBullet"
 PlayerFreemanState = {}
 
-function PlayerJXLState:new(levelView)
+function PlayerFreemanState:new(levelView)
 	local state = {}
 	state.levelView = levelView
 	state.fsm = levelView:getStateMachine()
@@ -9,31 +9,17 @@ function PlayerJXLState:new(levelView)
 	
 	function state:enter()
 		levelView:addEventListener("onTouch", self)
-		local enemies = levelView.enemies
-		local i = 1
-		while enemies[i] do
-			local enemy = enemies[i]
-			enemy:addEventListener("touch", self)
-			i = i + 1
-		end
 	end
 	
 	function state:exit()	
 		levelView:removeEventListener("onTouch", self)
-		local enemies = levelView.enemies
-		local i = 1
-		while enemies[i] do
-			local enemy = enemies[i]
-			enemy:removeEventListener("touch", self)
-			i = i + 1
-		end
 	end
 	
 	function state:tick(time)
 	end
 	
 	function state:onTouch(event)
-		local target = event.touchTarget
+		local target = event.target
 		local player = levelView.player
 		if player == nil then
 			return
@@ -54,7 +40,10 @@ function PlayerJXLState:new(levelView)
 				return true
 			end
 		elseif event.phase == "ended" then
-			if target.name == "right" then
+			if target.name == "strike" then
+				state:attack(event)
+				return true
+			elseif target.name == "right" then
 				player:stand()
 				return true
 			elseif target.name == "left" then
@@ -64,14 +53,7 @@ function PlayerJXLState:new(levelView)
 		end
 	end
 	
-	function state:touch(event)
-		if event.phase == "ended" then
-			self:attack(event.target)
-			return true
-		end
-	end
-	
-	function state:attack(target)
+	function state:attack(event)
 		local player = levelView.player
 		if player:attack() == false then return false end
 		
@@ -86,9 +68,22 @@ function PlayerJXLState:new(levelView)
 			self.lastAttack = system.getTimer()
 		end
 		
-		local bullet = Freeman9mmBullet:new(player.x, player.y, target)
+		local targetX, targetY
+		if player.direction == "left" then
+			targetX = -4
+		else
+			targetX = display.getCurrentStage().width + 4
+		end
+		targetY = player.y
+		
+		local bullet = Freeman9mmBullet:new(player.x + 4, player.y + 4, targetX, targetY, self.direction)
+		bullet:addEventListener("onRemoveFromGameLoop", self)
 		levelView:insertChild(bullet)
 		levelView.gameLoop:addLoop(bullet)
+	end
+	
+	function state:onRemoveFromGameLoop(event)
+		levelView.gameLoop:removeLoop(event.target)
 	end
 	
 	return state

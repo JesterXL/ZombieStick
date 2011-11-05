@@ -28,13 +28,12 @@ function PlayerJXL:new(params)
 	player.name = "JXL"
 	player.classType = "PlayerJXL"
 	player.sprite = nil
-	player.direction = "right"
 	player.moving = false
 	player.jumping = false
 	player.attacking = false
 	player.attackingTimer = nil
 	player.moveForce = 10
-	player.speed = 3
+	player:setSpeed(3)
 	player.maxSpeed = 3
 	player.tiredSpeed = 1
 	player.jumpForce = constants.JUMP_FORCE

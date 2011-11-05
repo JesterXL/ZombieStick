@@ -12,6 +12,7 @@ function BasePlayer:new()
 	player:insert(player.staminaBar)
 	player.lastAttack = nil
 	player.ATTACK_INTERVAL = 300
+	player.direction = "right"
 	
 	player.fsm = StateMachine:new()
 	
@@ -38,6 +39,7 @@ function BasePlayer:new()
 	
 	function player:setDirection(dir)
 		self.direction = dir
+		assert(self.direction ~= nil, "You cannot set direction to a nil value.")
 		local spriteHolder = player.spriteHolder
 		if dir == "right" then
 			spriteHolder.xScale = 1
@@ -247,10 +249,15 @@ function BasePlayer:new()
 		self.stamina = value
 		self.staminaBar:setStamina(value, self.maxStamina)
 		if self.stamina <= 1 then
-			self.speed = self.tiredSpeed
+			self:setSpeed(self.tiredSpeed)
 		else
-			self.speed = self.maxSpeed
+			self:setSpeed(self.maxSpeed)
 		end
+	end
+	
+	function player:setSpeed(value)
+		assert(value ~= nil, "You cannot set speed to a nil value.")
+		self.speed = value
 	end
 	
 	return player
