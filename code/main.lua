@@ -167,6 +167,32 @@ local function testScreenSize()
 	background:setFillColor(0, 255, 0)
 end
 
+local function testCharacterSelectView()
+	require "com.jxl.zombiestick.players.PlayerJXL"
+	require "com.jxl.zombiestick.players.PlayerFreeman"
+	require "com.jxl.zombiestick.gamegui.CharacterSelectView"
+	
+	local background = display.newRect(0, 0, stage.width, stage.height)
+	background.strokeWidth = 4
+	background:setStrokeColor(255, 0, 0)
+	background:setFillColor(0, 255, 0)
+	
+	local params = {x = 100,
+						y = 100,
+						density = 1,
+						friction = 1,
+						bounce=1}
+	local jxl = PlayerJXL:new(params)
+	jxl.isVisible = false
+	local free = PlayerFreeman:new(params)
+	free.isVisible = false
+	local view = CharacterSelectView:new()
+	view.x = 100
+	view.y = 100
+	local players = {jxl, free}
+	view:redraw(players)
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -181,3 +207,5 @@ end
 --testDialogueView()
 
 testLevelViewBuildFromJSON()
+
+--testCharacterSelectView()
