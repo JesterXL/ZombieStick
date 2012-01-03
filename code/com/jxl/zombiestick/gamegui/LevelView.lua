@@ -1,6 +1,11 @@
 require "com.jxl.zombiestick.gamegui.levelviews.Crate"
 require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 
+require "com.jxl.zombiestick.gamegui.hud.MoveLeftButton"
+require "com.jxl.zombiestick.gamegui.hud.MoveRightButton"
+require "com.jxl.zombiestick.gamegui.hud.JumpButton"
+require "com.jxl.zombiestick.gamegui.hud.AttackButton"
+
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
 require "com.jxl.zombiestick.players.weapons.SwordPolygon"
@@ -31,7 +36,7 @@ function LevelView:new(x, y, width, height)
 	level.fsm = StateMachine:new()
 	
 	local background = display.newRect(0, 0, width, height)
-	background:setFillColor(255, 255, 255, 100)
+	background:setFillColor(255, 0, 0, 100)
 	level:insert(background)
 	level.background = background
 	
@@ -129,10 +134,35 @@ function LevelView:new(x, y, width, height)
 		
 		if self.strikeButton == nil then
 			print("making buttons")
-			self.strikeButton = self:getButton("strike", 200, 100)
-			self.rightButton = self:getButton("right", 240, 100)
-			self.leftButton = self:getButton("left", 160, 100)
-			self.jumpButton = self:getButton("jump", 200, 140)
+			--self.strikeButton = self:getButton("strike", 200, 100)
+			--self.rightButton = self:getButton("right", 240, 100)
+			--self.leftButton = self:getButton("left", 160, 100)
+			--self.jumpButton = self:getButton("jump", 200, 140)
+			self.leftButton = MoveLeftButton:new()
+			self.leftButton.name = "left"
+			self.leftButton.x = 4
+			self.leftButton.y = height - (self.leftButton.height + 4)
+			
+			self.rightButton = MoveRightButton:new()
+			self.rightButton.name = "right"
+			self.rightButton.x = self.leftButton.x + self.leftButton.width + 4
+			self.rightButton.y = self.leftButton.y
+			
+			self.strikeButton = AttackButton:new()
+			self.strikeButton.name = "strike"
+			self.strikeButton.x = width - (self.strikeButton.width + 4)
+			self.strikeButton.y = self.leftButton.y
+			
+			self.jumpButton = JumpButton:new()
+			self.jumpButton.name = "jump"
+			self.jumpButton.x = self.strikeButton.x - (self.jumpButton.width + 4)
+			self.jumpButton.y = self.leftButton.y
+			
+			self.leftButton:addEventListener("touch", self)
+			self.rightButton:addEventListener("touch", self)
+			self.strikeButton:addEventListener("touch", self)
+			self.jumpButton:addEventListener("touch", self)
+			
 			self.jumpForward = self:getButton("jumpForward", 240, 140)
 		end
 		

@@ -25,7 +25,6 @@ local function testDialogueView()
 	--view:show()
 	--view:setCharacter(constants.CHARACTER_FREEMAN)
 end
---testDialogueView()
 
 local function testLoadLevelService()
 	local level = LoadLevelService:new("sample.json")
@@ -67,7 +66,6 @@ local function testLoadLevelService()
 		i = i + 1
 	end
 end
---testLoadLevelService()
 
 local function testMoviePlayerView()
 	local moviePlayer = MoviePlayerView:new()
@@ -77,7 +75,6 @@ local function testMoviePlayerView()
 	end
 	moviePlayer:addEventListener("movieEnded", t)
 end
---testMoviePlayerView()
 
 local function testMoviePlayerViewForLevel()
 	local level = LoadLevelService:new("sample.json")
@@ -85,23 +82,23 @@ local function testMoviePlayerViewForLevel()
 	--moviePlayer:startMovie(level.movies[1])
 	moviePlayer:startMovie(level.movies[2])
 end
---testMoviePlayerViewForLevel()
+
 
 local function testLevelView()
 	local stage = display.getCurrentStage()
 	local levelView = LevelView:new(0, 0, stage.width, stage.height)
 end
---testLevelView()
+
 
 local function testLevelViewBuildFromJSON()
 	local stage = display.getCurrentStage()
-	local levelView = LevelView:new(0, 0, stage.width, stage.height)
+	local levelView = LevelView:new(0, 0, stage.contentWidth, stage.contentHeight)
 	--local level = LoadLevelService:new("sample.json")
 	local level = LoadLevelService:new("level-test.json")
 	levelView:drawLevel(level)
 	levelView:startScrolling()
 end
-testLevelViewBuildFromJSON()
+
 
 local function testLevelViewBuildFromJSONBuildTwice()
 	local stage = display.getCurrentStage()
@@ -111,14 +108,14 @@ local function testLevelViewBuildFromJSONBuildTwice()
 	levelView:drawLevel(level)
 	levelView:startScrolling()
 end
---testLevelViewBuildFromJSONBuildTwice()
+
 
 local function testZombie()
 	local zombie = Zombie:new()
 	zombie.x = 100
 	zombie.y = 100
 end
---testZombie()
+
 
 local function testGroupCollisions()
 	require "gamegui.levelviews.Floor"
@@ -138,13 +135,13 @@ local function testGroupCollisions()
 	physics.addBody(crate2)
 end
 
---testGroupCollisions()
+
 
 local function testSwordPolygon()
 	require "players.weapons.SwordPolygon"
 	local sword = SwordPolygon:new(100, 100, 20, 2)
 end
---testSwordPolygon()
+
 
 local function testFreemanBullet()
 	require "com.jxl.zombiestick.players.weapons.Freeman9mmBullet"
@@ -159,4 +156,28 @@ local function testFreemanBullet()
 	gameLoop:start()
 	Runtime:addEventListener("touch", makeBullet)
 end
+
+
+local function testScreenSize()
+	local stage = display.getCurrentStage()
+	
+	local background = display.newRect(0, 0, stage.width, stage.height)
+	background.strokeWidth = 4
+	background:setStrokeColor(255, 0, 0)
+	background:setFillColor(0, 255, 0)
+end
+
+--testScreenSize()
 --testFreemanBullet()
+--testSwordPolygon()
+--testGroupCollisions()
+--testZombie()
+--testLevelViewBuildFromJSONBuildTwice()
+
+--testLevelView()
+--testMoviePlayerViewForLevel()
+--testMoviePlayerView()
+--testLoadLevelService()
+--testDialogueView()
+
+testLevelViewBuildFromJSON()
