@@ -15,9 +15,9 @@ function State:new(params)
 	end
 	
 	function state:getRoot()
-		local parentState = parent
+		local parentState = self.parent
 		if parentState then
-			while parentState.parent ~= nil do
+			while parentState.parent do
 				parentState = parentState.parent
 			end
 		end
@@ -26,7 +26,8 @@ function State:new(params)
 	
 	function state:getParents()
 		local parents = {}
-		local parentState = parent
+		local parentState = self.parent
+		--print("State::getParents, name: ", self.name, ", parent: ", self.parent)
 		if parentState ~= nil then
 			table.insert(parents, parentState)
 			while parentState.parent do
@@ -34,6 +35,7 @@ function State:new(params)
 				table.insert(parents, parentState)
 			end
 		end
+		return parents
 	end
 	
 	function state:inFrom(stateName)

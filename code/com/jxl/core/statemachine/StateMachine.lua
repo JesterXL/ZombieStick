@@ -21,7 +21,7 @@ function StateMachine:new()
 		
 		local newStatesParent = nil
 		if stateData.parent then
-			newStatesParent = self.states[stateData.parent.name]
+			newStatesParent = self.states[stateData.parent]
 		end
 		local state = State:new({name = stateName,
 									from = stateData.from,
@@ -76,7 +76,7 @@ function StateMachine:new()
 		return false
 	end
 	
-	function stateMachine:canChangeTo(stateName)
+	function stateMachine:canChangeStateTo(stateName)
 		local theState = self.states[stateName]
 		if stateName ~= self.state and (theState:inFrom(self.state) == false or theState.from == "*") then
 			return true
@@ -86,24 +86,30 @@ function StateMachine:new()
 	end
 	
 	function stateMachine:findPath(stateFrom, stateTo)
+		--print("-- findPath, stateFrom: ", stateFrom, ", stateTo: ", stateTo)
 		local states = self.states
 		local fromState = states[stateFrom]
-		local c = 1
-		local d = 1
+		local c = 0
+		local d = 0
 		while fromState do
-			d = 1
+			d = 0
 			local toState = states[stateTo]
+			--print("\ttoState: ", toState, ", name: ", toState.name)
 			while toState do
+				--print("\t\tc: ", c, ", d: ", d)
 				if fromState == toState then
+					--print("\t\t\we done, fromState.name: " .. fromState.name .. " is the same as toState.name: " .. toState.name)
 					return {c, d}
 				end
 				d = d + 1
+				--print("toState.parent: ", toState.parent)
 				toState = toState.parent
+				--if toState ~= nil then print("\t\ttoState is now: ", toState.name) end
 			end
 			c = c + 1
 			fromState = fromState.parent
 		end
-		return {0, 0}
+		return {c, d}
 	end
 	
 	function stateMachine:changeState(stateTo)
@@ -115,7 +121,7 @@ function StateMachine:new()
 			return false
 		end
 		
-		if changeChangeStateTo(stateTo) == false then
+		if self:canChangeStateTo(stateTo) == false then
 			print("StateMachine::changestate, Transition to " .. stateTo .. " denied.")
 			local outEvent = {name = "onTransitionDenied",
 								target = self,
@@ -127,6 +133,7 @@ function StateMachine:new()
 		end
 		
 		local path = self:findPath(state, stateTo)
+		--print("path, 1: ", path[1], ", 2: ", path[2])
 		if path[1] > 0 then
 			local exitCallback = {name = "onExit",
 									target = self,
@@ -143,7 +150,8 @@ function StateMachine:new()
 			
 			local p = 1
 			local firstPath = path[1]
-			local len = firstPath - 1
+			local len = firstPath
+			--print("len: ", len)
 			while p < len do
 				self.parentState = self.parentState.parent
 				if self.parentState.exit ~= nil then
@@ -156,22 +164,28 @@ function StateMachine:new()
 		local oldState = state
 		self.state = stateTo
 		state = stateTo
-		
+		--print("path[2]: ", path[2]);
 		if path[2] > 0 then
 			local enterCallback = {name = "onEnterState",
 									target = self,
 									toState = stateTo,
 									fromState = oldState}
-			
-			if states[stateTo].root ~= nil then
-				self.parentStates = states[stateTo].parents
-				local secondPath = path[1]
-				local k = secondPath - 2
+			--print("root: ", states[stateTo]:getRoot().name)
+			if states[stateTo]:getRoot() ~= nil then
+				self.parentStates = states[stateTo]:getParents()
+				--print("self.parentStates: ", self.parentStates)
+				--print("parentStates len: ", table.maxn(self.parentStates))
+				local secondPath = path[2]
+				local k = secondPath - 1
+				----print("len 2: ", (path[2] - 1))
 				while k >= 0 do
-					if self.parentStates[k] and self.parentStates[k].enter then
-						enterCallback.currentState = self.parentStates[k].name
-						self.parentStates[k].enter(enterCallback)
+					local theCurrentParentState = self.parentStates[k]
+					----print("k: ", k, ", theCurrentParentState: ", theCurrentParentState)
+					if theCurrentParentState and theCurrentParentState.enter then
+						enterCallback.currentState = theCurrentParentState.name
+						theCurrentParentState.enter(enterCallback)
 					end
+					k = k - 1
 				end
 			end
 			
@@ -181,7 +195,7 @@ function StateMachine:new()
 			end
 		end
 		
-		print("StateMachine::changeState, State changed to " .. state)
+		--print("StateMachine::changeState, State changed to " .. state)
 		
 		local outEvent = {name = "onTransitionComplete",
 							target = self,
@@ -201,7 +215,7 @@ function StateMachine:new()
 	end
 	
 	function stateMachine:dispatchEvent(event)
-		--print("StateMachine::dispatchEvent")
+		----print("StateMachine::dispatchEvent")
 		return Runtime:dispatchEvent(event)
 	end
 	
