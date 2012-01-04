@@ -193,6 +193,10 @@ local function testCharacterSelectView()
 	view:redraw(players)
 end
 
+local function testStateMachine2()
+	require "com.jxl.core.statemachine.statemachinetests"
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -206,6 +210,8 @@ end
 --testLoadLevelService()
 --testDialogueView()
 
-testLevelViewBuildFromJSON()
+--testLevelViewBuildFromJSON()
 
 --testCharacterSelectView()
+
+testStateMachine2()
