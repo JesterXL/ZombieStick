@@ -31,6 +31,18 @@ function StateMachine:new()
 		self.states[stateName] = state
 	end
 	
+	function stateMachine:addState2(state)
+		if self.states[state.name] ~= nil then
+			print("StateMachne::addedState2, overriding existing state: " .. state.name)
+		end
+		
+		local newStatesParent = nil
+		if state.parent then
+			newStatesParent = self.states[state.parent]
+		end
+		self.states[state.name] = state
+	end
+	
 	function stateMachine:setInitialState(stateName)
 		local initial = self.states[stateName]
 		--print("StateMachine::setInitialState, stateName: ", stateName)
@@ -77,12 +89,39 @@ function StateMachine:new()
 	end
 	
 	function stateMachine:canChangeStateTo(stateName)
+		--print("StateMachine::canChageStateTo, stateName: ", stateName)
 		local theState = self.states[stateName]
+		local score = 0
+		local win = 2
+		
+		if stateName ~= self.state then
+			--print("score 1")
+			score = score + 1
+		end
+		
+		if theState:inFrom(self.state) == true then
+			--print("score 2")
+			score = score + 1
+		end
+		
+		if theState.from == "*" then
+			--print("score 3")
+			score = score + 1
+		end
+		
+		if score >= win then
+			return true
+		else
+			return false
+		end
+		
+		--[[
 		if stateName ~= self.state and (theState:inFrom(self.state) == false or theState.from == "*") then
 			return true
 		else
 			return false
 		end
+		]]--
 	end
 	
 	function stateMachine:findPath(stateFrom, stateTo)
@@ -135,7 +174,7 @@ function StateMachine:new()
 		local path = self:findPath(state, stateTo)
 		--print("path, 1: ", path[1], ", 2: ", path[2])
 		if path[1] > 0 then
-			local exitCallback = {name = "onExit",
+			local exitCallback = {name = "onExitState",
 									target = self,
 									toState = stateTo,
 									fromState = state}

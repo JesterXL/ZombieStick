@@ -1,5 +1,6 @@
 require "com.jxl.core.statemachine.State"
 require "com.jxl.core.statemachine.StateMachine"
+require "com.jxl.core.statemachine.BaseState"
 
 function onPlayingEnter(event)
 	print("onPlayingEnter")
@@ -109,7 +110,31 @@ function runHierarchicalStateMachineTestsSucka()
 	
 end
 
+function runBaseStateTests()
+	print("*** statemachinetests.lua, runBaseStateTests running...")
+	
+	
+	local baseState = BaseState:new("idle")
+	local attackState = BaseState:new("attack", nil, "idle")
+	
+	local stateMachine = StateMachine:new()
+	stateMachine:addState2(baseState)
+	stateMachine:addState2(attackState)
+	
+	stateMachine:setInitialState("idle")
+	
+	local foo = {}
+	function foo:timer(event)
+		print("--- can change to attack: ", stateMachine:canChangeStateTo("attack"))
+		stateMachine:changeState("attack")
+	end
+	
+	timer.performWithDelay(1000, foo)
+end
+
+
 
 
 --runStateMachineTestsSucka()
-runHierarchicalStateMachineTestsSucka()
+--runHierarchicalStateMachineTestsSucka()
+runBaseStateTests()
