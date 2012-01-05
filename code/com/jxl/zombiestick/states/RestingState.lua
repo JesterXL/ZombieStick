@@ -1,39 +1,36 @@
+require "com.jxl.core.statemachine.BaseState"
 RestingState = {}
 
-function RestingState:new(playerJXL)
-	local state = {}
-	state.playerJXL = playerJXL
-	state.REST_TIME = 500
-	state.startTime = nil
-	state.elapsedTime = nil
-	state.fsm = playerJXL:getStateMachine()
+function RestingState:new()
+	local state = BaseState:new("resting")
+	state.player = nil
 	
-	function state:enter()
-		print("RestingState::enter")
+	
+	function state:onEnterState(event)
+		print("RestingState::onEnterState, event.data: ", event.data)
+		local player = event.data[1]
+		self.player = player
+		player.REST_TIME = 500
 		self:reset()
-		playerJXL:addEventListener("onPerformedAction", self)
 	end
 	
-	function state:exit()
-		playerJXL:removeEventListener("onPerformedAction", self)
-		self.playerJXL = nil
+	function state:onExitState(event)
+		print("RestingState::onExitState")
+		self.player = nil
 	end
 	
 	function state:tick(time)
-		self.elapsedTime = self.elapsedTime + time
-		if self.elapsedTime >= self.REST_TIME then
-			playerJXL:rechargeStamina()
+		local player = self.player
+		player.elapsedRestTime = player.elapsedRestTime + time
+		if player.elapsedRestTime >= player.REST_TIME then
+			player:rechargeStamina()
 			self:reset()
 		end
 	end
 	
 	function state:reset()
-		self.startTime = system.getTimer()
-		self.elapsedTime = 0
-	end
-	
-	function state:onPerformedAction(event)
-		self.fsm:changeState(ReadyState:new(playerJXL))
+		self.startRestTime = system.getTimer()
+		self.elapsedRestTime = 0
 	end
 	
 	return state

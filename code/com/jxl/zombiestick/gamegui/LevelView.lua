@@ -13,7 +13,6 @@ require "com.jxl.zombiestick.players.weapons.SwordPolygon"
 require "com.jxl.zombiestick.enemies.Zombie"
 
 require "com.jxl.zombiestick.core.GameLoop"
-require "com.jxl.zombiestick.states.StateMachine"
 require "com.jxl.zombiestick.states.level.PlayerJXLState"
 require "com.jxl.zombiestick.states.level.PlayerFreemanState"
 require "com.jxl.zombiestick.gamegui.CharacterSelectView"
@@ -33,7 +32,6 @@ function LevelView:new(x, y, width, height)
 	level.player = nil
 	level.backgroundImage = nil
 	level.gameLoop = GameLoop:new()
-	level.fsm = StateMachine:new()
 	
 	local background = display.newRect(0, 0, width, height)
 	background:setFillColor(255, 0, 0, 100)
@@ -70,8 +68,15 @@ function LevelView:new(x, y, width, height)
 	end
 	
 	function level:touch(event)
+		--[[
 		self:dispatchEvent({name="onTouch", target=self, target=event.target, phase=event.phase,
 							x=event.x, y=event.y})
+							]]--
+		if self.player then
+			self.player:onTouch({name="onTouch", 
+								target=event.target, phase=event.phase,
+								x=event.x, y=event.y}) 
+		end
 		return true
 	end
 
@@ -244,7 +249,8 @@ function LevelView:new(x, y, width, height)
 		if subType == "JesterXL" then
 			player = PlayerJXL:new(params)
 		elseif subType == "Freeman" then
-			player = PlayerFreeman:new(params)
+			--player = PlayerFreeman:new(params)
+			return
 		end
 		
 		table.insert(self.players, player)
@@ -260,11 +266,13 @@ function LevelView:new(x, y, width, height)
 	function level:setPlayer(target)
 		assert(target ~= nil, "You cannot set player to a nil target.")
 		self.player = target
+		--[[
 		if self.player.classType == "PlayerJXL" then
 			level.fsm:changeState(PlayerJXLState:new(level))
 		elseif self.player.classType == "PlayerFreeman" then
 			level.fsm:changeState(PlayerFreemanState:new(level))
 		end
+		]]--
 	end
 	
 	function level:getPlayerType(classType)
@@ -314,10 +322,6 @@ function LevelView:new(x, y, width, height)
 			enemy:setTargets(players)
 			i = i + 1
 		end
-	end
-	
-	function level:getStateMachine()
-		return self.fsm
 	end
 	
 	

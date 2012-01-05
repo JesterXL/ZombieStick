@@ -6,17 +6,21 @@ function BaseState:new(name, parent, from)
 
 	assert(name ~= nil, "You cannot pass a nil name.")
 	
-	if parent == nil or parent == "" then
-		parent = "*"
+	if from == nil or from == "" then
+		from = "*"
 	end
 	
 	local state = State:new({name = name, parent = parent, from = from})
+	state.ready = false
 	
 	state.enter = function(event)
+		state.ready = true
 		return state:onEnterState(event)
 	end
 	state.exit = function(event)
-		return state:onExitState(event)
+		local result = state:onExitState(event)
+		state.ready = false
+		return result
 	end
 	
 	
@@ -34,6 +38,9 @@ function BaseState:new(name, parent, from)
 	
 	function state:onTransitionDenied(event)
 		print(self.name .. " BaseState::onTransitionDenied, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
+	end
+	
+	function state:tick(time)
 	end
 	
 	Runtime:addEventListener("onTransitionComplete", function(event)

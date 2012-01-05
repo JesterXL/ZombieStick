@@ -11,6 +11,7 @@ function StateMachine:new()
 	stateMachine.parentState = nil
 	stateMachine.parentStates = {}
 	stateMachine.path = {}
+	stateMachine.previousState = nil
 	
 	function stateMachine:addState(stateName, stateData)
 		if self.states[stateName] ~= nil then
@@ -43,7 +44,7 @@ function StateMachine:new()
 		self.states[state.name] = state
 	end
 	
-	function stateMachine:setInitialState(stateName)
+	function stateMachine:setInitialState(stateName, ...)
 		local initial = self.states[stateName]
 		--print("StateMachine::setInitialState, stateName: ", stateName)
 		--print("state: ", self.state, ", initial: ", initial)
@@ -51,6 +52,9 @@ function StateMachine:new()
 			self.state = stateName
 			
 			local event = {name = "onEnterState", target = self, toState = stateName}
+			if #arg > 0 then
+				event.data = arg
+			end
 			
 			local root = initial:getRoot()
 			--print("root: ", root)
@@ -89,23 +93,23 @@ function StateMachine:new()
 	end
 	
 	function stateMachine:canChangeStateTo(stateName)
-		--print("StateMachine::canChageStateTo, stateName: ", stateName)
+		print("StateMachine::canChageStateTo, stateName: ", stateName)
 		local theState = self.states[stateName]
 		local score = 0
 		local win = 2
 		
 		if stateName ~= self.state then
-			--print("score 1")
+			print("score 1")
 			score = score + 1
 		end
 		
 		if theState:inFrom(self.state) == true then
-			--print("score 2")
+			print("score 2")
 			score = score + 1
 		end
 		
 		if theState.from == "*" then
-			--print("score 3")
+			print("score 3")
 			score = score + 1
 		end
 		
@@ -151,7 +155,8 @@ function StateMachine:new()
 		return {c, d}
 	end
 	
-	function stateMachine:changeState(stateTo)
+	function stateMachine:changeState(stateTo, ...)
+		assert(type(stateTo) == "string", "stateTo is supposed to be a String.")
 		local state = self.state
 		local states = self.states
 		local toState = states[stateTo]
@@ -201,6 +206,7 @@ function StateMachine:new()
 		end
 		
 		local oldState = state
+		self.previousState = oldState
 		self.state = stateTo
 		state = stateTo
 		--print("path[2]: ", path[2]);
@@ -209,6 +215,9 @@ function StateMachine:new()
 									target = self,
 									toState = stateTo,
 									fromState = oldState}
+			if #arg > 0 then
+				enterCallback.data = arg
+			end
 			--print("root: ", states[stateTo]:getRoot().name)
 			if states[stateTo]:getRoot() ~= nil then
 				self.parentStates = states[stateTo]:getParents()
@@ -230,6 +239,7 @@ function StateMachine:new()
 			
 			if states[state].enter ~= nil then
 				enterCallback.currentState = state
+				print("StateMachine::calling enter callback, event.data: ", enterCallback.data)
 				states[state].enter(enterCallback)
 			end
 		end
@@ -241,6 +251,16 @@ function StateMachine:new()
 							fromState = oldState,
 							toState = stateTo}
 		self:dispatchEvent(outEvent)
+	end
+	
+	function stateMachine:tick(time)
+		local state = self.state
+		if state ~= nil then
+			local currentState = self.states[state]
+			if currentState.ready == true then
+				currentState:tick(time)
+			end
+		end	
 	end
 	
 	-- event helpers

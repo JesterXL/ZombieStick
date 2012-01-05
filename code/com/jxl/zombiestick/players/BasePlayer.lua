@@ -1,4 +1,4 @@
-require "com.jxl.zombiestick.states.StateMachine"
+require "com.jxl.core.statemachine.StateMachine"
 require "com.jxl.zombiestick.gamegui.StaminaBar"
 
 BasePlayer = {}
@@ -10,6 +10,7 @@ function BasePlayer:new()
 	player:insert(player.spriteHolder)
 	player.staminaBar = StaminaBar:new()
 	player:insert(player.staminaBar)
+	
 	player.lastAttack = nil
 	player.ATTACK_INTERVAL = 300
 	player.direction = "right"
@@ -18,13 +19,40 @@ function BasePlayer:new()
 	player.jumpStartY = nil
 	player.JUMP_INTERVAL = 100
 	
+	-- moved from states
+	
+	-- ready --
+	player.REST_TIME = 2000
+	player.INACTIVE_TIME = 3000
+	player.startRestTime = nil
+	player.elapsedRestTime = nil
+	player.recharge = false
+	
+	-- resting --
+	--state.REST_TIME = 500
+	--state.startTime = nil
+	--state.elapsedTime = nil
+	
+	-- moving --
+	player.startMoveTime = nil
+	player.MOVE_STAMINA_TIME = 1000
+	player.speed = 3
+	player.maxSpeed = 3
+	player.tiredSpeed = 1
+	player.moveStamina = 1
+	
+	
+	
+	--
+	
 	player.fsm = StateMachine:new()
 	
-	function player:getStateMachine()
-		return self.fsm
-	end
-	
 	function player:tick(time)
+		if self.fsm ~= nil then
+			self.fsm:tick(time)
+		end
+		return true
+		--[[
 		if self.moving == true then
 			self:handleMove(time)
 			if system.getTimer() - self.startMoveTime >= self.MOVE_STAMINA_TIME then
@@ -47,10 +75,8 @@ function BasePlayer:new()
 				end
 			end
 		end
-			
-		if self.fsm ~= nil then
-			self.fsm:tick(time)
-		end
+		]]--	
+		
 	end
 	
 	function player:handleMove(time)
@@ -93,6 +119,7 @@ function BasePlayer:new()
 		end
 	end
 	
+	--[[
 	function player:moveRight()
 		--print("moveRight: ", self.jumping)
 		if self.attacking == false and self.jumping == false then
@@ -114,13 +141,16 @@ function BasePlayer:new()
 			return true
 		end
 	end
+	]]--
 	
+	--[[
 	function player:stand()
 		if self.attacking == false and self.jumping == false then
 			self:stopMoving()
 			self:showSprite("stand")
 		end
 	end
+	]]--
 	
 	function player:attack()
 		if self:canAttack() == false then return false end
@@ -179,6 +209,8 @@ function BasePlayer:new()
 		end
 	end
 	
+	-- moved to JumpState
+	--[[
 	function player:jump()
 		if self:canJump() == false then return false end
 		
@@ -191,6 +223,7 @@ function BasePlayer:new()
 		self.jumpStartY = self.y
 		self.lastJump = system.getTimer()
 	end
+	]]--
 	
 	function player:jumpForward()
 		if self:canJump() == false then return false end
@@ -211,6 +244,8 @@ function BasePlayer:new()
 		self:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
 	end
 	
+	-- moved to JumpState
+	--[[
 	function player.onJumpCollision(event)
 		local self = player
 		local anime = self.sprite
@@ -220,7 +255,11 @@ function BasePlayer:new()
 			self:removeEventListener("collision", player.onJumpCollision)
 		end
 	end
+	]]--
 	
+	-- called from subclass
+	-- moved to JumpState
+	--[[
 	function player.onJumpCompleted(event)
 		if event.phase == "end" then
 			if event.target.currentFrame ~= 6 then
@@ -237,6 +276,7 @@ function BasePlayer:new()
 			end
 		end
 	end
+	]]--
 	
 	function player:performedAction(actionType)
 		if actionType == "attack" then
@@ -248,6 +288,7 @@ function BasePlayer:new()
 	end
 	
 	function player:reduceStamina(amount)
+		assert(amount ~= nil, "Error: BasePlayer::reduceStamina, You cannot pass a nil amount.")
 		self:setStamina(self.stamina - amount)
 		if self.stamina < 0 then
 			self:setStamina(0)

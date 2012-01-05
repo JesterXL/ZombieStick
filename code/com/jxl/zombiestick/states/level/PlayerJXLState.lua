@@ -22,40 +22,7 @@ function PlayerJXLState:new(levelView)
 	function state:tick(time)
 	end
 	
-	function state:onTouch(event)
-		local target = event.target
-		local player = levelView.player
-		if player == nil then
-			return
-		end
-		
-		if event.phase == "began" then
-			if target.name == "jump" then
-				player:jump()
-				return true
-			elseif target.name == "jumpForward" then
-				player:jumpForward()
-				return true
-			elseif target.name == "right" then
-				player:moveRight()
-				return true
-			elseif target.name == "left" then
-				player:moveLeft()
-				return true
-			end
-		elseif event.phase == "ended" then
-			if target.name == "strike" then
-				state:attack()
-				return true
-			elseif target.name == "right" then
-				player:stand()
-				return true
-			elseif target.name == "left" then
-				player:stand()
-				return true
-			end
-		end
-	end
+
 	
 	function state:attack()
 		local player = levelView.player

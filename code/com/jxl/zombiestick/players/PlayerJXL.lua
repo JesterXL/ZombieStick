@@ -1,6 +1,8 @@
 require "sprite"
 require "com.jxl.zombiestick.constants"
 require "com.jxl.zombiestick.states.ReadyState"
+require "com.jxl.zombiestick.states.RestingState"
+require "com.jxl.zombiestick.states.MovingState"
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
 
@@ -28,23 +30,15 @@ function PlayerJXL:new(params)
 	player.name = "JXL"
 	player.classType = "PlayerJXL"
 	player.sprite = nil
-	player.moving = false
-	player.jumping = false
-	player.attacking = false
-	player.attackingTimer = nil
-	player.moveForce = 10
-	player:setSpeed(3)
-	player.maxSpeed = 3
-	player.tiredSpeed = 1
+	
 	player.jumpForce = constants.JUMP_FORCE
 	player.jumpForwardForce = constants.JUMP_FORWARD_FORCE
+	
 	player.stamina = 10
 	player.maxStamina = 10
 	player.attackStamina = 1
 	player.jumpStamina = 2
-	player.moveStamina = 1
-	player.startMoveTime = nil
-	player.MOVE_STAMINA_TIME = 1000
+	
 	
 	function player:getBounds()
 		return {22,4, 42,4, 42,55, 22,55}
@@ -58,7 +52,12 @@ function PlayerJXL:new(params)
 		elseif name == "jump" then
 			spriteAnime = sprite.newSprite(PlayerJXL.jumpSet)
 			spriteAnime:prepare("PlayerJXLJump")
-			spriteAnime:addEventListener("sprite", player.onJumpCompleted)
+			--spriteAnime:addEventListener("sprite", player.onJumpCompleted)
+			spriteAnime:addEventListener("sprite", function(event) 
+														player:dispatchEvent({name = "onJumpCompleted",
+																				target = player})
+													end
+										)
 		elseif name == "stand" then
 			spriteAnime = sprite.newSprite(PlayerJXL.standSet)
 			spriteAnime:prepare("PlayerJXLStand")
@@ -77,6 +76,43 @@ function PlayerJXL:new(params)
 		spriteAnime.y = 0
 	end
 	
+	function player:onTouch(event)
+		print("PlayerJXL::onTouch, phase: ", event.phase)
+		local target = event.target
+		
+		if event.phase == "began" then
+			if target.name == "jump" then
+				--player:jump()
+				self.fsm:changeState("jump", self)
+				return true
+			elseif target.name == "jumpForward" then
+				--player:jumpForward()
+				return true
+			elseif target.name == "right" then
+				--player:moveRight()
+				self.fsm:changeState("moving", self, "right")
+				return true
+			elseif target.name == "left" then
+				--player:moveLeft()
+				self.fsm:changeState("moving", self, "left")
+				return true
+			end
+		elseif event.phase == "ended" then
+			if target.name == "strike" then
+				--state:attack()
+				return true
+			elseif target.name == "right" then
+				--player:stand()
+				self.fsm:changeState("ready", self)
+				return true
+			elseif target.name == "left" then
+				--player:stand()
+				self.fsm:changeState("ready", self)
+				return true
+			end
+		end
+	end
+	
 	player:showSprite("stand")
 	
 	player.x = params.x
@@ -92,7 +128,12 @@ function PlayerJXL:new(params)
 			
 	player.isFixedRotation = true
 	
-	player.fsm:changeState(ReadyState:new(player))
+	--player.fsm:changeState(ReadyState:new(player))
+	
+	player.fsm:addState2(ReadyState:new())
+	player.fsm:addState2(RestingState:new())
+	player.fsm:addState2(MovingState:new())
+	player.fsm:setInitialState("ready", player)
 	
 	return player
 end
