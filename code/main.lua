@@ -210,8 +210,8 @@ end
 --testLoadLevelService()
 --testDialogueView()
 
---testLevelViewBuildFromJSON()
+testLevelViewBuildFromJSON()
 
 --testCharacterSelectView()
 
-testStateMachine2()
+--testStateMachine2()
