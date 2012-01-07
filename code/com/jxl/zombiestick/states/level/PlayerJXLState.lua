@@ -33,8 +33,11 @@ function PlayerJXLState:new(levelView)
 			if target.name == "jump" then
 				player:jump()
 				return true
-			elseif target.name == "jumpForward" then
-				player:jumpForward()
+			elseif target.name == "jumpLeft" then
+				player:jumpLeft()
+				return true
+			elseif target.name == "jumpRight" then
+				player:jumpRight()
 				return true
 			elseif target.name == "right" then
 				player:moveRight()

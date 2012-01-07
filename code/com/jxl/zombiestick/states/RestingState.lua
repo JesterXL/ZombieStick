@@ -6,7 +6,7 @@ function RestingState:new(playerJXL)
 	state.REST_TIME = 500
 	state.startTime = nil
 	state.elapsedTime = nil
-	state.fsm = playerJXL:getStateMachine()
+	state.fsm = playerJXL.fsm
 	
 	function state:enter()
 		print("RestingState::enter")

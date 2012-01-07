@@ -10,7 +10,7 @@ function ReadyState:new(playerJXL)
 	state.elapsedTime = nil
 	state.recharged = false
 	state.paused = false
-	state.fsm = playerJXL:getStateMachine()
+	state.fsm = playerJXL.fsm
 	
 	function state:enter()
 		print("ReadyState::enter")

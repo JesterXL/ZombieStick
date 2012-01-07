@@ -4,6 +4,8 @@ require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 require "com.jxl.zombiestick.gamegui.hud.MoveLeftButton"
 require "com.jxl.zombiestick.gamegui.hud.MoveRightButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpButton"
+require "com.jxl.zombiestick.gamegui.hud.JumpLeftButton"
+require "com.jxl.zombiestick.gamegui.hud.JumpRightButton"
 require "com.jxl.zombiestick.gamegui.hud.AttackButton"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
@@ -130,7 +132,7 @@ function LevelView:new(x, y, width, height)
 		self.players = {}
 		self.enemies = {}
 		
-		self:setBackgroundImage(levelVO.backgroundImageShort)
+		--self:setBackgroundImage(levelVO.backgroundImageShort)
 		
 		if self.strikeButton == nil then
 			print("making buttons")
@@ -153,17 +155,28 @@ function LevelView:new(x, y, width, height)
 			self.strikeButton.x = width - (self.strikeButton.width + 4)
 			self.strikeButton.y = self.leftButton.y
 			
+			self.jumpRightButton = JumpRightButton:new()
+			self.jumpRightButton.name = "jumpRight"
+			self.jumpRightButton.x = self.strikeButton.x - (self.jumpRightButton.width + 4)
+			self.jumpRightButton.y = self.leftButton.y
+			
 			self.jumpButton = JumpButton:new()
 			self.jumpButton.name = "jump"
-			self.jumpButton.x = self.strikeButton.x - (self.jumpButton.width + 4)
+			self.jumpButton.x = self.jumpRightButton.x - (self.jumpButton.width + 4)
 			self.jumpButton.y = self.leftButton.y
+			
+			self.jumpLeftButton = JumpLeftButton:new()
+			self.jumpLeftButton.name = "jumpLeft"
+			self.jumpLeftButton.x = self.jumpButton.x - (self.jumpLeftButton.width + 4)
+			self.jumpLeftButton.y = self.leftButton.y
 			
 			self.leftButton:addEventListener("touch", self)
 			self.rightButton:addEventListener("touch", self)
 			self.strikeButton:addEventListener("touch", self)
 			self.jumpButton:addEventListener("touch", self)
+			self.jumpLeftButton:addEventListener("touch", self)
+			self.jumpRightButton:addEventListener("touch", self)
 			
-			self.jumpForward = self:getButton("jumpForward", 240, 140)
 		end
 		
 		local events = levelVO.events

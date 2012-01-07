@@ -14,15 +14,12 @@ function BasePlayer:new()
 	player.ATTACK_INTERVAL = 300
 	player.direction = "right"
 	player.jumpGravity = -3
-	player.lastJump = nil
+	player.lastJump = 0
 	player.jumpStartY = nil
 	player.JUMP_INTERVAL = 100
+	player.jumpHeightCheck = false
 	
 	player.fsm = StateMachine:new()
-	
-	function player:getStateMachine()
-		return self.fsm
-	end
 	
 	function player:tick(time)
 		if self.moving == true then
@@ -36,8 +33,13 @@ function BasePlayer:new()
 				self:onAttackComplete()
 			end
 		elseif self.jumping == true then
+			--print(tostring(system.getTimer()) .. " self.jumpStartY: ", self.jumpStartY, ", self.y: ", self.y, ", diff: ", (self.jumpStartY - self.y))
+			if self.jumpHeightCheck == false and self.jumpStartY - self.y >= 40 then
+				self.jumpHeightCheck = true
+				self:addEventListener("collision", self)
+			end
+			--[[
 			self.y = self.y + self.jumpGravity
-			if system.getTimer() - self.lastJump >= self.JUMP_INTERVAL then
 				-- [jwarden 1.2.2012] NOTE: this needs to ease based on time
 				self.jumpGravity = self.jumpGravity + .1
 				if self.jumpStartY - self.y >= 45 then self.jumpGravity = 0 end
@@ -45,9 +47,8 @@ function BasePlayer:new()
 				if self.jumpGravity > 0 then
 					self:addEventListener("collision", player.onJumpCollision)
 				end
-			end
+				]]--
 		end
-			
 		if self.fsm ~= nil then
 			self.fsm:tick(time)
 		end
@@ -170,11 +171,13 @@ function BasePlayer:new()
 		if self.attacking == false then score = score + 1 end
 		if self.moving == false then score = score + 1 end
 		if self.jumping == false then score = score + 1 end
+		--if system.getTimer() - self.lastJump >= self.JUMP_INTERVAL then score = score + 1 end
 		if self.stamina >= self.jumpStamina then score = score + 1 end
 		
 		if score >= min then
 			return true
 		else
+			--print("attack: ", self.attacking, ", moving: ", self.moving, ", jumping: ", self.jumping, ", stamina: ", self.stamina)
 			return false
 		end
 	end
@@ -185,12 +188,22 @@ function BasePlayer:new()
 		self.jumping = true
 		self:showSprite("jump")
 		self:performedAction("jump")
-		--self:addEventListener("collision", player.onJumpCollision)
-		--self:applyLinearImpulse(0, self.jumpForce, 40, 32)
+		self:applyLinearImpulse(0, self.jumpForce, 40, 32)
 		self.jumpGravity = -4
 		self.jumpStartY = self.y
 		self.lastJump = system.getTimer()
+		self.jumpHeightCheck = false
 	end
+	
+	function player:jumpLeft()
+		self:setDirection("left")
+		self:jumpForward()
+	end
+	
+	function player:jumpRight()
+		self:setDirection("right")
+		self:jumpForward()
+	end	
 	
 	function player:jumpForward()
 		if self:canJump() == false then return false end
@@ -206,9 +219,13 @@ function BasePlayer:new()
 			xForce = -self.jumpForwardForce
 		end
 		
-		self:addEventListener("collision", player.onJumpCollision)
 		local multiplier = 60
 		self:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
+		
+		self.jumpGravity = -4
+		self.jumpStartY = self.y
+		self.lastJump = system.getTimer()
+		self.jumpHeightCheck = false
 	end
 	
 	function player.onJumpCollision(event)
@@ -275,6 +292,17 @@ function BasePlayer:new()
 		assert(value ~= nil, "You cannot set speed to a nil value.")
 		self.speed = value
 	end
+	
+	function player:collision(event)
+		if event.other.name == "Floor" then
+			self:removeEventListener("collision", self)
+			self:showSprite("stand")
+			self.jumping = false
+			self:dispatchEvent({name="onJumpCompleted", target=self})
+		end
+	end
+	
+	player:addEventListener("collision", player)
 	
 	return player
 end
