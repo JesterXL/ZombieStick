@@ -23,8 +23,9 @@ function CharacterSelectView:new(x, y)
 			local player = players[i]
 			local image
 			local frame = display.newImage("character-frame.png")
-			local frameMask = graphics.newMask("frame-mask.png")
 			frame:setReferencePoint(display.TopLeftReferencePoint)
+			local frameMask = graphics.newMask("frame-mask.png")
+			
 			if player.classType == "PlayerJXL" then
 				image = display.newImage("gamegui_dialogueview_jesterxl_normal.jpg")
 			elseif player.classType == "PlayerFreeman" then
@@ -33,7 +34,7 @@ function CharacterSelectView:new(x, y)
 			image:setReferencePoint(display.TopLeftReferencePoint)
 			image:setMask(frameMask)
 			image.maskX = 2
-			image.maskY = 5
+			image.maskY = 2
 			image.name = player.classType
 			frame.name = "frame_" .. player.classType
 			self:insert(image)
@@ -47,7 +48,7 @@ function CharacterSelectView:new(x, y)
 	end
 	
 	function group:touch(event)
-		print("event.target.name: ", event.target.name)
+		--print("event.target.name: ", event.target.name)
 		self:dispatchEvent({name="onSelect", target=self, classType=event.target.name})
 	end
 	

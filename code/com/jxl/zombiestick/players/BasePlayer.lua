@@ -294,6 +294,7 @@ function BasePlayer:new()
 	end
 	
 	function player:collision(event)
+		print("hit: ", event.other.name)
 		if event.other.name == "Floor" then
 			self:removeEventListener("collision", self)
 			self:showSprite("stand")

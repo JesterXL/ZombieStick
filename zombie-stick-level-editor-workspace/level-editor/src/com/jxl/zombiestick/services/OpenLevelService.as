@@ -1,6 +1,5 @@
 package com.jxl.zombiestick.services
 {
-	import com.adobe.serialization.json.JSON;
 	import com.jxl.zombiestick.events.OpenLevelServiceEvent;
 	import com.jxl.zombiestick.vo.LevelVO;
 	
@@ -60,7 +59,9 @@ package com.jxl.zombiestick.services
 			var jsonObject:Object;
 			try
 			{
-				jsonObject = JSON.decode(jsonString);
+				//jsonObject = JSON.decode(jsonString);
+				jsonObject = JSON.parse(jsonString);
+				
 				if(jsonObject == null)
 				{
 					trace("OpenLevelService::onFileSelected, error parsing JSON String, it was null after parsing, jsonString: " + jsonString);
