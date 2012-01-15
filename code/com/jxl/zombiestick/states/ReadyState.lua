@@ -3,15 +3,10 @@ ReadyState = {}
 
 function ReadyState:new()
 	local state = BaseState:new("ready")
-	state.player = nil
-	
 	
 	function state:onEnterState(event)
 		print("ReadyState::onEnterState")
-		
-		local player = event.data[1]
-		self.player = player
-		
+		local player = self.player
 		player.REST_TIME = 2000
 		player.INACTIVE_TIME = 3000
 		player.startRestTime = nil
@@ -21,18 +16,32 @@ function ReadyState:new()
 		self:reset()
 		
 		player:showSprite("stand")
+		
+		Runtime:addEventListener("onMoveLeftStarted", self)
+		Runtime:addEventListener("onMoveRightStarted", self)
+		Runtime:addEventListener("onAttackStarted", self)
+		Runtime:addEventListener("onJumpStarted", self)
+		Runtime:addEventListener("onJumpLeftStarted", self)
+		Runtime:addEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:onExitState(event)
 		print("ReadyState::onExitState")
-		self.player = nil
+		
+		Runtime:removeEventListener("onMoveLeftStarted", self)
+		Runtime:removeEventListener("onMoveRightStarted", self)
+		Runtime:removeEventListener("onAttackStarted", self)
+		Runtime:removeEventListener("onJumpStarted", self)
+		Runtime:removeEventListener("onJumpLeftStarted", self)
+		Runtime:removeEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:tick(time)
 		local player = self.player
 		player.elapsedRestTime = player.elapsedRestTime + time
 		if player.elapsedRestTime >= player.INACTIVE_TIME then
-			player.fsm:changeState("resting", player)
+			--player.fsm:changeState("resting", player)
+			self.stateMachine:changeStateToAtNextTick("resting")
 		elseif player.elapsedRestTime >= player.REST_TIME and player.recharge == false then
 			player.recharge = true
 			player:rechargeStamina()
@@ -44,6 +53,30 @@ function ReadyState:new()
 		player.startRestTime = system.getTimer()
 		player.elapsedRestTime = 0
 		player.recharge = false
+	end
+	
+	function state:onMoveLeftStarted(event)
+		self.stateMachine:changeStateToAtNextTick("moving")
+	end
+	
+	function state:onMoveRightStarted(event)
+		self.stateMachine:changeStateToAtNextTick("moving")
+	end
+	
+	function state:onAttackStarted(event)
+		self.stateMachine:changeStateToAtNextTick("attack")
+	end
+	
+	function state:onJumpStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jump")
+	end
+	
+	function state:onJumpLeftStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jumpLeft")
+	end
+	
+	function state:onJumpRightStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jumpRight")
 	end
 	
 	return state

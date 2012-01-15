@@ -15,11 +15,15 @@ function BaseState:new(name, parent, from)
 	
 	state.enter = function(event)
 		state.ready = true
+		state.stateMachine = event.target
+		state.player = event.entity
 		return state:onEnterState(event)
 	end
 	state.exit = function(event)
 		local result = state:onExitState(event)
 		state.ready = false
+		state.stateMachine = nil
+		state.player = nil
 		return result
 	end
 	

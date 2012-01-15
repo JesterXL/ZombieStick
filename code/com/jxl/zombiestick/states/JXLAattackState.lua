@@ -1,8 +1,10 @@
 require "com.jxl.core.statemachine.BaseState"
-JumpState = {}
 
-function JumpState:new()
-	local state = BaseState:new("jump")
+JXLAttackState = {}
+
+function JXLAttackState:new()
+	
+	local state = BaseState:new("attack")
 	state.player = nil
 	
 	function state:onEnterState(event)
@@ -28,13 +30,6 @@ function JumpState:new()
 		self.jumpStartY = self.y
 		self.lastJump = system.getTimer()
 		self.jumpHeightCheck = false
-		
-			Runtime:addEventListener("onMoveLeftEnded", self)
-			Runtime:addEventListener("onMoveRightEnded", self)
-			Runtime:addEventListener("onAttackStarted", self)
-			Runtime:addEventListener("onJumpStarted", self)
-			Runtime:addEventListener("onJumpLeftStarted", self)
-			Runtime:addEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:onExitState(event)
@@ -78,6 +73,7 @@ function JumpState:new()
 	
 	
 	return state
+	
 end
 
-return JumpState
+return JXLAttackState

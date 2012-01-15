@@ -45,7 +45,7 @@ function BasePlayer:new()
 	
 	--
 	
-	player.fsm = StateMachine:new()
+	player.fsm = StateMachine:new(player)
 	
 	function player:tick(time)
 		if self.fsm ~= nil then

@@ -3,20 +3,33 @@ RestingState = {}
 
 function RestingState:new()
 	local state = BaseState:new("resting")
-	state.player = nil
-	
 	
 	function state:onEnterState(event)
-		print("RestingState::onEnterState, event.data: ", event.data)
-		local player = event.data[1]
-		self.player = player
-		player.REST_TIME = 500
+		print("RestingState::onEnterState")
+		
+		self.oldRestTime = self.player.REST_TIME
+		self.player.REST_TIME = 500
 		self:reset()
+		
+		Runtime:addEventListener("onMoveLeftStarted", self)
+		Runtime:addEventListener("onMoveRightStarted", self)
+		Runtime:addEventListener("onAttackStarted", self)
+		Runtime:addEventListener("onJumpStarted", self)
+		Runtime:addEventListener("onJumpLeftStarted", self)
+		Runtime:addEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:onExitState(event)
 		print("RestingState::onExitState")
-		self.player = nil
+		
+		self.player.REST_TIME = self.oldRestTime
+		
+		Runtime:removeEventListener("onMoveLeftStarted", self)
+		Runtime:removeEventListener("onMoveRightStarted", self)
+		Runtime:removeEventListener("onAttackStarted", self)
+		Runtime:removeEventListener("onJumpStarted", self)
+		Runtime:removeEventListener("onJumpLeftStarted", self)
+		Runtime:removeEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:tick(time)
@@ -31,6 +44,31 @@ function RestingState:new()
 	function state:reset()
 		self.startRestTime = system.getTimer()
 		self.elapsedRestTime = 0
+	end
+	
+	
+	function state:onMoveLeftStarted(event)
+		self.stateMachine:changeStateToAtNextTick("moving")
+	end
+	
+	function state:onMoveRightStarted(event)
+		self.stateMachine:changeStateToAtNextTick("moving")
+	end
+	
+	function state:onAttackStarted(event)
+		self.stateMachine:changeStateToAtNextTick("attack")
+	end
+	
+	function state:onJumpStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jump")
+	end
+	
+	function state:onJumpLeftStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jumpLeft")
+	end
+	
+	function state:onJumpRightStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jumpRight")
 	end
 	
 	return state

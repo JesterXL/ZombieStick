@@ -8,12 +8,23 @@ function MovingState:new()
 	
 	function state:onEnterState(event)
 		print("MovingState::onEnterState")
-		local player = event.data[1]
-		local direction = event.data[2]
-		self.player = player
+		
+		local player = self.player
+		
 		player.startMoveTime = system.getTimer()
-		player:setDirection(direction)
-		player:showSprite("move")
+		--player:setDirection(direction)
+		--player:showSprite("move")
+		
+		Make a Left Moving and Right Moving state; THEN set the direction.
+		You do that, and it should work just great since this state works,
+		but doesn't know direction yet.
+		
+		Runtime:addEventListener("onMoveLeftEnded", self)
+		Runtime:addEventListener("onMoveRightEnded", self)
+		Runtime:addEventListener("onAttackStarted", self)
+		Runtime:addEventListener("onJumpStarted", self)
+		Runtime:addEventListener("onJumpLeftStarted", self)
+		Runtime:addEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:onExitState(event)
@@ -28,7 +39,12 @@ function MovingState:new()
 		end
 		player:applyLinearImpulse(force / 3, 0, 40, 32)
 		
-		self.player = nil
+		Runtime:removeEventListener("onMoveLeftEnded", self)
+		Runtime:removeEventListener("onMoveRightEnded", self)
+		Runtime:removeEventListener("onAttackStarted", self)
+		Runtime:removeEventListener("onJumpStarted", self)
+		Runtime:removeEventListener("onJumpLeftStarted", self)
+		Runtime:removeEventListener("onJumpRightStarted", self)
 	end
 	
 	function state:tick(time)
@@ -67,6 +83,34 @@ function MovingState:new()
 			player.x = player.x - moveX
 			player.y = player.y - moveY
 		end
+	end
+	
+	function state:onMoveLeftEnded(event)
+		--local sm = self.stateMachine
+		--sm:changeStateToAtNextTick(sm.previousState)
+		self.stateMachine:changeStateToAtNextTick("ready")
+	end
+	
+	function state:onMoveRightEnded(event)
+		--local sm = self.stateMachine
+		--sm:changeStateToAtNextTick(sm.previousState)
+		self.stateMachine:changeStateToAtNextTick("ready")
+	end
+	
+	function state:onAttackStarted(event)
+		self.stateMachine:changeStateToAtNextTick("attack")
+	end
+	
+	function state:onJumpStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jump")
+	end
+	
+	function state:onJumpLeftStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jumpLeft")
+	end
+	
+	function state:onJumpRightStarted(event)
+		self.stateMachine:changeStateToAtNextTick("jumpRight")
 	end
 	
 	return state

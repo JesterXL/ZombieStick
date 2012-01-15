@@ -76,43 +76,6 @@ function PlayerJXL:new(params)
 		spriteAnime.y = 0
 	end
 	
-	function player:onTouch(event)
-		print("PlayerJXL::onTouch, phase: ", event.phase)
-		local target = event.target
-		
-		if event.phase == "began" then
-			if target.name == "jump" then
-				--player:jump()
-				self.fsm:changeState("jump", self)
-				return true
-			elseif target.name == "jumpForward" then
-				--player:jumpForward()
-				return true
-			elseif target.name == "right" then
-				--player:moveRight()
-				self.fsm:changeState("moving", self, "right")
-				return true
-			elseif target.name == "left" then
-				--player:moveLeft()
-				self.fsm:changeState("moving", self, "left")
-				return true
-			end
-		elseif event.phase == "ended" then
-			if target.name == "strike" then
-				--state:attack()
-				return true
-			elseif target.name == "right" then
-				--player:stand()
-				self.fsm:changeState("ready", self)
-				return true
-			elseif target.name == "left" then
-				--player:stand()
-				self.fsm:changeState("ready", self)
-				return true
-			end
-		end
-	end
-	
 	player:showSprite("stand")
 	
 	player.x = params.x

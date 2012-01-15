@@ -1,7 +1,7 @@
 require "com.jxl.core.statemachine.State"
 StateMachine = {}
 
-function StateMachine:new()
+function StateMachine:new(entity)
 	
 	local stateMachine = {}
 	stateMachine.states = {}
@@ -12,6 +12,11 @@ function StateMachine:new()
 	stateMachine.parentStates = {}
 	stateMachine.path = {}
 	stateMachine.previousState = nil
+	stateMachine.entity = entity
+	stateMachine.lastTickTime = nil
+	stateMachine.stateToChangeTo = nil
+	stateMachine.changeStateAtTick = false
+	stateMachine.entity = entity
 	
 	function stateMachine:addState(stateName, stateData)
 		if self.states[stateName] ~= nil then
@@ -44,17 +49,14 @@ function StateMachine:new()
 		self.states[state.name] = state
 	end
 	
-	function stateMachine:setInitialState(stateName, ...)
+	function stateMachine:setInitialState(stateName)
 		local initial = self.states[stateName]
 		--print("StateMachine::setInitialState, stateName: ", stateName)
 		--print("state: ", self.state, ", initial: ", initial)
 		if self.state == nil and initial ~= nil then
 			self.state = stateName
 			
-			local event = {name = "onEnterState", target = self, toState = stateName}
-			if #arg > 0 then
-				event.data = arg
-			end
+			local event = {name = "onEnterState", target = self, toState = stateName, entity = self.entity}
 			
 			local root = initial:getRoot()
 			--print("root: ", root)
@@ -77,7 +79,7 @@ function StateMachine:new()
 			end
 			
 			local outEvent = {name = "onTransitionComplete", target = self, toState = stateName}
-			self:dispatchEvent(outEvent)
+			Runtime:dispatchEvent(outEvent)
 		end
 	end
 	
@@ -155,7 +157,14 @@ function StateMachine:new()
 		return {c, d}
 	end
 	
-	function stateMachine:changeState(stateTo, ...)
+	function stateMachine:changeStateToAtNextTick(stateTo)
+		assert(stateTo ~= nil, "stateTo must be a String and not nil.")
+		assert(type(stateTo) == "string", "stateTo is supposed to be a String.")
+		self.stateToChangeTo = stateTo
+		self.changeStateAtTick = true
+	end
+	
+	function stateMachine:changeState(stateTo)
 		assert(type(stateTo) == "string", "stateTo is supposed to be a String.")
 		local state = self.state
 		local states = self.states
@@ -172,7 +181,7 @@ function StateMachine:new()
 								fromState = state,
 								toState = stateTo,
 								allowedStates = states[stateTo].from}
-			self:dispatchEvent(outEvent)
+			Runtime:dispatchEvent(outEvent)
 			return false
 		end
 		
@@ -214,10 +223,8 @@ function StateMachine:new()
 			local enterCallback = {name = "onEnterState",
 									target = self,
 									toState = stateTo,
-									fromState = oldState}
-			if #arg > 0 then
-				enterCallback.data = arg
-			end
+									fromState = oldState,
+									entity = self.entity}
 			--print("root: ", states[stateTo]:getRoot().name)
 			if states[stateTo]:getRoot() ~= nil then
 				self.parentStates = states[stateTo]:getParents()
@@ -239,7 +246,7 @@ function StateMachine:new()
 			
 			if states[state].enter ~= nil then
 				enterCallback.currentState = state
-				print("StateMachine::calling enter callback, event.data: ", enterCallback.data)
+				--print("StateMachine::calling enter callback, event.data: ", enterCallback.data)
 				states[state].enter(enterCallback)
 			end
 		end
@@ -250,10 +257,17 @@ function StateMachine:new()
 							target = self,
 							fromState = oldState,
 							toState = stateTo}
-		self:dispatchEvent(outEvent)
+		Runtime:dispatchEvent(outEvent)
 	end
 	
 	function stateMachine:tick(time)
+		self.lastTickTime = time
+		if self.changeStateAtTick == true then
+			self.changeStateAtTick = false
+			self:changeState(self.stateToChangeTo)
+			self.stateToChangeTo = nil
+		end
+		
 		local state = self.state
 		if state ~= nil then
 			local currentState = self.states[state]
@@ -261,21 +275,6 @@ function StateMachine:new()
 				currentState:tick(time)
 			end
 		end	
-	end
-	
-	-- event helpers
-	
-	function stateMachine:addEventListener(name, listener)
-		return Runtime:addEventListener(name, listener)
-	end
-	
-	function stateMachine:removeEventListener(name, listener)
-		return Runtime:removeEventListener(name, listener)
-	end
-	
-	function stateMachine:dispatchEvent(event)
-		----print("StateMachine::dispatchEvent")
-		return Runtime:dispatchEvent(event)
 	end
 	
 	return stateMachine
