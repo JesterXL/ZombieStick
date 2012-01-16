@@ -1,8 +1,11 @@
 require "com.jxl.core.statemachine.BaseState"
 JumpState = {}
 
-function JumpState:new()
-	local state = BaseState:new("jump")
+function JumpState:new(stateName)
+	if stateName == nil or stateName == "" then
+		stateName = "jump"
+	end
+	local state = BaseState:new(stateName)
 	state.player = nil
 	
 	function state:onEnterState(event)
@@ -10,35 +13,23 @@ function JumpState:new()
 		local player = event.entity
 		self.player = player
 		
-		--[[
-		player:addEventListener("onJumpCompleted", self)
 		player:showSprite("jump")
-		--player:performedAction("jump")
+		player:performedAction("jump")
 		--self:addEventListener("collision", player.onJumpCollision)
 		--self:applyLinearImpulse(0, self.jumpForce, 40, 32)
 		player.jumpGravity = -4
 		player.jumpStartY = player.y
 		player.lastJump = system.getTimer()
-		]]--
 		
-		self:showSprite("jump")
-		self:performedAction("jump")
-		self:applyLinearImpulse(0, self.jumpForce, 40, 32)
-		self.jumpGravity = -4
-		self.jumpStartY = self.y
-		self.lastJump = system.getTimer()
-		self.jumpHeightCheck = false
-		
-			Runtime:addEventListener("onMoveLeftEnded", self)
-			Runtime:addEventListener("onMoveRightEnded", self)
-			Runtime:addEventListener("onAttackStarted", self)
-			Runtime:addEventListener("onJumpStarted", self)
-			Runtime:addEventListener("onJumpLeftStarted", self)
-			Runtime:addEventListener("onJumpRightStarted", self)
+		Runtime:addEventListener("onMoveLeftStarted", self)
+		Runtime:addEventListener("onMoveRightStarted", self)
 	end
 	
 	function state:onExitState(event)
 		print("JumpState::onEnterState")
+		
+		Runtime:removeEventListener("onMoveLeftStarted", self)
+		Runtime:removeEventListener("onMoveRightStarted", self)
 		
 		local player = self.player
 		--player:removeEventListener("onJumpCompleted", self)
@@ -48,7 +39,7 @@ function JumpState:new()
 	
 	function state:tick(time)
 		local player = self.player
-		--[[
+		
 		player.y = player.y + player.jumpGravity
 		if system.getTimer() - player.lastJump >= player.JUMP_INTERVAL then
 			-- [jwarden 1.2.2012] NOTE: this needs to ease based on time
@@ -56,26 +47,32 @@ function JumpState:new()
 			if player.jumpStartY - player.y >= 45 then player.jumpGravity = 0 end
 			if player.jumpGravity > 9.8 then player.jumpGravity = 9.8 end
 			if player.jumpGravity > 0 then
-				player:addEventListener("collision", self.onJumpCollision)
+				player:addEventListener("collision", self)
 			end
 		end
-		]]--
-		if self.jumpHeightCheck == false and self.jumpStartY - self.y >= 40 then
-			self.jumpHeightCheck = true
-			self:addEventListener("collision", self)
-		end
+		
+		--if self.jumpHeightCheck == false and self.jumpStartY - self.y >= 40 then
+		--	self.jumpHeightCheck = true
+		--	player:addEventListener("collision", self)
+		--end
 	end
 	
-	function player:collision(event)
+	function state:collision(event)
 		if event.other.name == "Floor" then
 			local player = self.player
-			self:removeEventListener("collision", self)
+			player:removeEventListener("collision", self)
 			player:showSprite("stand")
-			--self.jumping = false
-			player:dispatchEvent({name="onJumpCompleted", target=self})
+			self.stateMachine:changeStateToAtNextTick("ready")
 		end
 	end
 	
+	function state:onMoveLeftStarted(event)
+		self.player:setDirection("left")
+	end
+	
+	function state:onMoveRightStarted(event)
+		self.player:setDirection("right")
+	end
 	
 	return state
 end

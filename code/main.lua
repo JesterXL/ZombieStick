@@ -18,6 +18,15 @@ display.setStatusBar( display.HiddenStatusBar )
 
 local stage = display.getCurrentStage()
 
+function showProps(o)
+	print("-- showProps --")
+	print("o: ", o)
+	for key,value in pairs(o) do
+		print("key: ", key, ", value: ", value);
+	end
+	print("-- end showProps --")
+end
+
 local function testDialogueView()
 	local view = DialogueView:new()
 	--view:setText("Testing.")

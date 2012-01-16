@@ -1,13 +1,13 @@
 require "com.jxl.core.statemachine.BaseState"
 MovingState = {}
 
-function MovingState:new()
-	local state = BaseState:new("moving")
+function MovingState:new(stateName)
+	local state = BaseState:new(stateName)
 	state.player = nil
 	
 	
 	function state:onEnterState(event)
-		print("MovingState::onEnterState")
+		print("MovingState::onEnterState, showProps: ", showProps(event))
 		
 		local player = self.player
 		
@@ -15,9 +15,10 @@ function MovingState:new()
 		--player:setDirection(direction)
 		--player:showSprite("move")
 		
-		Make a Left Moving and Right Moving state; THEN set the direction.
-		You do that, and it should work just great since this state works,
-		but doesn't know direction yet.
+		--Make a Left Moving and Right Moving state; THEN set the direction.
+		--You do that, and it should work just great since this state works,
+		--but doesn't know direction yet.
+		
 		
 		Runtime:addEventListener("onMoveLeftEnded", self)
 		Runtime:addEventListener("onMoveRightEnded", self)

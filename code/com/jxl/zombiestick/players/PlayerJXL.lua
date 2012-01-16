@@ -1,8 +1,12 @@
 require "sprite"
 require "com.jxl.zombiestick.constants"
+
 require "com.jxl.zombiestick.states.ReadyState"
 require "com.jxl.zombiestick.states.RestingState"
-require "com.jxl.zombiestick.states.MovingState"
+require "com.jxl.zombiestick.states.MovingLeftState"
+require "com.jxl.zombiestick.states.MovingRightState"
+require "com.jxl.zombiestick.states.JumpState"
+
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
 
@@ -95,7 +99,11 @@ function PlayerJXL:new(params)
 	
 	player.fsm:addState2(ReadyState:new())
 	player.fsm:addState2(RestingState:new())
-	player.fsm:addState2(MovingState:new())
+	player.fsm:addState2(MovingLeftState:new())
+	player.fsm:addState2(MovingRightState:new())
+	player.fsm:addState2(JumpState:new())
+	--player.fsm:addState2(JumpRightState:new())
+	--player.fsm:addState2(JumpLeftState:new())
 	player.fsm:setInitialState("ready", player)
 	
 	return player

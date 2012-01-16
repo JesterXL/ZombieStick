@@ -56,11 +56,11 @@ function ReadyState:new()
 	end
 	
 	function state:onMoveLeftStarted(event)
-		self.stateMachine:changeStateToAtNextTick("moving")
+		self.stateMachine:changeStateToAtNextTick("movingLeft")
 	end
 	
 	function state:onMoveRightStarted(event)
-		self.stateMachine:changeStateToAtNextTick("moving")
+		self.stateMachine:changeStateToAtNextTick("movingRight")
 	end
 	
 	function state:onAttackStarted(event)
