@@ -15,11 +15,6 @@ function MovingState:new(stateName)
 		--player:setDirection(direction)
 		--player:showSprite("move")
 		
-		--Make a Left Moving and Right Moving state; THEN set the direction.
-		--You do that, and it should work just great since this state works,
-		--but doesn't know direction yet.
-		
-		
 		Runtime:addEventListener("onMoveLeftEnded", self)
 		Runtime:addEventListener("onMoveRightEnded", self)
 		Runtime:addEventListener("onAttackStarted", self)

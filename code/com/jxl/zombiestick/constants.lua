@@ -8,7 +8,8 @@ constants.CHARACTER_JESTERXL_DIALOGUEVIEW_IMAGE 	= "gamegui_dialogueview_jesterx
 constants.CHARACTER_FREEMAN_DIALOGUEVIEW_IMAGE 		= "gamegui_dialogueview_freeman_normal.png"
 
 constants.JUMP_FORCE = 30
-constants.JUMP_FORWARD_FORCE = 14
+--constants.JUMP_FORWARD_FORCE = 14
+constants.JUMP_FORWARD_FORCE = 3
 
 constants.COLLISION_FILTER_PLAYER_CATEGORY			= 1
 constants.COLLISION_FILTER_PLAYER_MASK				= 28

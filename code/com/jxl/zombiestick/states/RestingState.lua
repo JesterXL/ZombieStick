@@ -6,9 +6,9 @@ function RestingState:new()
 	
 	function state:onEnterState(event)
 		print("RestingState::onEnterState")
-		
-		self.oldRestTime = self.player.REST_TIME
-		self.player.REST_TIME = 500
+		local player = self.player
+		player.oldRestTime = player.REST_TIME
+		player.REST_TIME = 200
 		self:reset()
 		
 		Runtime:addEventListener("onMoveLeftStarted", self)
@@ -21,8 +21,8 @@ function RestingState:new()
 	
 	function state:onExitState(event)
 		print("RestingState::onExitState")
-		
-		self.player.REST_TIME = self.oldRestTime
+		local player = self.player
+		player.REST_TIME = player.oldRestTime
 		
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)
@@ -35,6 +35,7 @@ function RestingState:new()
 	function state:tick(time)
 		local player = self.player
 		player.elapsedRestTime = player.elapsedRestTime + time
+		--print("elapsed rest time: ", player.elapsedRestTime)
 		if player.elapsedRestTime >= player.REST_TIME then
 			player:rechargeStamina()
 			self:reset()
@@ -42,8 +43,9 @@ function RestingState:new()
 	end
 	
 	function state:reset()
-		self.startRestTime = system.getTimer()
-		self.elapsedRestTime = 0
+		local player = self.player
+		player.startRestTime = system.getTimer()
+		player.elapsedRestTime = 0
 	end
 	
 	

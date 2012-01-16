@@ -12,7 +12,7 @@ function JumpState:new(stateName)
 		print("JumpState::onEnterState")
 		local player = event.entity
 		self.player = player
-		
+		player.jumping = true
 		player:showSprite("jump")
 		player:performedAction("jump")
 		--self:addEventListener("collision", player.onJumpCollision)
@@ -31,10 +31,7 @@ function JumpState:new(stateName)
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)
 		
-		local player = self.player
-		--player:removeEventListener("onJumpCompleted", self)
-		--player:removeEventListener("collision", self.onJumpCollision)
-		self.player = nil
+		self.player.jumping = false
 	end
 	
 	function state:tick(time)
