@@ -7,7 +7,7 @@ require "com.jxl.zombiestick.states.MovingLeftState"
 require "com.jxl.zombiestick.states.MovingRightState"
 require "com.jxl.zombiestick.states.JumpState"
 require "com.jxl.zombiestick.states.JumpRightState"
---require "com.jxl.zombiestick.states.JumpLeftState"
+require "com.jxl.zombiestick.states.JumpLeftState"
 
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
@@ -105,7 +105,7 @@ function PlayerJXL:new(params)
 	player.fsm:addState2(MovingRightState:new())
 	player.fsm:addState2(JumpState:new())
 	player.fsm:addState2(JumpRightState:new())
-	--player.fsm:addState2(JumpLeftState:new())
+	player.fsm:addState2(JumpLeftState:new())
 	player.fsm:setInitialState("ready", player)
 	
 	return player

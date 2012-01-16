@@ -1,19 +1,19 @@
 require "com.jxl.zombiestick.states.JumpState"
 
-JumpRightState = {}
+JumpLeftState = {}
 
-function JumpRightState:new()
-	local state = JumpState:new("jumpRight")
+function JumpLeftState:new()
+	local state = JumpState:new("jumpLeft")
 	state.xForce = nil
 	
 	state.superOnEnterState = state.onEnterState
 	function state:onEnterState(event)
-		print("JumpRightState::onEnterState")
+		print("JumpLeftState::onEnterState")
 		self:superOnEnterState(event)
 		
 		local player = self.player
-		player:setDirection("right")
-		self.xForce = player.jumpForwardForce
+		player:setDirection("left")
+		self.xForce = -player.jumpForwardForce
 		--local multiplier = 60
 		--player:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
 	end
@@ -36,4 +36,4 @@ function JumpRightState:new()
 	
 end
 
-return JumpRightState
+return JumpLeftState
