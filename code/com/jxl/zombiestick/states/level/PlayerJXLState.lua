@@ -9,8 +9,7 @@ function PlayerJXLState:new(levelView)
 	
 	function state:enter()
 		levelView:addEventListener("onTouch", self)
-		self.swordPolygon = SwordPolygon:new(-99, -99, 20, 2)
-		levelView:insertChild(self.swordPolygon)
+		
 	end
 	
 	function state:exit()	

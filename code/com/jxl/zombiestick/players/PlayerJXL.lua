@@ -8,6 +8,7 @@ require "com.jxl.zombiestick.states.MovingRightState"
 require "com.jxl.zombiestick.states.JumpState"
 require "com.jxl.zombiestick.states.JumpRightState"
 require "com.jxl.zombiestick.states.JumpLeftState"
+require "com.jxl.zombiestick.states.JXLAttackState"
 
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
@@ -60,8 +61,10 @@ function PlayerJXL:new(params)
 			spriteAnime:prepare("PlayerJXLJump")
 			--spriteAnime:addEventListener("sprite", player.onJumpCompleted)
 			spriteAnime:addEventListener("sprite", function(event) 
-														player:dispatchEvent({name = "onJumpCompleted",
-																				target = player})
+														if event.phase == "end" then
+															player:dispatchEvent({name = "onJumpCompleted",
+																					target = player})
+														end
 													end
 										)
 		elseif name == "stand" then
@@ -70,6 +73,13 @@ function PlayerJXL:new(params)
 		elseif name == "attack" then
 			spriteAnime = sprite.newSprite(PlayerJXL.attackSet)
 			spriteAnime:prepare("PlayerJXLAttack")
+			spriteAnime:addEventListener("sprite", function(event) 
+														if event.phase == "end" then
+															player:dispatchEvent({name = "onAttackAnimationCompleted",
+																					target = player})
+														end
+													end
+										)
 		end
 		spriteAnime:setReferencePoint(display.TopLeftReferencePoint)
 		spriteAnime:play()
@@ -106,6 +116,7 @@ function PlayerJXL:new(params)
 	player.fsm:addState2(JumpState:new())
 	player.fsm:addState2(JumpRightState:new())
 	player.fsm:addState2(JumpLeftState:new())
+	player.fsm:addState2(JXLAttackState:new())
 	player.fsm:setInitialState("ready", player)
 	
 	return player

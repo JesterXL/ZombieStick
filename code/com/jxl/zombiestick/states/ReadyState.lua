@@ -64,6 +64,7 @@ function ReadyState:new()
 	end
 	
 	function state:onAttackStarted(event)
+		print("ReadyState::onAttackStarted")
 		self.stateMachine:changeStateToAtNextTick("attack")
 	end
 	

@@ -1,3 +1,6 @@
+
+-- Warning: This class is treated as a Singleton at very bottom.
+
 require "com.jxl.zombiestick.gamegui.levelviews.Crate"
 require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 
@@ -384,7 +387,7 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	
+	LevelView.instance = level
 	
 	return level
 end

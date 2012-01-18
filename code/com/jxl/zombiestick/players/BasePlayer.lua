@@ -152,6 +152,7 @@ function BasePlayer:new()
 	end
 	]]--
 	
+	--[[
 	function player:attack()
 		if self:canAttack() == false then return false end
 		
@@ -161,6 +162,7 @@ function BasePlayer:new()
 		self:performedAction("attack")
 		return true
 	end
+	]]--
 	
 	function player:canAttack()
 		if self.attacking == true then return false end
@@ -225,6 +227,7 @@ function BasePlayer:new()
 	end
 	]]--
 	
+	--[[
 	function player:jumpForward()
 		if self:canJump() == false then return false end
 		
@@ -243,6 +246,7 @@ function BasePlayer:new()
 		local multiplier = 60
 		self:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
 	end
+	]]--
 	
 	-- moved to JumpState
 	--[[
