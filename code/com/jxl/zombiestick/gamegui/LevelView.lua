@@ -124,6 +124,7 @@ function LevelView:new(x, y, width, height)
 		self:setBackgroundImage(levelVO.backgroundImageShort)
 		
 		if self.hudControls == nil then
+			print("telling HUD Controls to use width: ", width, ", and height: ", height)
 			local hudControls = HudControls:new(width, height)
 			self:insert(hudControls)
 			hudControls:addEventListener("onLeftButtonTouch", self)
@@ -197,7 +198,10 @@ function LevelView:new(x, y, width, height)
 	function level:onAttackButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
-			Runtime:dispatchEvent({name = "onAttackStarted", target = event.target})
+			event.name = "onAttackStarted"
+			self.player.lastAttackX = event.x
+			self.player.lastAttackY = event.y
+			Runtime:dispatchEvent(event)
 			return true
 		elseif p == "ended" or p == "cancelled" then
 			Runtime:dispatchEvent({name = "onAttackEnded", target = event.target})
@@ -324,7 +328,8 @@ function LevelView:new(x, y, width, height)
 		if event.classType == "PlayerJXL" and (self.player ~= nil and self.player.classType ~= "PlayerJXL") then 
 			local freeman = self:getPlayerType("PlayerFreeman")
 			if freeman then
-				freeman.fsm:changeStateToAtNextTick("idle")
+				print("**** SET FREEMAN TO IDLE ****")
+				freeman.fsm:changeState("idle")
 			end
 			self:setPlayer(self:getPlayerType("PlayerJXL"))
 			self.hudControls.fsm:changeState("HudControlsJXL")
@@ -332,7 +337,7 @@ function LevelView:new(x, y, width, height)
 		elseif event.classType == "PlayerFreeman" and (self.player ~= nil and self.player.classType ~= "PlayerFreeman") then
 			local jxl = self:getPlayerType("PlayerJXL")
 			if jxl then
-				jxl.fsm:changeStateToAtNextTick("idle")
+				jxl.fsm:changeState("idle")
 			end
 			self:setPlayer(self:getPlayerType("PlayerFreeman"))
 			self.hudControls.fsm:changeState("HudControlsFreeman")

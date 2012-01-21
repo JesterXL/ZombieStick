@@ -20,7 +20,7 @@ function StateMachine:new(entity)
 	
 	function stateMachine:addState(stateName, stateData)
 		if self.states[stateName] ~= nil then
-			print("StateMachne::addedState, overriding existing state: " .. stateName)
+			print("WARNING: StateMachne::addedState, overriding existing state: " .. stateName)
 		end
 		
 		if stateData == nil then stateData = {} end
@@ -39,7 +39,7 @@ function StateMachine:new(entity)
 	
 	function stateMachine:addState2(state)
 		if self.states[state.name] ~= nil then
-			print("StateMachne::addedState2, overriding existing state: " .. state.name)
+			print("WARNING: StateMachne::addedState2, overriding existing state: " .. state.name)
 		end
 		
 		local newStatesParent = nil
@@ -54,7 +54,7 @@ function StateMachine:new(entity)
 		--print("StateMachine::setInitialState, stateName: ", stateName)
 		--print("state: ", self.state, ", initial: ", initial)
 		if self.state == nil and initial ~= nil then
-			self.state = stateName
+			self:setState(stateName)
 			
 			local event = {name = "onEnterState", target = self, toState = stateName, entity = self.entity}
 			
@@ -95,7 +95,7 @@ function StateMachine:new(entity)
 	end
 	
 	function stateMachine:canChangeStateTo(stateName)
-		print("StateMachine::canChageStateTo, stateName: ", stateName)
+		--print("StateMachine::canChageStateTo, stateName: ", stateName)
 		local theState = self.states[stateName]
 		local score = 0
 		local win = 2
@@ -160,22 +160,33 @@ function StateMachine:new(entity)
 	function stateMachine:changeStateToAtNextTick(stateTo)
 		assert(stateTo ~= nil, "stateTo must be a String and not nil.")
 		assert(type(stateTo) == "string", "stateTo is supposed to be a String.")
-		self.stateToChangeTo = stateTo
+		self:setStateToChangeTo(stateTo)
 		self.changeStateAtTick = true
 	end
 	
+	function stateMachine:setStateToChangeTo(value)
+		--print("StateMachine::setStateToChangeTo, value: ", value)
+		self.stateToChangeTo = value
+	end
+	
+	function stateMachine:setState(value)
+		self.previousState = self.state
+		self.state = value
+		Runtime:dispatchEvent({name="onStateMachineStateChanged", target=self})
+	end
+	
 	function stateMachine:changeState(stateTo)
-		assert(type(stateTo) == "string", "stateTo is supposed to be a String.")
+		assert(type(stateTo) == "string", "stateTo is supposed to be a String, not: ", stateTo)
 		local state = self.state
 		local states = self.states
 		local toState = states[stateTo]
 		if toState == nil then
-			print("StateMachine::changeState, Cannot make transition: State " .. stateTo .. " is not defined.")
+			print("ERROR: StateMachine::changeState, Cannot make transition: State " .. stateTo .. " is not defined.")
 			return false
 		end
 		
 		if self:canChangeStateTo(stateTo) == false then
-			print("StateMachine::changestate, Transition to " .. stateTo .. " denied.")
+			print("ERROR: StateMachine::changestate, Transition to " .. stateTo .. " denied.")
 			local outEvent = {name = "onTransitionDenied",
 								target = self,
 								fromState = state,
@@ -215,8 +226,7 @@ function StateMachine:new(entity)
 		end
 		
 		local oldState = state
-		self.previousState = oldState
-		self.state = stateTo
+		self:setState(stateTo)
 		state = stateTo
 		--print("path[2]: ", path[2]);
 		if path[2] > 0 then
@@ -264,8 +274,9 @@ function StateMachine:new(entity)
 		self.lastTickTime = time
 		if self.changeStateAtTick == true then
 			self.changeStateAtTick = false
+			--print("StateMachine::tick, self.stateToChangeTo: ", self.stateToChangeTo)
 			self:changeState(self.stateToChangeTo)
-			self.stateToChangeTo = nil
+			--self:setStateToChangeTo(nil)
 		end
 		
 		local state = self.state

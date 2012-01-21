@@ -51,6 +51,13 @@ function HudControls:new(width, height)
 	jumpLeftButton.y = leftButton.y
 	controls:insert(jumpLeftButton)
 	
+	local clickRect = display.newRect(0, 0, width, height - leftButton.height - 4)
+	clickRect.strokeWidth = 3
+	clickRect:setFillColor(255, 0, 0, 1)
+	clickRect:setStrokeColor(255, 0, 0)
+	controls:insert(clickRect)
+	clickRect.isVisible = false
+	
 	function controls:showJXLAttackButton(show)
 		print("HudControls::showJXLAttackButtons, show: ", show)
 		attackButton.isVisible = show
@@ -58,6 +65,7 @@ function HudControls:new(width, height)
 	
 	function controls:showFreemanAttackButton(show)
 		print("HudControls::showFreemanAttackButton, show: ", show)
+		--[[
 		if show then
 			local targetButton
 			if self.targetButton == null then
@@ -72,6 +80,9 @@ function HudControls:new(width, height)
 				targetButton:hide()
 			end
 		end
+		]]--
+		
+		clickRect.isVisible = show
 	end
 	
 	function controls:touch(event)
@@ -88,6 +99,8 @@ function HudControls:new(width, height)
 			self:dispatchEvent({name="onJumpLeftButtonTouch", target=self, phase=event.phase, button=jumpLeftButton})
 		elseif t == jumpRightButton then
 			self:dispatchEvent({name="onJumpRightButtonTouch", target=self, phase=event.phase, button=jumpRightButton})
+		elseif t == clickRect then
+			self:dispatchEvent({name="onAttackButtonTouch", target=self, phase=event.phase, button=clickRect, x=event.x, y=event.y})
 		end	
 		return true
 	end
@@ -98,6 +111,7 @@ function HudControls:new(width, height)
 	jumpButton:addEventListener("touch", controls)
 	jumpLeftButton:addEventListener("touch", controls)
 	jumpRightButton:addEventListener("touch", controls)
+	clickRect:addEventListener("touch", controls)
 	
 	controls.fsm = StateMachine:new(controls)
 	controls.fsm:addState2(HudControlsJXLState:new())

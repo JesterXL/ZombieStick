@@ -27,12 +27,12 @@ function TargetButton:new()
 	
 	function image:show()
 		self.isVisible = true
-		Runtime:addEventListener("touch", image)
+		--Runtime:addEventListener("touch", image)
 	end
 	
 	function image:hide()
 		self.isVisible = false
-		Runtime:removeEventListener("touch", image)
+		--Runtime:removeEventListener("touch", image)
 	end
 	
 	
