@@ -1,5 +1,15 @@
 require "sprite"
 require "com.jxl.zombiestick.players.BasePlayer"
+
+require "com.jxl.zombiestick.states.ReadyState"
+require "com.jxl.zombiestick.states.RestingState"
+require "com.jxl.zombiestick.states.MovingLeftState"
+require "com.jxl.zombiestick.states.MovingRightState"
+require "com.jxl.zombiestick.states.JumpState"
+require "com.jxl.zombiestick.states.JumpRightState"
+require "com.jxl.zombiestick.states.JumpLeftState"
+require "com.jxl.zombiestick.states.FreemanAttackState"
+
 PlayerFreeman = {}
 
 function PlayerFreeman:new(params)
@@ -94,7 +104,16 @@ function PlayerFreeman:new(params)
 			
 	player.isFixedRotation = true
 	
-	player.fsm:changeState(ReadyState:new(player))
+	player.fsm:addState2(ReadyState:new())
+	player.fsm:addState2(RestingState:new())
+	player.fsm:addState2(MovingLeftState:new())
+	player.fsm:addState2(MovingRightState:new())
+	player.fsm:addState2(JumpState:new())
+	player.fsm:addState2(JumpRightState:new())
+	player.fsm:addState2(JumpLeftState:new())
+	player.fsm:addState2(JXLAttackState:new())
+	player.fsm:setInitialState("ready", player)
+	
 	
 	return player
 end

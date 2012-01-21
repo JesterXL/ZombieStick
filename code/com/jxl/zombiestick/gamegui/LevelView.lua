@@ -4,13 +4,6 @@
 require "com.jxl.zombiestick.gamegui.levelviews.Crate"
 require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 
-require "com.jxl.zombiestick.gamegui.hud.MoveLeftButton"
-require "com.jxl.zombiestick.gamegui.hud.MoveRightButton"
-require "com.jxl.zombiestick.gamegui.hud.JumpButton"
-require "com.jxl.zombiestick.gamegui.hud.AttackButton"
-require "com.jxl.zombiestick.gamegui.hud.JumpRightButton"
-require "com.jxl.zombiestick.gamegui.hud.JumpLeftButton"
-
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
 require "com.jxl.zombiestick.players.weapons.SwordPolygon"
@@ -18,9 +11,9 @@ require "com.jxl.zombiestick.players.weapons.SwordPolygon"
 require "com.jxl.zombiestick.enemies.Zombie"
 
 require "com.jxl.zombiestick.core.GameLoop"
-require "com.jxl.zombiestick.states.level.PlayerJXLState"
 require "com.jxl.zombiestick.states.level.PlayerFreemanState"
 require "com.jxl.zombiestick.gamegui.CharacterSelectView"
+require "com.jxl.zombiestick.gamegui.hud.HudControls"
 
 LevelView = {}
 
@@ -36,6 +29,8 @@ function LevelView:new(x, y, width, height)
 	level.name = "level"
 	level.player = nil
 	level.backgroundImage = nil
+	level.hudControls = nil
+	
 	level.gameLoop = GameLoop:new()
 	
 	local background = display.newRect(0, 0, width, height)
@@ -128,44 +123,16 @@ function LevelView:new(x, y, width, height)
 		
 		self:setBackgroundImage(levelVO.backgroundImageShort)
 		
-		if self.strikeButton == nil then
+		if self.hudControls == nil then
 			print("making buttons")
-			self.leftButton = MoveLeftButton:new()
-			self.leftButton.name = "left"
-			self.leftButton.x = 4
-			self.leftButton.y = height - (self.leftButton.height + 4)
-
-			self.rightButton = MoveRightButton:new()
-			self.rightButton.name = "right"
-			self.rightButton.x = self.leftButton.x + self.leftButton.width + 4
-			self.rightButton.y = self.leftButton.y
-
-			self.strikeButton = AttackButton:new()
-			self.strikeButton.name = "strike"
-			self.strikeButton.x = width - (self.strikeButton.width + 4)
-			self.strikeButton.y = self.leftButton.y
-
-			self.jumpRightButton = JumpRightButton:new()
-			self.jumpRightButton.name = "jumpRight"
-			self.jumpRightButton.x = self.strikeButton.x - (self.jumpRightButton.width + 4)
-			self.jumpRightButton.y = self.leftButton.y
-
-			self.jumpButton = JumpButton:new()
-			self.jumpButton.name = "jump"
-			self.jumpButton.x = self.jumpRightButton.x - (self.jumpButton.width + 4)
-			self.jumpButton.y = self.leftButton.y
-
-			self.jumpLeftButton = JumpLeftButton:new()
-			self.jumpLeftButton.name = "jumpLeft"
-			self.jumpLeftButton.x = self.jumpButton.x - (self.jumpLeftButton.width + 4)
-			self.jumpLeftButton.y = self.leftButton.y
-
-			self.leftButton:addEventListener("touch", function(e) self:onMoveLeft(e) end)
-			self.rightButton:addEventListener("touch", function(e) self:onMoveRight(e) end)
-			self.strikeButton:addEventListener("touch", function(e) self:onAttack(e) end)
-			self.jumpButton:addEventListener("touch", function(e) self:onJump(e) end)
-			self.jumpLeftButton:addEventListener("touch", function(e) self:onJumpLeft(e) end)
-			self.jumpRightButton:addEventListener("touch", function(e) self:onJumpRight(e) end)
+			local hudControls = HudControls:new(width, height)
+			self:insert(hudControls)
+			hudControls:addEventListener("onLeftButtonTouch", self)
+			hudControls:addEventListener("onRightButtonTouch", self)
+			hudControls:addEventListener("onAttackButtonTouch", self)
+			hudControls:addEventListener("onJumpButtonTouch", self)
+			hudControls:addEventListener("onJumpLeftButtonTouch", self)
+			hudControls:addEventListener("onJumpRightButtonTouch", self)
 		end
 		
 		local events = levelVO.events
@@ -201,7 +168,7 @@ function LevelView:new(x, y, width, height)
 		self.gameLoop:start()
 	end
 	
-	function level:onMoveLeft(event)
+	function level:onLeftButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
 			Runtime:dispatchEvent({name = "onMoveLeftStarted", target = event.target})
@@ -212,7 +179,7 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	function level:onMoveRight(event)
+	function level:onRightButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
 			Runtime:dispatchEvent({name = "onMoveRightStarted", target = event.target})
@@ -223,7 +190,7 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	function level:onAttack(event)
+	function level:onAttackButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
 			Runtime:dispatchEvent({name = "onAttackStarted", target = event.target})
@@ -234,7 +201,7 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	function level:onJump(event)
+	function level:onJumpButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
 			Runtime:dispatchEvent({name = "onJumpStarted", target = event.target})
@@ -245,7 +212,7 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	function level:onJumpLeft(event)
+	function level:onJumpLeftButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
 			Runtime:dispatchEvent({name = "onJumpLeftStarted", target = event.target})
@@ -256,7 +223,7 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
-	function level:onJumpRight(event)
+	function level:onJumpRightButtonTouch(event)
 		local p = event.phase
 		if p == "began" then
 			Runtime:dispatchEvent({name = "onJumpRightStarted", target = event.target})
