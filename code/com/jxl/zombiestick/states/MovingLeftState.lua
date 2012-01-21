@@ -9,8 +9,8 @@ function MovingLeftState:new()
 	function state:onEnterState(event)
 		print("MovingLeftState::onEnterState")
 		self:superOnEnterState(event)
-		self.player:setDirection("left")
-		self.player:showSprite("move")
+		self.entity:setDirection("left")
+		self.entity:showSprite("move")
 	end
 	
 	return state

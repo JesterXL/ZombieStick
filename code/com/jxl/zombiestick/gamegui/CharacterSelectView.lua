@@ -31,7 +31,7 @@ function CharacterSelectView:new(x, y)
 				image = display.newImage("gamegui_dialogueview_freeman_normal.png")
 			end
 			image:setReferencePoint(display.TopLeftReferencePoint)
-			image:setMask(frameMask)
+			--image:setMask(frameMask)
 			image.maskX = 2
 			image.maskY = 5
 			image.name = player.classType
@@ -41,14 +41,13 @@ function CharacterSelectView:new(x, y)
 			frame.x = startX
 			image.x = startX
 			image:addEventListener("touch", self)
-			startX = startX + frame.width + 8
+			startX = startX + 64 + 8
 			i = i + 1
 		end
 	end
 	
 	function group:touch(event)
-		print("event.target.name: ", event.target.name)
-		self:dispatchEvent({name="onSelect", target=self, classType=event.target.name})
+		self:dispatchEvent({name="onSelectActivePlayer", target=self, classType=event.target.name})
 	end
 	
 	return group

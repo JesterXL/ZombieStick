@@ -112,7 +112,8 @@ function PlayerFreeman:new(params)
 	player.fsm:addState2(JumpRightState:new())
 	player.fsm:addState2(JumpLeftState:new())
 	player.fsm:addState2(JXLAttackState:new())
-	player.fsm:setInitialState("ready", player)
+	player.fsm:addState2(IdleState:new())
+	player.fsm:setInitialState("idle")
 	
 	
 	return player

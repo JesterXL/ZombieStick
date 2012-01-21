@@ -6,7 +6,7 @@ function RestingState:new()
 	
 	function state:onEnterState(event)
 		print("RestingState::onEnterState")
-		local player = self.player
+		local player = self.entity
 		player.oldRestTime = player.REST_TIME
 		player.REST_TIME = 200
 		self:reset()
@@ -21,7 +21,7 @@ function RestingState:new()
 	
 	function state:onExitState(event)
 		print("RestingState::onExitState")
-		local player = self.player
+		local player = self.entity
 		player.REST_TIME = player.oldRestTime
 		
 		Runtime:removeEventListener("onMoveLeftStarted", self)
@@ -33,7 +33,7 @@ function RestingState:new()
 	end
 	
 	function state:tick(time)
-		local player = self.player
+		local player = self.entity
 		player.elapsedRestTime = player.elapsedRestTime + time
 		--print("elapsed rest time: ", player.elapsedRestTime)
 		if player.elapsedRestTime >= player.REST_TIME then
@@ -43,7 +43,7 @@ function RestingState:new()
 	end
 	
 	function state:reset()
-		local player = self.player
+		local player = self.entity
 		player.startRestTime = system.getTimer()
 		player.elapsedRestTime = 0
 	end

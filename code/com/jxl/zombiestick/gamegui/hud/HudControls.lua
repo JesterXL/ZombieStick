@@ -5,6 +5,9 @@ require "com.jxl.zombiestick.gamegui.hud.AttackButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpRightButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpLeftButton"
 
+require "com.jxl.zombiestick.states.hud.HudControlsJXLState"
+require "com.jxl.zombiestick.states.hud.HudControlsFreemanState"
+
 HudControls = {}
 
 function HudControls:new(width, height)
@@ -22,16 +25,16 @@ function HudControls:new(width, height)
 	rightButton.x = leftButton.x + leftButton.width + 4
 	rightButton.y = leftButton.y
 	controls:insert(rightButton)
-
-	local strikeButton = AttackButton:new()
-	strikeButton.name = "strike"
-	strikeButton.x = width - (strikeButton.width + 4)
-	strikeButton.y = leftButton.y
+	
+	local attackButton = AttackButton:new()
+	attackButton.name = "attack"
+	attackButton.x = width - (attackButton.width + 4)
+	attackButton.y = leftButton.y
 	controls:insert(leftButton)
-
+	
 	local jumpRightButton = JumpRightButton:new()
 	jumpRightButton.name = "jumpRight"
-	jumpRightButton.x = strikeButton.x - (jumpRightButton.width + 4)
+	jumpRightButton.x = attackButton.x - (jumpRightButton.width + 4)
 	jumpRightButton.y = leftButton.y
 	controls:insert(jumpRightButton)
 
@@ -47,14 +50,32 @@ function HudControls:new(width, height)
 	jumpLeftButton.y = leftButton.y
 	controls:insert(jumpLeftButton)
 	
+	function controls:showJXLAttackButton(show)
+		attackButton.isVisible = show
+	end
+	
+	function controls:showFreemanAttackButton(show)
+		if show then
+			if self.targetButton == null then
+				local targetButton = TargetButton:new()
+				targetButton.name = "attack"
+				controls:insert(targetButton)
+			end
+			targetButton:show()
+		else
+			targetButton.isVisible = false
+			targetButton:hide()
+		end
+	end
+	
 	function controls:touch(event)
 		local t = event.target
 		if t == leftButton then
 			self:dispatchEvent({name="onLeftButtonTouch", target=self, phase=event.phase, button=leftButton})
 		elseif t == rightButton then
 			self:dispatchEvent({name="onRightButtonTouch", target=self, phase=event.phase, button=rightButton})
-		elseif t == strikeButton then
-			self:dispatchEvent({name="onAttackButtonTouch", target=self, phase=event.phase, button=strikeButton})
+		elseif t == attackButton then
+			self:dispatchEvent({name="onAttackButtonTouch", target=self, phase=event.phase, button=attackButton})
 		elseif t == jumpButton then
 			self:dispatchEvent({name="onJumpButtonTouch", target=self, phase=event.phase, button=jumpButton})
 		elseif t == jumpLeftButton then
@@ -67,10 +88,15 @@ function HudControls:new(width, height)
 
 	leftButton:addEventListener("touch", controls)
 	rightButton:addEventListener("touch", controls)
-	strikeButton:addEventListener("touch", controls)
+	attackButton:addEventListener("touch", controls)
 	jumpButton:addEventListener("touch", controls)
 	jumpLeftButton:addEventListener("touch", controls)
 	jumpRightButton:addEventListener("touch", controls)
+	
+	controls.fsm = StateMachine:new(controls)
+	controls.fsm:addState2(HudControlsJXLState:new())
+	controls.fsm:addState2(HudControlsFreemanState:new())
+	controls.fsm:setInitialState("HudControlsJXL")
 	
 	return controls
 	

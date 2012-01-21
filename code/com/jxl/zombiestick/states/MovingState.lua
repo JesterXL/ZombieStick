@@ -9,7 +9,7 @@ function MovingState:new(stateName)
 	function state:onEnterState(event)
 		print("MovingState::onEnterState, showProps: ", showProps(event))
 		
-		local player = self.player
+		local player = self.entity
 		
 		player.startMoveTime = system.getTimer()
 		--player:setDirection(direction)
@@ -26,7 +26,7 @@ function MovingState:new(stateName)
 	function state:onExitState(event)
 		print("MovingState::onEnterState")
 		
-		local player = self.player
+		local player = self.entity
 		local force
 		if player.direction == "right" then
 			force = player.speed
@@ -44,7 +44,7 @@ function MovingState:new(stateName)
 	end
 	
 	function state:tick(time)
-		local player = self.player
+		local player = self.entity
 		self:handleMove(time)
 		if system.getTimer() - player.startMoveTime >= player.MOVE_STAMINA_TIME then
 			player:reduceStamina(player.moveStamina)
@@ -54,7 +54,7 @@ function MovingState:new(stateName)
 	end
 	
 	function state:handleMove(time)
-		local player = self.player
+		local player = self.entity
 		local speed = player.speed
 		local targetX
 		local targetY = player.y

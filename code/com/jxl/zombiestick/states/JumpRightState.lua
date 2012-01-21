@@ -11,7 +11,7 @@ function JumpRightState:new()
 		print("JumpRightState::onEnterState")
 		self:superOnEnterState(event)
 		
-		local player = self.player
+		local player = self.entity
 		player:setDirection("right")
 		self.xForce = player.jumpForwardForce
 		--local multiplier = 60
@@ -20,14 +20,14 @@ function JumpRightState:new()
 	
 	state.superOnExitState = state.onExitState
 	function state:onExitState(event)
-		local player = self.player
+		local player = self.entity
 		player:applyLinearImpulse(self.xForce / 3, 0, 40, 32)
 		self:superOnExitState(event)
 	end
 	
 	state.superTick = state.tick
 	function state:tick(time)
-		local player = self.player
+		local player = self.entity
 		player.x = player.x + self.xForce
 		self:superTick(time)
 	end

@@ -124,7 +124,6 @@ function LevelView:new(x, y, width, height)
 		self:setBackgroundImage(levelVO.backgroundImageShort)
 		
 		if self.hudControls == nil then
-			print("making buttons")
 			local hudControls = HudControls:new(width, height)
 			self:insert(hudControls)
 			hudControls:addEventListener("onLeftButtonTouch", self)
@@ -133,6 +132,7 @@ function LevelView:new(x, y, width, height)
 			hudControls:addEventListener("onJumpButtonTouch", self)
 			hudControls:addEventListener("onJumpLeftButtonTouch", self)
 			hudControls:addEventListener("onJumpRightButtonTouch", self)
+			self.hudControls = hudControls
 		end
 		
 		local events = levelVO.events
@@ -157,7 +157,7 @@ function LevelView:new(x, y, width, height)
 		if self.characterSelectView == nil then
 			local characterSelectView = CharacterSelectView:new(0, 0)
 			self:insert(characterSelectView)
-			characterSelectView:addEventListener("onSelect", self)
+			characterSelectView:addEventListener("onSelectActivePlayer", self)
 			self.characterSelectView = characterSelectView
 		end
 		self.characterSelectView:redraw(self.players)
@@ -166,6 +166,10 @@ function LevelView:new(x, y, width, height)
 		self:updateEnemyTargets()
 		self.gameLoop:reset()
 		self.gameLoop:start()
+		
+		self:setPlayer(self:getPlayerType("PlayerJXL"))
+		self.hudControls.fsm:changeStateToAtNextTick("HudControlsJXL")
+		self.player.fsm:changeStateToAtNextTick("ready")
 	end
 	
 	function level:onLeftButtonTouch(event)
@@ -279,13 +283,11 @@ function LevelView:new(x, y, width, height)
 		if subType == "JesterXL" then
 			player = PlayerJXL:new(params)
 		elseif subType == "Freeman" then
-			--player = PlayerFreeman:new(params)
-			return
+			player = PlayerFreeman:new(params)
 		end
 		
 		table.insert(self.players, player)
 		
-		print("player.classType: ", player.classType)
 		if self.player == nil and player.classType == "PlayerJXL" then
 			self:setPlayer(player)
 		end
@@ -318,11 +320,23 @@ function LevelView:new(x, y, width, height)
 		return nil
 	end
 	
-	function level:onSelect(event)
-		if event.classType == "PlayerJXL" and (self.player ~= nil and self.player.classType ~= "PlayerJXL") then
+	function level:onSelectActivePlayer(event)
+		if event.classType == "PlayerJXL" and (self.player ~= nil and self.player.classType ~= "PlayerJXL") then 
+			local freeman = self:getPlayerType("PlayerFreeman")
+			if freeman then
+				freeman.fsm:changeStateToAtNextTick("idle")
+			end
 			self:setPlayer(self:getPlayerType("PlayerJXL"))
+			self.hudControls.fsm:changeStateToAtNextTick("HudControlsJXL")
+			self.player.fsm:changeStateToAtNextTick("ready")
 		elseif event.classType == "PlayerFreeman" and (self.player ~= nil and self.player.classType ~= "PlayerFreeman") then
+			local jxl = self:getPlayerType("PlayerJXL")
+			if jxl then
+				jxl.fsm:changeStateToAtNextTick("idle")
+			end
 			self:setPlayer(self:getPlayerType("PlayerFreeman"))
+			self.hudControls.fsm:changeStateToAtNextTick("HudControlsFreeman")
+			self.player.fsm:changeStateToAtNextTick("ready")
 		end
 	end
 	

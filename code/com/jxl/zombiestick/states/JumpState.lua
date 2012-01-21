@@ -35,7 +35,7 @@ function JumpState:new(stateName)
 	end
 	
 	function state:tick(time)
-		local player = self.player
+		local player = self.entity
 		
 		player.y = player.y + player.jumpGravity
 		if system.getTimer() - player.lastJump >= player.JUMP_INTERVAL then
@@ -56,7 +56,7 @@ function JumpState:new(stateName)
 	
 	function state:collision(event)
 		if event.other.name == "Floor" then
-			local player = self.player
+			local player = self.entity
 			player:removeEventListener("collision", self)
 			player:showSprite("stand")
 			self.stateMachine:changeStateToAtNextTick("ready")
@@ -64,11 +64,11 @@ function JumpState:new(stateName)
 	end
 	
 	function state:onMoveLeftStarted(event)
-		self.player:setDirection("left")
+		self.entity:setDirection("left")
 	end
 	
 	function state:onMoveRightStarted(event)
-		self.player:setDirection("right")
+		self.entity:setDirection("right")
 	end
 	
 	return state

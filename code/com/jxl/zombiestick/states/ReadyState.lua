@@ -6,7 +6,7 @@ function ReadyState:new()
 	
 	function state:onEnterState(event)
 		print("ReadyState::onEnterState")
-		local player = self.player
+		local player = self.entity
 		player.REST_TIME = 2000
 		player.INACTIVE_TIME = 3000
 		player.startRestTime = nil
@@ -37,7 +37,7 @@ function ReadyState:new()
 	end
 	
 	function state:tick(time)
-		local player = self.player
+		local player = self.entity
 		player.elapsedRestTime = player.elapsedRestTime + time
 		if player.elapsedRestTime >= player.INACTIVE_TIME then
 			--player.fsm:changeState("resting", player)
@@ -49,7 +49,7 @@ function ReadyState:new()
 	end
 	
 	function state:reset()
-		local player = self.player
+		local player = self.entity
 		player.startRestTime = system.getTimer()
 		player.elapsedRestTime = 0
 		player.recharge = false

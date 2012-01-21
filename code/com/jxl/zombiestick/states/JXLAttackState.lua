@@ -12,7 +12,7 @@ function JXLAttackState:new()
 	end
 	
 	function state:onEnterState(event)
-		local player = self.player
+		local player = self.entity
 		
 		player:addEventListener("onAttackAnimationCompleted", state)
 		player.attacking = true
@@ -59,7 +59,7 @@ function JXLAttackState:new()
 	end
 	
 	function state:onExitState(event)
-		local player = self.player
+		local player = self.entity
 		
 		player:removeEventListener("onAttackAnimationCompleted", state)
 		

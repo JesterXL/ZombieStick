@@ -9,8 +9,8 @@ function MovingRightState:new()
 	function state:onEnterState(event)
 		print("MovingRightState::onEnterState")
 		self:superOnEnterState(event)
-		self.player:setDirection("right")
-		self.player:showSprite("move")
+		self.entity:setDirection("right")
+		self.entity:showSprite("move")
 	end
 	
 	return state

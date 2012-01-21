@@ -206,6 +206,12 @@ local function testStateMachine2()
 	require "com.jxl.core.statemachine.statemachinetests"
 end
 
+local function testTargetButton()
+	require "com.jxl.zombiestick.gamegui.hud.TargetButton"
+	local button = TargetButton:new()
+	button:show()
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -218,9 +224,9 @@ end
 --testMoviePlayerView()
 --testLoadLevelService()
 --testDialogueView()
+--testCharacterSelectView()
+--testStateMachine2()
+--testTargetButton()
+
 
 testLevelViewBuildFromJSON()
-
---testCharacterSelectView()
-
---testStateMachine2()
