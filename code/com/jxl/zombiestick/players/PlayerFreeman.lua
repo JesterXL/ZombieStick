@@ -21,7 +21,7 @@ function PlayerFreeman:new(params)
 		local moveSet = sprite.newSpriteSet(sheet, 8, 7)
 		sprite.add(moveSet, "PlayerFreemanMove", 1, 8, 500, 0)
 		local jumpSet = sprite.newSpriteSet(sheet, 15, 6)
-		sprite.add(jumpSet, "PlayerJXLJump", 1, 6, 600, 1)
+		sprite.add(jumpSet, "PlayerFreemanJump", 1, 6, 600, 1)
 		local attackSet = sprite.newSpriteSet(sheet, 22, 6)
 		sprite.add(attackSet, "PlayerFreemanAttack", 1, 5, 300, 1)
 
@@ -67,7 +67,14 @@ function PlayerFreeman:new(params)
 		elseif name == "jump" then
 			spriteAnime = sprite.newSprite(PlayerFreeman.jumpSet)
 			spriteAnime:prepare("PlayerFreemanJump")
-			spriteAnime:addEventListener("sprite", player.onJumpCompleted)
+			--spriteAnime:addEventListener("sprite", player.onJumpCompleted)
+			spriteAnime:addEventListener("sprite", function(event) 
+														if event.phase == "end" then
+															player:dispatchEvent({name = "onJumpCompleted",
+																					target = player})
+														end
+													end
+										)
 		elseif name == "stand" then
 			spriteAnime = sprite.newSprite(PlayerFreeman.standSet)
 			spriteAnime:prepare("PlayerFreemanStand")

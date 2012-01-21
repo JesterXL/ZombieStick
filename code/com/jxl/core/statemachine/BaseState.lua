@@ -29,19 +29,19 @@ function BaseState:new(name, parent, from)
 	
 	
 	function state:onEnterState(event)
-		print(self.name .. " BaseState::onEnterState, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
+		--print(self.name .. " BaseState::onEnterState, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
 	end
 	
 	function state:onExitState(event)
-		print(self.name .. " BaseState::onExitState, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
+		--print(self.name .. " BaseState::onExitState, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
 	end
 	
 	function state:onTransitionComplete(event)
-		print(self.name .. " BaseState::onTransitionComplete, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
+		--print(self.name .. " BaseState::onTransitionComplete, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
 	end
 	
 	function state:onTransitionDenied(event)
-		print(self.name .. " BaseState::onTransitionDenied, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
+		--print(self.name .. " BaseState::onTransitionDenied, from: ", event.fromState, ", to: ", event.toState, ", current: ", event.currentState)
 	end
 	
 	function state:tick(time)

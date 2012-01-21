@@ -327,7 +327,7 @@ function LevelView:new(x, y, width, height)
 				freeman.fsm:changeStateToAtNextTick("idle")
 			end
 			self:setPlayer(self:getPlayerType("PlayerJXL"))
-			self.hudControls.fsm:changeStateToAtNextTick("HudControlsJXL")
+			self.hudControls.fsm:changeState("HudControlsJXL")
 			self.player.fsm:changeStateToAtNextTick("ready")
 		elseif event.classType == "PlayerFreeman" and (self.player ~= nil and self.player.classType ~= "PlayerFreeman") then
 			local jxl = self:getPlayerType("PlayerJXL")
@@ -335,7 +335,7 @@ function LevelView:new(x, y, width, height)
 				jxl.fsm:changeStateToAtNextTick("idle")
 			end
 			self:setPlayer(self:getPlayerType("PlayerFreeman"))
-			self.hudControls.fsm:changeStateToAtNextTick("HudControlsFreeman")
+			self.hudControls.fsm:changeState("HudControlsFreeman")
 			self.player.fsm:changeStateToAtNextTick("ready")
 		end
 	end

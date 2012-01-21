@@ -101,17 +101,17 @@ function StateMachine:new(entity)
 		local win = 2
 		
 		if stateName ~= self.state then
-			print("score 1")
+			--print("score 1")
 			score = score + 1
 		end
 		
 		if theState:inFrom(self.state) == true then
-			print("score 2")
+			--print("score 2")
 			score = score + 1
 		end
 		
 		if theState.from == "*" then
-			print("score 3")
+			--print("score 3")
 			score = score + 1
 		end
 		

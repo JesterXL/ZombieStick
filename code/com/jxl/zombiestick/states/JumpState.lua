@@ -10,7 +10,7 @@ function JumpState:new(stateName)
 	
 	function state:onEnterState(event)
 		print("JumpState::onEnterState")
-		local player = event.entity
+		local player = self.entity
 		self.player = player
 		player.jumping = true
 		player:showSprite("jump")

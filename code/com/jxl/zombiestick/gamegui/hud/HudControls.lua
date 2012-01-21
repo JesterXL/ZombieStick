@@ -4,6 +4,7 @@ require "com.jxl.zombiestick.gamegui.hud.JumpButton"
 require "com.jxl.zombiestick.gamegui.hud.AttackButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpRightButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpLeftButton"
+require "com.jxl.zombiestick.gamegui.hud.TargetButton"
 
 require "com.jxl.zombiestick.states.hud.HudControlsJXLState"
 require "com.jxl.zombiestick.states.hud.HudControlsFreemanState"
@@ -51,20 +52,25 @@ function HudControls:new(width, height)
 	controls:insert(jumpLeftButton)
 	
 	function controls:showJXLAttackButton(show)
+		print("HudControls::showJXLAttackButtons, show: ", show)
 		attackButton.isVisible = show
 	end
 	
 	function controls:showFreemanAttackButton(show)
+		print("HudControls::showFreemanAttackButton, show: ", show)
 		if show then
+			local targetButton
 			if self.targetButton == null then
-				local targetButton = TargetButton:new()
+				targetButton = TargetButton:new()
+				self.targetButton = targetButton
 				targetButton.name = "attack"
 				controls:insert(targetButton)
 			end
 			targetButton:show()
 		else
-			targetButton.isVisible = false
-			targetButton:hide()
+			if targetButton then
+				targetButton:hide()
+			end
 		end
 	end
 	
