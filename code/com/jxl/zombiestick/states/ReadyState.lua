@@ -20,6 +20,7 @@ function ReadyState:new()
 		Runtime:addEventListener("onMoveLeftStarted", self)
 		Runtime:addEventListener("onMoveRightStarted", self)
 		Runtime:addEventListener("onAttackStarted", self)
+		Runtime:addEventListener("onGrappleTargetTouched", self)
 		Runtime:addEventListener("onJumpStarted", self)
 		Runtime:addEventListener("onJumpLeftStarted", self)
 		Runtime:addEventListener("onJumpRightStarted", self)
@@ -31,6 +32,7 @@ function ReadyState:new()
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)
 		Runtime:removeEventListener("onAttackStarted", self)
+		Runtime:removeEventListener("onGrappleTargetTouched", self)
 		Runtime:removeEventListener("onJumpStarted", self)
 		Runtime:removeEventListener("onJumpLeftStarted", self)
 		Runtime:removeEventListener("onJumpRightStarted", self)
@@ -64,7 +66,13 @@ function ReadyState:new()
 	end
 	
 	function state:onAttackStarted(event)
+		print("ReadyState::onAttackStarted")
 		self.stateMachine:changeStateToAtNextTick("attack")
+	end
+	
+	function state:onGrappleTargetTouched(event)
+		print("ReadyState::onGrappleTargetTouched")
+		self.stateMachine:changeStateToAtNextTick("grapple")
 	end
 	
 	function state:onJumpStarted(event)

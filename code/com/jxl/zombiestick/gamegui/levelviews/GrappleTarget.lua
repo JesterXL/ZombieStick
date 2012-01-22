@@ -7,6 +7,10 @@ function GrappleTarget:new(x, y)
 	grappleTarget.classType = "GrappleTarget"
 	grappleTarget.x = x
 	grappleTarget.y = y		
+	
+	physics.addBody( grappleTarget, {isSensor = true } )
+	grappleTarget.bodyType = "kinematic"
+	
 	return grappleTarget
 end
 

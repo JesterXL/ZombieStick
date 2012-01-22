@@ -76,9 +76,12 @@ function HudControls:new(width, height)
 	end
 	
 	local function onTouch(event)
+		print("HudControls::onTouch")
 		if event.phase == "began" then
+			if gunButton.alpha == 1 then
 				controls:dispatchEvent({name="onAttackButtonTouch", target=controls, 
 								phase=event.phase, button=clickRect, x=event.x, y=event.y})
+			end
 		end
 	end
 	

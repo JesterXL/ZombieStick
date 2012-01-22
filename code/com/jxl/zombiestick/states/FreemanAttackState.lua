@@ -21,6 +21,11 @@ function FreemanAttackState:new()
 	function state:attack(event)
 		local player = self.entity
 		
+		if player.selectedWeapon ~= "gun" then
+			player.fsm:changeStateToAtNextTick("ready")
+			return
+		end
+		
 		player.attacking = true
 		
 		player:showSprite("attack")
@@ -51,6 +56,7 @@ function FreemanAttackState:new()
 			levelView.gameLoop:addLoop(bullet)
 			player.fsm:changeStateToAtNextTick("ready")
 		elseif player.selectedWeapon == "grapple" then
+			-- TODO: remove this
 			player.fsm:changeStateToAtNextTick("grapple")
 		end
 	end

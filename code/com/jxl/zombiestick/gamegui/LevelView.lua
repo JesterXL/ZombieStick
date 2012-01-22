@@ -276,7 +276,13 @@ function LevelView:new(x, y, width, height)
 		elseif terrainType == "Grapple Target" then
 			params.name = "Grapple Target"
 			terrain = GrappleTarget:new(params.x, params.y)
-			print("ZOMG GRAPPLETARGET ZOMG")
+			function terrain:touch(event)
+				if event.phase == "began" then
+					level.player.lastGrappleTarget = self
+					Runtime:dispatchEvent({name="onGrappleTargetTouched", target=self})
+				end
+			end
+			terrain:addEventListener("touch", terrain)
 		end
 		self:insertChild(terrain)
 	end
