@@ -71,6 +71,13 @@
 							width="320" height="320">
 					<s:Group>
 						<zombiestick:LevelCanvas id="levelCanvas" level="{level}" />
+						<!--
+						<s:Rect width="{levelCanvas.width}" height="{levelCanvas.height}">
+							<s:fill>
+								<s:SolidColor color="#FF0000" alpha="0" />
+							</s:fill>
+						</s:Rect>
+						-->
 					</s:Group>
 				</s:Scroller>
 			</s:Group>

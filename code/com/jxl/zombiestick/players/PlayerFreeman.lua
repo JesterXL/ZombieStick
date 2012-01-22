@@ -9,6 +9,7 @@ require "com.jxl.zombiestick.states.JumpState"
 require "com.jxl.zombiestick.states.JumpRightState"
 require "com.jxl.zombiestick.states.JumpLeftState"
 require "com.jxl.zombiestick.states.FreemanAttackState"
+require "com.jxl.zombiestick.states.GrappleState"
 
 PlayerFreeman = {}
 
@@ -54,6 +55,7 @@ function PlayerFreeman:new(params)
 	player.startMoveTime = nil
 	player.MOVE_STAMINA_TIME = 1000
 	player.ATTACK_INTERVAL = 500
+	player.selectedWeapon = "gun" -- gun or grapple
 	
 	function player:getBounds()
 		return {22,4, 42,4, 42,55, 22,55}
@@ -96,6 +98,24 @@ function PlayerFreeman:new(params)
 		spriteAnime.y = 0
 	end
 	
+	function player:setSelectedWeapon(weapon)
+		if weapon == "gun" or weapon == "grapple" then
+			self.selectedWeapon = weapon
+			Runtime:dispatchEvent({name="onFreemanSelectedWeaponChanged", target=self})
+		else
+			asesrt("Unknown weapon.")
+		end
+	end
+	
+	function player:onGunButtonTouch(event)
+		self:setSelectedWeapon("gun")
+	end
+	
+	function player:onGrappleButtonTouch(event)
+		print("PlayerFreeman::onGrappleButtonTouch")
+		self:setSelectedWeapon("grapple")
+	end
+	
 	player:showSprite("stand")
 	
 	player.x = params.x
@@ -119,8 +139,12 @@ function PlayerFreeman:new(params)
 	player.fsm:addState2(JumpRightState:new())
 	player.fsm:addState2(JumpLeftState:new())
 	player.fsm:addState2(FreemanAttackState:new())
+	player.fsm:addState2(GrappleState:new())
 	player.fsm:addState2(IdleState:new())
 	player.fsm:setInitialState("idle")
+	
+	Runtime:addEventListener("onGunButtonTouch", player)
+	Runtime:addEventListener("onGrappleButtonTouch", player)
 	
 	
 	return player

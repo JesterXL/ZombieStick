@@ -5,6 +5,8 @@ require "com.jxl.zombiestick.gamegui.hud.AttackButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpRightButton"
 require "com.jxl.zombiestick.gamegui.hud.JumpLeftButton"
 require "com.jxl.zombiestick.gamegui.hud.TargetButton"
+require "com.jxl.zombiestick.gamegui.hud.GunButton"
+require "com.jxl.zombiestick.gamegui.hud.GrapplingHookGunButton"
 
 require "com.jxl.zombiestick.states.hud.HudControlsJXLState"
 require "com.jxl.zombiestick.states.hud.HudControlsFreemanState"
@@ -14,6 +16,7 @@ HudControls = {}
 function HudControls:new(width, height)
 
 	local controls = display.newGroup()
+	controls.classType = "HudControls"
 	
 	local leftButton = MoveLeftButton:new()
 	leftButton.name = "left"
@@ -51,41 +54,60 @@ function HudControls:new(width, height)
 	jumpLeftButton.y = leftButton.y
 	controls:insert(jumpLeftButton)
 	
-	local clickRect = display.newRect(0, 0, width, height - leftButton.height - 4)
-	clickRect.strokeWidth = 3
-	clickRect:setFillColor(255, 0, 0, 1)
-	clickRect:setStrokeColor(255, 0, 0)
-	controls:insert(clickRect)
-	clickRect.isVisible = false
+	local gunButton = GunButton:new()
+	gunButton.name = "gunButton"
+	gunButton.x = rightButton.x + (rightButton.width + 4)
+	gunButton.y = leftButton.y
+	controls:insert(gunButton)
+	gunButton.isVisible = false
+	gunButton.alpha = .5
+	
+	local grappleButton = GrapplingHookGunButton:new()
+	grappleButton.name = "grappleButton"
+	grappleButton.x = gunButton.x + (gunButton.width + 4)
+	grappleButton.y = leftButton.y
+	controls:insert(grappleButton)
+	grappleButton.isVisible = false
+	grappleButton.alpha = .5
 	
 	function controls:showJXLAttackButton(show)
 		print("HudControls::showJXLAttackButtons, show: ", show)
 		attackButton.isVisible = show
 	end
 	
+	local function onTouch(event)
+		if event.phase == "began" then
+				controls:dispatchEvent({name="onAttackButtonTouch", target=controls, 
+								phase=event.phase, button=clickRect, x=event.x, y=event.y})
+		end
+	end
+	
 	function controls:showFreemanAttackButton(show)
 		print("HudControls::showFreemanAttackButton, show: ", show)
-		--[[
+		gunButton.isVisible = show
+		grappleButton.isVisible = show
 		if show then
-			local targetButton
-			if self.targetButton == null then
-				targetButton = TargetButton:new()
-				self.targetButton = targetButton
-				targetButton.name = "attack"
-				controls:insert(targetButton)
-			end
-			targetButton:show()
+			Runtime:addEventListener("touch", onTouch)
 		else
-			if targetButton then
-				targetButton:hide()
-			end
+			Runtime:removeEventListener("touch", onTouch)
 		end
-		]]--
-		
-		clickRect.isVisible = show
+	end
+	
+	function controls:setFreemanWeapon(weapon)
+		print("HudControls::setFreemanWeapon, weapon: ", weapon)
+		if weapon == "gun" then
+			gunButton.alpha = 1
+			grappleButton.alpha = .5
+		elseif weapon == "grapple" then
+			gunButton.alpha = .5
+			grappleButton.alpha = 1
+		else
+			assert("Unknown weapon.")
+		end
 	end
 	
 	function controls:touch(event)
+		print("HudControls::touch, target: ", event.target.name)
 		local t = event.target
 		if t == leftButton then
 			self:dispatchEvent({name="onLeftButtonTouch", target=self, phase=event.phase, button=leftButton})
@@ -99,11 +121,15 @@ function HudControls:new(width, height)
 			self:dispatchEvent({name="onJumpLeftButtonTouch", target=self, phase=event.phase, button=jumpLeftButton})
 		elseif t == jumpRightButton then
 			self:dispatchEvent({name="onJumpRightButtonTouch", target=self, phase=event.phase, button=jumpRightButton})
-		elseif t == clickRect then
-			self:dispatchEvent({name="onAttackButtonTouch", target=self, phase=event.phase, button=clickRect, x=event.x, y=event.y})
-		end	
+		elseif t == gunButton then
+			Runtime:dispatchEvent({name="onGunButtonTouch", target=self, phase=event.phase, button=gunButton})
+		elseif t == grappleButton then
+			Runtime:dispatchEvent({name="onGrappleButtonTouch", target=self, phase=event.phase, button=grappleButton})
+		end
 		return true
 	end
+	
+
 
 	leftButton:addEventListener("touch", controls)
 	rightButton:addEventListener("touch", controls)
@@ -111,7 +137,8 @@ function HudControls:new(width, height)
 	jumpButton:addEventListener("touch", controls)
 	jumpLeftButton:addEventListener("touch", controls)
 	jumpRightButton:addEventListener("touch", controls)
-	clickRect:addEventListener("touch", controls)
+	gunButton:addEventListener("touch", controls)
+	grappleButton:addEventListener("touch", controls)
 	
 	controls.fsm = StateMachine:new(controls)
 	controls.fsm:addState2(HudControlsJXLState:new())

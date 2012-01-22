@@ -1,6 +1,5 @@
 package com.jxl.zombiestick.services
 {
-	import com.adobe.serialization.json.JSON;
 	import com.jxl.zombiestick.events.SaveLevelServiceEvent;
 	import com.jxl.zombiestick.vo.GameObjectVO;
 	import com.jxl.zombiestick.vo.LevelVO;
@@ -69,7 +68,7 @@ package com.jxl.zombiestick.services
 			
 			try
 			{
-				str = JSON.encode(obj);
+				str = JSON.stringify(obj);
 			}
 			catch(err:Error)
 			{

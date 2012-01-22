@@ -6,13 +6,13 @@
 
 	<fx:Script>
 		<![CDATA[
+			import com.jxl.zombiestick.constants.GameObjectTypes;
 			import com.jxl.zombiestick.constants.subtypes.CharacterTypes;
-		import com.jxl.zombiestick.constants.GameObjectTypes;
-		import com.jxl.zombiestick.constants.subtypes.EnemyTypes;
-		import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
-		import com.jxl.zombiestick.vo.GameObjectVO;
-
-		import mx.collections.ArrayCollection;
+			import com.jxl.zombiestick.constants.subtypes.EnemyTypes;
+			import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
+			import com.jxl.zombiestick.vo.GameObjectVO;
+			
+			import mx.collections.ArrayCollection;
 
 		private var _gameObject:GameObjectVO;
 		private var typeDirty:Boolean = false;
@@ -23,7 +23,8 @@
 		private var file:File;
 		private var gameObjectTerrainTypes:ArrayCollection = new ArrayCollection([
 			TerrainTypes.CRATE,
-			TerrainTypes.FLOOR
+			TerrainTypes.FLOOR,
+			TerrainTypes.GRAPPLE_TARGET
 		]);
 		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([
 			CharacterTypes.JESTERXL,

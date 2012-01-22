@@ -17,9 +17,11 @@ function BaseState:new(name, parent, from)
 		state.ready = true
 		state.stateMachine = event.target
 		state.entity = event.entity
+		assert(state.onEnterState ~= nil, "Your state class does not define an onEnterState method.")
 		return state:onEnterState(event)
 	end
 	state.exit = function(event)
+		assert(state.onExitState ~= nil, "Your state class does not define an onExitState method.")
 		local result = state:onExitState(event)
 		state.ready = false
 		state.stateMachine = nil

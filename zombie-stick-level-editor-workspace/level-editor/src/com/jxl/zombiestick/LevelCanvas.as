@@ -1,13 +1,15 @@
 package com.jxl.zombiestick
 {
 import com.jxl.zombiestick.controls.GameObjectView;
-	import com.jxl.zombiestick.events.GameObjectViewEvent;
-	import com.jxl.zombiestick.vo.GameObjectVO;
+import com.jxl.zombiestick.events.GameObjectViewEvent;
+import com.jxl.zombiestick.vo.GameObjectVO;
 import com.jxl.zombiestick.vo.LevelVO;
 
+import flash.display.DisplayObject;
 import flash.display.Graphics;
 import flash.events.Event;
 import flash.events.MouseEvent;
+import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
 import mx.core.UIComponent;
@@ -16,6 +18,7 @@ import mx.events.CollectionEventKind;
 import mx.graphics.BitmapScaleMode;
 
 import spark.components.Image;
+import spark.primitives.Rect;
 	
 	public class LevelCanvas extends UIComponent
 	{
@@ -59,9 +62,6 @@ import spark.components.Image;
 		public function LevelCanvas()
 		{
 			super();
-			
-			width = 320;
-			height = 320;
 		}
 
         public function newGameObject():void
@@ -149,9 +149,31 @@ import spark.components.Image;
 		
 		private function onImageLoadComplete(event:Event):void
 		{
-			width = backgroundImage.sourceWidth;
-			height = backgroundImage.sourceHeight;
-			invalidateDisplayList();
+			invalidateSize();
+		}
+		
+		protected override function measure():void
+		{
+			var rect:Rectangle = new Rectangle();
+			
+			var len:int = gameObjects.numChildren;
+			while(len--)
+			{
+				var child:DisplayObject = gameObjects.getChildAt(len);
+				rect.x = Math.min(child.x, rect.x);
+				rect.y = Math.min(child.y, rect.y);
+				rect.width = Math.max(child.width, rect.width);
+				rect.height = Math.max(child.height, rect.height);
+			}
+			
+			if(isNaN(backgroundImage.sourceWidth) == false)
+			{
+				rect.width = Math.max(backgroundImage.sourceWidth, rect.width);
+				rect.height = Math.max(backgroundImage.sourceHeight, rect.height);
+			}
+			
+			width = measuredWidth = rect.width;
+			height = measuredHeight = rect.height;
 		}
 
         private function onMouseDown(event:MouseEvent):void

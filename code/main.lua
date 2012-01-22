@@ -212,6 +212,12 @@ local function testTargetButton()
 	button:show()
 end
 
+local function testGrappleState()
+	require "com.jxl.zombiestick.states.GrappleState"
+	local state = GrappleState:new()
+	
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -227,6 +233,7 @@ end
 --testCharacterSelectView()
 --testStateMachine2()
 --testTargetButton()
+--testGrappleState()
 
 
 testLevelViewBuildFromJSON()

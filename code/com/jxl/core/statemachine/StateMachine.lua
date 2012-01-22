@@ -38,6 +38,7 @@ function StateMachine:new(entity)
 	end
 	
 	function stateMachine:addState2(state)
+		print("StateMachine::addState2, state: ", state.name)
 		if self.states[state.name] ~= nil then
 			print("WARNING: StateMachne::addedState2, overriding existing state: " .. state.name)
 		end
@@ -274,7 +275,7 @@ function StateMachine:new(entity)
 		self.lastTickTime = time
 		if self.changeStateAtTick == true then
 			self.changeStateAtTick = false
-			--print("StateMachine::tick, self.stateToChangeTo: ", self.stateToChangeTo)
+			print("StateMachine::tick, self.stateToChangeTo: ", self.stateToChangeTo)
 			self:changeState(self.stateToChangeTo)
 			--self:setStateToChangeTo(nil)
 		end

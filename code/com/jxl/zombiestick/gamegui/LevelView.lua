@@ -3,6 +3,7 @@
 
 require "com.jxl.zombiestick.gamegui.levelviews.Crate"
 require "com.jxl.zombiestick.gamegui.levelviews.Floor"
+require "com.jxl.zombiestick.gamegui.levelviews.GrappleTarget"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
@@ -272,6 +273,10 @@ function LevelView:new(x, y, width, height)
 		elseif terrainType == "Floor" then
 			params.name = "Floor"
 			terrain = Floor:new(params)
+		elseif terrainType == "Grapple Target" then
+			params.name = "Grapple Target"
+			terrain = GrappleTarget:new(params.x, params.y)
+			print("ZOMG GRAPPLETARGET ZOMG")
 		end
 		self:insertChild(terrain)
 	end
@@ -325,22 +330,22 @@ function LevelView:new(x, y, width, height)
 	end
 	
 	function level:onSelectActivePlayer(event)
-		if event.classType == "PlayerJXL" and (self.player ~= nil and self.player.classType ~= "PlayerJXL") then 
-			local freeman = self:getPlayerType("PlayerFreeman")
+		local freeman = self:getPlayerType("PlayerFreeman")
+		local jxl = self:getPlayerType("PlayerJXL")
+		if event.classType == "PlayerJXL" and (self.player ~= nil and self.player.classType ~= "PlayerJXL") then
 			if freeman then
-				print("**** SET FREEMAN TO IDLE ****")
 				freeman.fsm:changeState("idle")
 			end
-			self:setPlayer(self:getPlayerType("PlayerJXL"))
+			self:setPlayer(jxl)
 			self.hudControls.fsm:changeState("HudControlsJXL")
 			self.player.fsm:changeStateToAtNextTick("ready")
 		elseif event.classType == "PlayerFreeman" and (self.player ~= nil and self.player.classType ~= "PlayerFreeman") then
-			local jxl = self:getPlayerType("PlayerJXL")
 			if jxl then
 				jxl.fsm:changeState("idle")
 			end
-			self:setPlayer(self:getPlayerType("PlayerFreeman"))
+			self:setPlayer(freeman)
 			self.hudControls.fsm:changeState("HudControlsFreeman")
+			self.hudControls:setFreemanWeapon(freeman.selectedWeapon)
 			self.player.fsm:changeStateToAtNextTick("ready")
 		end
 	end
