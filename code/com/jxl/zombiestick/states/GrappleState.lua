@@ -31,7 +31,7 @@ function GrappleState:new()
 		--touchJoint.frequency = 0.5
 		--touchJoint.dampingRatio = 0
 		
-		player:setLinearVelocity( 0, 6)
+		player:applyLinearImpulse(0, -.5, player.width / 2, player.height / 2)
 	end
 	
 	function state:onExitState(event)
@@ -44,11 +44,11 @@ function GrappleState:new()
 		end
 		self.touchJoint:removeSelf()
 		
-		player:setLinearVelocity( 0, 0 )
+		--player:setLinearVelocity( 0, 0 )
 		player.angularVelocity = 0
 		player.isFixedRotation = true
 		player.rotation = 0
-		player:applyLinearImpulse(0, -10, player.width / 2, player.height / 2)
+		--player:applyLinearImpulse(0, -10, player.width / 2, player.height / 2)
 	end
 	
 	function state:tick(time)
@@ -57,20 +57,32 @@ function GrappleState:new()
 			return
 		end
 		
-		local minX, minY = touchJoint:getAnchorB()
 		local player = self.entity
+		--local minX, minY = touchJoint:getAnchorB()
+		local grappleTarget = player.lastGrappleTarget
+		--local grappleX, grappleY = grappleTarget:localToContent(grappleTarget.x, grappleTarget.y)
+		--local targetX, targetY = player:localToContent(player.x, player.y)
+		--grappleX, grappleY = LevelView.instance:contentToLocal(grappleX, grappleY)
+		--targetX, targetY = LevelView.instance:contentToLocal(targetX, targetY)
+		local grappleX = grappleTarget.x
+		local grappleY = grappleTarget.y
+		local targetX = player.x - (player.width / 2)
+		local targetY = player.y + (player.height / 4)
+		grappleX, grappleY = LevelView.instance.levelChildren:localToContent(grappleX, grappleY)
+		targetX, targetY = LevelView.instance.levelChildren:localToContent(targetX, targetY)
 		
+		--print("player.x: ", player.x, ", player.y: ", player.y, ", minX: ", minX, ", minY: ", minY)
 		local grappleLine = self.grappleLine
 		if grappleLine ~= nil then
 			grappleLine:removeSelf()
 		end
-		grappleLine = display.newLine(player.x + (player.width / 2), player.y + (player.height / 2), minX, minY)
-		grappleLine.width = 3
+		grappleLine = display.newLine(grappleX, grappleY, targetX + (player.width / 2), targetY + (player.height / 2))
+		grappleLine.width = 2
 		grappleLine:setColor(0, 0, 0)
 		self.grappleLine = grappleLine
 		--LevelView.instance:insertChild(grappleLine)
 		
-		touchJoint.length = touchJoint.length - 3
+		touchJoint.length = touchJoint.length - 1
 		if touchJoint.length < 2 then
 			self.stateMachine:changeStateToAtNextTick("ready")
 			return

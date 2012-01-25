@@ -80,12 +80,14 @@ function LevelView:new(x, y, width, height)
 		return button
 	end
 	
+	-- old
+	--[[
 	function level.scrollScreen()
-		local self = level
+			local self = level
 		if self.player == nil then
 			return
 		end
-		
+
 		local lvlChildren = self.levelChildren
 		local w = self.background.width
 		local centerX = w / 2
@@ -94,15 +96,56 @@ function LevelView:new(x, y, width, height)
 		local playerX, playerY = player:localToContent(0, 0)
 		local currentOffsetX = playerX - lvlChildren.x
 		local currentOffsetY = playerY - lvlChildren.y
-	
+
 		local deltaX = playerX - centerX
 		local deltaY = playerY - centerY
-	
+
 		if true then
 			if lvlChildren.x + -deltaX < 0 then
 				lvlChildren.x = lvlChildren.x + -deltaX
 			end
 			return
+		end
+
+	end
+		
+	]]--
+	
+	-- new
+	level.lastScrollTime = system.getTimer()
+	function level.scrollScreen(event)
+		local self = level
+		if self.player == nil then
+			return
+		end
+		
+		local player = self.player
+		local lvlChildren = self.levelChildren
+		local w = self.background.width
+		local centerX = w / 2
+		local centerY = lvlChildren.y
+		
+		local playerX, playerY = player:localToContent(0, 0)
+		local currentOffsetX = playerX - lvlChildren.x
+		local currentOffsetY = playerY - lvlChildren.y
+	
+		local deltaX = playerX - centerX
+		--local deltaY = playerY - centerY
+		local deltaY = (-player.y + 170) - lvlChildren.y
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+		local speed = 0.15
+		local passed = system.getTimer() - self.lastScrollTime
+		self.lastScrollTime = system.getTimer()
+		local moveX = speed * (deltaX / dist) * passed
+		local moveY = speed * (deltaY / dist) * passed
+		
+		moveX = math.round(moveX)
+		moveY = math.round(moveY)
+		
+		--print("moveX: ", moveX, ", dist: ", dist)
+		if lvlChildren.x + -moveX < 0 then
+			lvlChildren.x = lvlChildren.x + -moveX
+			--lvlChildren.y = lvlChildren.y + moveY
 		end
 	
 	end

@@ -10,6 +10,7 @@ require "com.jxl.zombiestick.states.JumpRightState"
 require "com.jxl.zombiestick.states.JumpLeftState"
 require "com.jxl.zombiestick.states.FreemanAttackState"
 require "com.jxl.zombiestick.states.GrappleState"
+require "com.jxl.zombiestick.states.ReloadState"
 
 PlayerFreeman = {}
 
@@ -56,6 +57,8 @@ function PlayerFreeman:new(params)
 	player.MOVE_STAMINA_TIME = 1000
 	player.ATTACK_INTERVAL = 500
 	player.selectedWeapon = "gun" -- gun or grapple
+	player.gunAmmo = 10
+	player.MAX_GUN_AMMO = 10
 	
 	function player:getBounds()
 		return {22,4, 42,4, 42,55, 22,55}
@@ -116,6 +119,34 @@ function PlayerFreeman:new(params)
 		self:setSelectedWeapon("grapple")
 	end
 	
+	function player:canShoot()
+		if self.gunAmmo > 0 then return true end
+		return false
+	end
+	
+	function player:canReload()
+		if self.gunAmmo < self.MAX_GUN_AMMO then return true end
+		return false
+	end
+	
+	function player:setGunAmmo(value)
+		print("PlayerFreeman::setGunAmmo, value: ", value)
+		assert(value ~= nil, "You cannot set gunAmmo to a nil value.")
+		assert(type(value) == "number", "You must set gunmmo to a number.")
+		
+		if value < 0 then
+			error("You cannot have negative gunAmmo.")
+		end
+		
+		if value > self.MAX_GUN_AMMO then
+			error("You cannot set gunAmmo larger than MAX_GUN_AMMO.")
+		end
+		
+		self.gunAmmo = value
+		
+		Runtime:dispatchEvent({name="onPlayerGunAmmoChanged", target=self, amount=self.gunAmmo, max=self.MAX_GUN_AMMO})
+	end
+	
 	player:showSprite("stand")
 	
 	player.x = params.x
@@ -140,6 +171,7 @@ function PlayerFreeman:new(params)
 	player.fsm:addState2(JumpLeftState:new())
 	player.fsm:addState2(FreemanAttackState:new())
 	player.fsm:addState2(GrappleState:new())
+	player.fsm:addState2(ReloadState:new())
 	player.fsm:addState2(IdleState:new())
 	player.fsm:setInitialState("idle")
 	

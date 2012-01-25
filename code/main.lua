@@ -10,7 +10,7 @@ require "com.jxl.zombiestick.enemies.Zombie"
 require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
-physics.setDrawMode("normal")
+physics.setDrawMode("hybrid")
 physics.start()
 physics.setGravity(0, 9.8)
 
@@ -218,6 +218,20 @@ local function testGrappleState()
 	
 end
 
+local function testGunAmmoLine()
+	require "com.jxl.zombiestick.gamegui.hud.GunAmmoLine"
+	local line = GunAmmoLine:new(10, 10)
+	line.x = 100
+	line.y = 100
+	
+	local line2 = GunAmmoLine:new(10, 10)
+	line2.x = 100
+	line2.y = line.y + line.height + 10
+	line2:showBullets(5)
+	line2:redraw(12, 6)
+	
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -234,6 +248,6 @@ end
 --testStateMachine2()
 --testTargetButton()
 --testGrappleState()
-
+--testGunAmmoLine()
 
 testLevelViewBuildFromJSON()

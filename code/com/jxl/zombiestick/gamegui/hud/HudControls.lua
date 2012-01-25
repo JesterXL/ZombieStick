@@ -7,6 +7,7 @@ require "com.jxl.zombiestick.gamegui.hud.JumpLeftButton"
 require "com.jxl.zombiestick.gamegui.hud.TargetButton"
 require "com.jxl.zombiestick.gamegui.hud.GunButton"
 require "com.jxl.zombiestick.gamegui.hud.GrapplingHookGunButton"
+require "com.jxl.zombiestick.gamegui.hud.GunAmmoLine"
 
 require "com.jxl.zombiestick.states.hud.HudControlsJXLState"
 require "com.jxl.zombiestick.states.hud.HudControlsFreemanState"
@@ -62,6 +63,13 @@ function HudControls:new(width, height)
 	gunButton.isVisible = false
 	gunButton.alpha = .5
 	
+	local gunAmmoLine = GunAmmoLine:new(10, 10)
+	gunAmmoLine.name = "gunAmmoLine"
+	gunAmmoLine.x = gunButton.x
+	gunAmmoLine.y = gunButton.y - (gunAmmoLine.height + 2)
+	controls:insert(gunAmmoLine)
+	gunAmmoLine.isVisible = false
+	
 	local grappleButton = GrapplingHookGunButton:new()
 	grappleButton.name = "grappleButton"
 	grappleButton.x = gunButton.x + (gunButton.width + 4)
@@ -88,6 +96,7 @@ function HudControls:new(width, height)
 	function controls:showFreemanAttackButton(show)
 		print("HudControls::showFreemanAttackButton, show: ", show)
 		gunButton.isVisible = show
+		gunAmmoLine.isVisible = show
 		grappleButton.isVisible = show
 		if show then
 			Runtime:addEventListener("touch", onTouch)

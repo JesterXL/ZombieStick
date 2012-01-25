@@ -26,10 +26,28 @@ function FreemanAttackState:new()
 			return
 		end
 		
-		player.attacking = true
+		if player:canShoot() == false then
+			if player:canReload() then
+				player.fsm:changeStateToAtNextTick("reload")
+				return
+			else
+				player.fsm:changeStateToAtNextTick("ready")
+				return
+			end
+		end
+		
+		player:setGunAmmo(player.gunAmmo - 1)
+		
+		if player.gunFireSound == nil then
+			player.gunFireSound = audio.loadSound("sound-hk-fire.wav")
+		end
+		audio.play(player.gunFireSound)
 		
 		player:showSprite("attack")
-		player:performedAction("attack")
+		-- NOTE/TODO: I don't think Freeman shooting should reduce stamina... if it does, like a freaking 0.01.
+		-- Instead, I'd rather focus on his reloading be the stagger time vs. the running around.
+		-- He still gets the normal movement + jump stamina reductions.
+		--player:performedAction("attack")
 		
 		local levelView = LevelView.instance
 		local lc = levelView.levelChildren
@@ -47,18 +65,13 @@ function FreemanAttackState:new()
 			player:setDirection("left")
 		end
 		
-		if player.selectedWeapon == "gun" then
-			local bullet = Freeman9mmBullet:new(player.x + 4, player.y + (player.height / 2), targetX, targetY)
-			bullet:addEventListener("onRemoveFromGameLoop", function(e)
-																LevelView.instance.gameLoop:removeLoop(bullet)
-															end)
-			levelView:insertChild(bullet)
-			levelView.gameLoop:addLoop(bullet)
-			player.fsm:changeStateToAtNextTick("ready")
-		elseif player.selectedWeapon == "grapple" then
-			-- TODO: remove this
-			player.fsm:changeStateToAtNextTick("grapple")
-		end
+		local bullet = Freeman9mmBullet:new(player.x + 4, player.y + (player.height / 2), targetX, targetY)
+		bullet:addEventListener("onRemoveFromGameLoop", function(e)
+															LevelView.instance.gameLoop:removeLoop(bullet)
+														end)
+		levelView:insertChild(bullet)
+		levelView.gameLoop:addLoop(bullet)
+		player.fsm:changeStateToAtNextTick("ready")
 	end
 	
 	return state
