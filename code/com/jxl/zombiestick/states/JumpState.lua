@@ -55,9 +55,14 @@ function JumpState:new(stateName)
 				end
 			end
 		else
-			player:removeEventListener("collision", self)
+			local ledge = self.ledge
 			player:showSprite("stand")
-			player.x = self.ledge.x
+			print("ledge.exitDirection: ", ledge.exitDirection)
+			if ledge.exitDirection == "right" then
+				player.x = ledge.x + ledge.width
+			else
+				player.x = ledge.x - player.width
+			end
 			player.y = self.ledge.y - player.height
 			player.angularVelocity = 0
 			player:setLinearVelocity(0, 0)
@@ -75,6 +80,7 @@ function JumpState:new(stateName)
 		elseif event.other.name == "Ledge" then
 			self.hitLedge = true
 			self.ledge = event.other
+			player:removeEventListener("collision", self)
 			return true
 		end
 	end

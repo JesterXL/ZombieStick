@@ -1,5 +1,4 @@
 require "com.jxl.core.statemachine.StateMachine"
-require "com.jxl.zombiestick.gamegui.StaminaBar"
 
 BasePlayer = {}
 
@@ -8,8 +7,6 @@ function BasePlayer:new()
 	
 	player.spriteHolder = display.newGroup()
 	player:insert(player.spriteHolder)
-	player.staminaBar = StaminaBar:new()
-	player:insert(player.staminaBar)
 	
 	player.lastAttack = nil
 	player.ATTACK_INTERVAL = 300
@@ -308,12 +305,12 @@ function BasePlayer:new()
 	
 	function player:setStamina(value)
 		self.stamina = value
-		self.staminaBar:setStamina(value, self.maxStamina)
 		if self.stamina <= 1 then
 			self:setSpeed(self.tiredSpeed)
 		else
 			self:setSpeed(self.maxSpeed)
 		end
+		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, oldValue=oldValue, value=value})
 	end
 	
 	function player:setSpeed(value)

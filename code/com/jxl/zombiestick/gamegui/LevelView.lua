@@ -311,7 +311,8 @@ function LevelView:new(x, y, width, height)
 							rotation = event.rotation,
 							density = event.density,
 							friction = event.friction,
-							bounce = event.bounce}
+							bounce = event.bounce,
+							ledgeExitDirection = event.ledgeExitDirection}
 		if terrainType == "Crate" then
 			terrain = Crate:new(params)
 		elseif terrainType == "Floor" then
@@ -329,7 +330,7 @@ function LevelView:new(x, y, width, height)
 			terrain:addEventListener("touch", terrain)
 		elseif terrainType == "Ledge" then
 			params.name = "Ledge"
-			terrain = Ledge:new(params.x, params.y)
+			terrain = Ledge:new(params.x, params.y, params.ledgeExitDirection)
 		end
 		self:insertChild(terrain)
 	end
