@@ -4,6 +4,7 @@
 require "com.jxl.zombiestick.gamegui.levelviews.Crate"
 require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 require "com.jxl.zombiestick.gamegui.levelviews.GrappleTarget"
+require "com.jxl.zombiestick.gamegui.levelviews.Ledge"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
@@ -326,6 +327,9 @@ function LevelView:new(x, y, width, height)
 				end
 			end
 			terrain:addEventListener("touch", terrain)
+		elseif terrainType == "Ledge" then
+			params.name = "Ledge"
+			terrain = Ledge:new(params.x, params.y)
 		end
 		self:insertChild(terrain)
 	end
