@@ -7,11 +7,14 @@ function JumpState:new(stateName)
 	end
 	local state = BaseState:new(stateName)
 	state.player = nil
-	state.hitLedge = false
+	state.hitLedge = nil
 	state.ledge = nil
 	
 	function state:onEnterState(event)
 		print("JumpState::onEnterState")
+		
+		self.hitLedge = false
+		
 		local player = self.entity
 		self.player = player
 		player.jumping = true
@@ -65,7 +68,6 @@ function JumpState:new(stateName)
 	function state:collision(event)
 		local player = self.entity
 		if event.other.name == "Floor" or event.other.name == "Crate" then
-			
 			player:removeEventListener("collision", self)
 			player:showSprite("stand")
 			self.stateMachine:changeStateToAtNextTick("ready")
