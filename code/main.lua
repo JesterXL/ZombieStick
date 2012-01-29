@@ -10,7 +10,7 @@ require "com.jxl.zombiestick.enemies.Zombie"
 require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
-physics.setDrawMode("hybrid")
+physics.setDrawMode("normal")
 physics.start()
 physics.setGravity(0, 9.8)
 
@@ -103,7 +103,8 @@ local function testLevelViewBuildFromJSON()
 	local stage = display.getCurrentStage()
 	local levelView = LevelView:new(0, 0, stage.contentWidth, stage.contentHeight)
 	--local level = LoadLevelService:new("sample.json")
-	local level = LoadLevelService:new("level-test.json")
+	--local level = LoadLevelService:new("level-test.json")
+	local level = LoadLevelService:new("Level1.json")
 	levelView:drawLevel(level)
 	levelView:startScrolling()
 end

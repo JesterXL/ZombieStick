@@ -46,8 +46,11 @@ package com.jxl.zombiestick.vo
 			{
 				var obj:Object = {};
 				obj.classType = "level";
-				obj.backgroundImage = _backgroundImage;
-				obj.backgroundImageShort = _backgroundImage.substring(_backgroundImage.lastIndexOf("/") + 1, _backgroundImage.length);
+				if(_backgroundImage)
+				{
+					obj.backgroundImage = _backgroundImage;
+					obj.backgroundImageShort = _backgroundImage.substring(_backgroundImage.lastIndexOf("/") + 1, _backgroundImage.length);
+				}
 				obj.levelDirectory = _levelDirectory;
 				obj.events			= [];
 				obj.movies 			= [];

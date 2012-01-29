@@ -13,8 +13,10 @@
 			import com.jxl.zombiestick.vo.GameObjectVO;
 			
 			import mx.collections.ArrayCollection;
+			import mx.events.CollectionEvent;
 
 		private var _gameObject:GameObjectVO;
+			private var _selections:ArrayCollection;
 		private var typeDirty:Boolean = false;
 		private var gameObjectDirty:Boolean = false;
 		private var gameObjectTypes:ArrayCollection = new ArrayCollection([GameObjectTypes.TERRAIN,
@@ -22,9 +24,15 @@
 			GameObjectTypes.ENEMY]);
 		private var file:File;
 		private var gameObjectTerrainTypes:ArrayCollection = new ArrayCollection([
-			TerrainTypes.CRATE,
 			TerrainTypes.FLOOR,
-			TerrainTypes.GRAPPLE_TARGET
+			TerrainTypes.CRATE,
+			TerrainTypes.GRAPPLE_TARGET,
+			TerrainTypes.LEDGE,
+			TerrainTypes.CHAIR_LEFT,
+			TerrainTypes.CHAIR_RIGHT,
+			TerrainTypes.TABLE,
+			TerrainTypes.FIREHOSE,
+			TerrainTypes.GENERIC_SENSOR
 		]);
 		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([
 			CharacterTypes.JESTERXL,
@@ -57,6 +65,40 @@
 			typeDirty = true;
 			invalidateProperties();
 		}
+			
+			public function get selections():ArrayCollection
+			{
+				return _selections;
+			}
+			
+			public function set selections(value:ArrayCollection):void
+			{
+				if(_selections !== value)
+				{
+					if(_selections)
+					{
+						_selections.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onSelectionsChanged);
+					}
+					_selections = value;
+					if(_selections)
+					{
+						_selections.addEventListener(CollectionEvent.COLLECTION_CHANGE, onSelectionsChanged);
+						if(_selections.length < 2)
+						{
+							gameObject = _selections[0];
+							
+						}
+						else
+						{
+							gameObject = null;
+						}
+					}
+					else
+					{
+						gameObject = null;
+					}
+				}
+			}
 
 		protected override function commitProperties():void
 		{
@@ -85,6 +127,18 @@
 				}
 			}
 		}
+			
+			private function onSelectionsChanged(event:CollectionEvent):void
+			{
+				if(_selections && _selections.length > 0 && _selections.length < 2)
+				{
+					gameObject = _selections[0];
+				}
+				else
+				{
+					gameObject = null;
+				}
+			}
 
 		private function onXNumericStepperChanged():void
 		{
@@ -103,7 +157,8 @@
 
 		private function onHeightNumericStepperChanged():void
 		{
-			gameObject.height = heightNumericStepper.value;
+			if(gameObject)
+				gameObject.height = heightNumericStepper.value;
 		}
 
 		private function onTypeChanged(event:Event):void
@@ -151,6 +206,15 @@
 				{
 					_gameObject.subType = subTypeComboBox.dataProvider[0];
 				}
+				
+				if(_gameObject.type == GameObjectTypes.TERRAIN && _gameObject.subType == TerrainTypes.LEDGE)
+				{
+					ledgeExitDirectionFormItem.includeInLayout = ledgeExitDirectionFormItem.visible = true;
+				}
+				else
+				{
+					ledgeExitDirectionFormItem.includeInLayout = ledgeExitDirectionFormItem.visible = false;
+				}
 			}
 		}
 
@@ -193,7 +257,19 @@
 		{
 			gameObject.bounce = bounceSlider.value;
 		}
-
+			
+		private function onChangeLedgeExitDirection():void
+		{
+			trace("onChangeLedgeExitDirection, ledgeExitDirectionLeftRadioButton.selected: " + ledgeExitDirectionLeftRadioButton.selected);
+			if(ledgeExitDirectionLeftRadioButton.selected)
+			{
+				gameObject.ledgeExitDirection = "left";
+			}
+			else
+			{
+				gameObject.ledgeExitDirection = "right";
+			}
+		}
 
 		]]>
 	</fx:Script>
@@ -247,6 +323,19 @@
 		</s:FormItem>
 		<s:FormItem label="Bounce:">
 			<s:HSlider id="bounceSlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.bounce}" change="onBounceChange()" />
+		</s:FormItem>
+		<s:FormItem label="Exit Direction:" id="ledgeExitDirectionFormItem">
+			<s:RadioButton id="ledgeExitDirectionRightRadioButton" 
+						   label="Right"
+						   click="onChangeLedgeExitDirection()" selected="{gameObject.ledgeExitDirection == 'right'}" />
+			<s:RadioButton id="ledgeExitDirectionLeftRadioButton" 
+						   label="Left"
+						   click="onChangeLedgeExitDirection()" selected="{gameObject.ledgeExitDirection == 'left'}" />
+		</s:FormItem>
+		<s:FormItem label="Custom Name:">
+			<s:TextInput id="customNameTextInput"
+						 text="{gameObject.customName}"
+						 change="gameObject.customName = customNameTextInput.text" />
 		</s:FormItem>
 	</s:Form>
 

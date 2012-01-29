@@ -24,7 +24,7 @@ function MovingState:new(stateName)
 	end
 	
 	function state:onExitState(event)
-		print("MovingState::onEnterState")
+		print("MovingState::onExitState")
 		
 		local player = self.entity
 		local force

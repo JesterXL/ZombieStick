@@ -10,6 +10,7 @@ require "com.jxl.zombiestick.states.JumpRightState"
 require "com.jxl.zombiestick.states.JumpLeftState"
 require "com.jxl.zombiestick.states.IdleState"
 require "com.jxl.zombiestick.states.JXLAttackState"
+require "com.jxl.zombiestick.states.FirehoseState"
 
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
@@ -26,12 +27,16 @@ function PlayerJXL:new(params)
 		sprite.add(jumpSet, "PlayerJXLJump", 1, 6, 600, 1)
 		local attackSet = sprite.newSpriteSet(sheet, 25, 6)
 		sprite.add(attackSet, "PlayerJXLAttack", 1, 6, 300, 1)
+		local hangSet = sprite.newSpriteSet(sheet, 31, 1)
+		-- sprite.add( spriteSet, sequenceName, startFrame, frameCount, time, [loopParam] )
+		sprite.add(hangSet, "PlayerJXLHang", 1, 1, 1000)
 		
 		PlayerJXL.sheet = sheet
 		PlayerJXL.standSet = standSet
 		PlayerJXL.moveSet = moveSet
 		PlayerJXL.jumpSet = jumpSet
 		PlayerJXL.attackSet = attackSet
+		PlayerJXL.hangSet = hangSet
 	end
 	
 	local player = BasePlayer:new()
@@ -81,6 +86,9 @@ function PlayerJXL:new(params)
 														end
 													end
 										)
+		elseif name == "hang" then
+			spriteAnime = sprite.newSprite(PlayerJXL.hangSet)
+			spriteAnime:prepare("PlayerJXLHang")
 		end
 		spriteAnime:setReferencePoint(display.TopLeftReferencePoint)
 		spriteAnime:play()
@@ -119,6 +127,7 @@ function PlayerJXL:new(params)
 	player.fsm:addState2(JumpLeftState:new())
 	player.fsm:addState2(JXLAttackState:new())
 	player.fsm:addState2(IdleState:new())
+	player.fsm:addState2(FirehoseState:new())
 	player.fsm:setInitialState("idle", player)
 	
 	return player

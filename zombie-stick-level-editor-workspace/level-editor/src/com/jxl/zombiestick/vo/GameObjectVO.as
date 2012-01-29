@@ -2,9 +2,9 @@ package com.jxl.zombiestick.vo
 {
     import com.jxl.zombiestick.constants.GameObjectTypes;
     import com.jxl.zombiestick.constants.PhysicTypes;
-	import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
-
-	import flash.events.Event;
+    import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
+    
+    import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.geom.Point;
     
@@ -128,6 +128,34 @@ package com.jxl.zombiestick.vo
 			dispatchEvent(new Event("bounceChanged"));
 		}
 		
+		[Bindable(event="ledgeExitDirectionChanged")]
+		public function get ledgeExitDirection():String
+		{
+			return _ledgeExitDirection;
+		}
+		
+		public function set ledgeExitDirection(value:String):void
+		{
+			_ledgeExitDirection = value;
+			dispatchEvent(new Event("ledgeExitDirectionChanged"));
+		}
+		
+		[Bindable(event="selectedChanged")]
+		public function get selected():Boolean { return _selected; }
+		public function set selected(value:Boolean):void
+		{
+			_selected = value;
+			dispatchEvent(new Event("selectedChanged"));
+		}
+		
+		[Bindable(event="customNameChanged")]
+		public function get customName():String { return _customName; }
+		public function set customName(value:String):void
+		{
+			_customName = value;
+			dispatchEvent(new Event("customNameChanged"));
+		}
+		
 		private var _image:String;	
 		private var _type:String                 		= GameObjectTypes.TERRAIN;
 		private var _subType:String						= TerrainTypes.CRATE;
@@ -135,6 +163,10 @@ package com.jxl.zombiestick.vo
 		private var _y:Number                    		= 0;
 		private var _width:Number                		= 35;
 		private var _height:Number                		= 35;
+		private var _selected:Boolean 					= false;
+		private var _customName:String 					= "";
+		
+		public var originalPoint:Point;
 		
 		public var polygons:ArrayCollection;
 		public var rotation:Number              		= 0;
@@ -145,6 +177,7 @@ package com.jxl.zombiestick.vo
         private var _imageRelativeToLevelPath:Boolean 	= false;
 		public var when:int 							= -1;
 		public var pause:Boolean 						= false;
+		private var _ledgeExitDirection:String 			= "right";
 		
 		public function GameObjectVO()
 		{
@@ -186,6 +219,7 @@ package com.jxl.zombiestick.vo
 				obj.physicsType					= physicsType;
 				obj.when						= when;
 				obj.pause						= pause;
+				obj.ledgeExitDirection			= _ledgeExitDirection;
 				return obj;
 			}
 			catch(err:Error)
@@ -222,6 +256,7 @@ package com.jxl.zombiestick.vo
 			physicsType						= object.physicsType;
 			when							= object.when;
 			pause							= object.pause;
+			ledgeExitDirection				= object.ledgeExitDirection;
 		}
 
 

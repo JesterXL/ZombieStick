@@ -5,6 +5,10 @@ require "com.jxl.zombiestick.gamegui.levelviews.Crate"
 require "com.jxl.zombiestick.gamegui.levelviews.Floor"
 require "com.jxl.zombiestick.gamegui.levelviews.GrappleTarget"
 require "com.jxl.zombiestick.gamegui.levelviews.Ledge"
+require "com.jxl.zombiestick.gamegui.levelviews.Table"
+require "com.jxl.zombiestick.gamegui.levelviews.Chair"
+require "com.jxl.zombiestick.gamegui.levelviews.Firehose"
+require "com.jxl.zombiestick.gamegui.levelviews.GenericSensor"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
@@ -36,7 +40,7 @@ function LevelView:new(x, y, width, height)
 	level.gameLoop = GameLoop:new()
 	
 	local background = display.newRect(0, 0, width, height)
-	background:setFillColor(255, 0, 0, 100)
+	background:setFillColor(255, 255, 255, 250)
 	level:insert(background)
 	level.background = background
 	
@@ -129,7 +133,6 @@ function LevelView:new(x, y, width, height)
 		local playerX, playerY = player:localToContent(0, 0)
 		local currentOffsetX = playerX - lvlChildren.x
 		local currentOffsetY = playerY - lvlChildren.y
-	
 		local deltaX = playerX - centerX
 		--local deltaY = playerY - centerY
 		local deltaY = (-player.y + 170) - lvlChildren.y
@@ -144,10 +147,14 @@ function LevelView:new(x, y, width, height)
 		moveY = math.round(moveY)
 		
 		--print("moveX: ", moveX, ", dist: ", dist)
-		if lvlChildren.x + -moveX < 0 then
-			lvlChildren.x = lvlChildren.x + -moveX
-			--lvlChildren.y = lvlChildren.y + moveY
-		end
+		--print("player.y: ", player.y, ", lvlChildren.y: ", lvlChildren.y)
+	--	if lvlChildren.x + -moveX < 0 then
+			--lvlChildren.x = lvlChildren.x + -moveX
+	--		lvlChildren.x = lvlChildren.x - deltaX
+	--	end
+		
+		lvlChildren.x = lvlChildren.x - deltaX
+		lvlChildren.y = -(player.y - 60)
 	
 	end
 	
@@ -331,6 +338,24 @@ function LevelView:new(x, y, width, height)
 		elseif terrainType == "Ledge" then
 			params.name = "Ledge"
 			terrain = Ledge:new(params.x, params.y, params.ledgeExitDirection)
+		elseif terrainType == "Table" then
+			terrain = Table:new(params)
+		elseif terrainType == "Chair Left" then
+			terrain = Chair:new(params, "left")
+		elseif terrainType == "Chair Right" then
+			terrain = Chair:new(params, "right")
+		elseif terrainType == "Firehose" then
+			terrain = Firehose:new(params)
+			function terrain:collision(event)
+				if event.other.name == "JXL" then
+					event.other.lastFirehoseTarget = self
+					event.other.fsm:changeStateToAtNextTick("firehose")
+					return true
+				end
+			end
+			terrain:addEventListener("collision", terrain)
+		elseif terrainType == "Generic Sensor" then
+			terrain = GenericSensor:new(params)
 		end
 		self:insertChild(terrain)
 	end
