@@ -12,7 +12,7 @@ function GrappleState:new()
 		player.isFixedRotation = false
 		player.attacking = true
 		
-		player:showSprite("attack")
+		player:showSprite("climb")
 		player:performedAction("attack")
 		
 		local levelView = LevelView.instance
@@ -87,7 +87,7 @@ function GrappleState:new()
 			self.stateMachine:changeStateToAtNextTick("ready")
 			return
 		end
-		print("touchJoint.length: ", touchJoint.length)
+		--print("touchJoint.length: ", touchJoint.length)
 	end
 	
 	return state

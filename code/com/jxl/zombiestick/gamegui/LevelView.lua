@@ -154,7 +154,7 @@ function LevelView:new(x, y, width, height)
 	--	end
 		
 		lvlChildren.x = lvlChildren.x - deltaX
-		lvlChildren.y = -(player.y - 60)
+		lvlChildren.y = -(player.y - 160)
 	
 	end
 	

@@ -26,12 +26,16 @@ function PlayerFreeman:new(params)
 		sprite.add(jumpSet, "PlayerFreemanJump", 1, 6, 600, 1)
 		local attackSet = sprite.newSpriteSet(sheet, 22, 6)
 		sprite.add(attackSet, "PlayerFreemanAttack", 1, 5, 300, 1)
+		local climbSet = sprite.newSpriteSet(sheet, 29, 4)
+		-- sprite.add( spriteSet, sequenceName, startFrame, frameCount, time, [loopParam] )
+		sprite.add(climbSet, "PlayerFreemanClimb", 1, 4, 500, 0)
 
 		PlayerFreeman.sheet = sheet
 		PlayerFreeman.standSet = standSet
 		PlayerFreeman.moveSet = moveSet
 		PlayerFreeman.jumpSet = jumpSet
 		PlayerFreeman.attackSet = attackSet
+		PlayerFreeman.climbSet = climbSet
 	end
 	
 	local player = BasePlayer:new()
@@ -86,6 +90,9 @@ function PlayerFreeman:new(params)
 		elseif name == "attack" then
 			spriteAnime = sprite.newSprite(PlayerFreeman.attackSet)
 			spriteAnime:prepare("PlayerFreemanAttack")
+		elseif name == "climb" then
+			spriteAnime = sprite.newSprite(PlayerFreeman.climbSet)
+			spriteAnime:prepare("PlayerFreemanClimb")
 		else
 			assert("Unknown sprite name: ", name)
 			return false
