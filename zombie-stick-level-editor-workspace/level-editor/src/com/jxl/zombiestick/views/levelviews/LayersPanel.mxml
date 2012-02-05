@@ -6,20 +6,67 @@
 	<fx:Script>
 		<![CDATA[
 			import com.jxl.zombiestick.events.LayerItemRendererEvent;
+			import com.jxl.zombiestick.vo.GameObjectVO;
 			import com.jxl.zombiestick.vo.LevelVO;
+			
+			import mx.collections.ArrayCollection;
 			
 			[Bindable]
 			public var level:LevelVO;
+			
+			[Bindable]
+			public var selectedIndices:Vector.<int>;
+			
+			private var _selections:ArrayCollection;
+			private var selectionsDirty:Boolean = false;
+			
+			public function get selections():ArrayCollection { return _selections; }
+			public function set selections(value:ArrayCollection):void
+			{
+				if(value !== _selections)
+				{
+					_selections = value;
+					selectionsDirty = true;
+					invalidateProperties();
+				}
+			}
+			
+			protected override function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if(selectionsDirty)
+				{
+					selectionsDirty = false;
+					var indices:Vector.<int> = new Vector.<int>();
+					if(_selections)
+					{
+						var len:int = _selections.length;
+						for(var index:int = 0; index < len; index++)
+						{
+							var gameObject:GameObjectVO = _selections[index] as GameObjectVO;
+							var listIndex:int = level.events.getItemIndex(gameObject);
+							indices[index] = listIndex;
+						}
+					}
+					selectedIndices = indices;
+				}
+			}
 			
 			private function onDeleteGameObject(event:LayerItemRendererEvent):void
 			{
 				level.events.removeItemAt(level.events.getItemIndex(event.gameObject));
 			}
+			
+			
+			
 		]]>
 	</fx:Script>
 	
 	
 	<s:Label text="Layers" />
-	<layersviews:LayersList dataProvider="{level.events}" width="100%" height="100%" deleteGameObject="onDeleteGameObject(event)"/>
+	<layersviews:LayersList dataProvider="{level.events}" width="100%" height="100%" deleteGameObject="onDeleteGameObject(event)"
+							allowMultipleSelection="true"
+							selectedIndices="{selectedIndices}"/>
 	
 </s:VGroup>

@@ -24,13 +24,20 @@ package com.jxl.zombiestick.rl.mediators
 		public override function onRegister():void
 		{
 			addContextListener("levelChanged", onLevelChanged);
+			addContextListener("selectionsChanged", onSelectionsChanged);
 			
 			onLevelChanged();
+			onSelectionsChanged();
 		}
 		
 		private function onLevelChanged(event:Event=null):void
 		{
 			view.level = model.level;
+		}
+		
+		private function onSelectionsChanged(event:Event=null):void
+		{
+			view.selections = model.selections;
 		}
 	}
 }
