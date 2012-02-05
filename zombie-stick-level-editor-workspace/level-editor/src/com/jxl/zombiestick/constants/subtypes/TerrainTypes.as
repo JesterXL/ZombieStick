@@ -11,6 +11,7 @@ package com.jxl.zombiestick.constants.subtypes
 		public static const CHAIR_LEFT:String 		= "Chair Left";
 		public static const FIREHOSE:String 		= "Firehose";
 		public static const GENERIC_SENSOR:String 	= "Generic Sensor";
+		public static const WINDOW_PIECE:String 	= "Window Piece";
 		
 
 	}

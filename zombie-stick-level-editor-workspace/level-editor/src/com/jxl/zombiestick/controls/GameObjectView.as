@@ -78,7 +78,8 @@ package com.jxl.zombiestick.controls
             invalidateProperties();
         }
 
-        public function get selected():Boolean {
+        public function get selected():Boolean
+		{
            	if(gameObject)
 			{
 				return gameObject.selected;

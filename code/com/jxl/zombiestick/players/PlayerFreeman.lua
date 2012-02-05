@@ -27,7 +27,6 @@ function PlayerFreeman:new(params)
 		local attackSet = sprite.newSpriteSet(sheet, 22, 6)
 		sprite.add(attackSet, "PlayerFreemanAttack", 1, 5, 300, 1)
 		local climbSet = sprite.newSpriteSet(sheet, 29, 4)
-		-- sprite.add( spriteSet, sequenceName, startFrame, frameCount, time, [loopParam] )
 		sprite.add(climbSet, "PlayerFreemanClimb", 1, 4, 500, 0)
 
 		PlayerFreeman.sheet = sheet

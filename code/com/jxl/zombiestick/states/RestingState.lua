@@ -34,6 +34,14 @@ function RestingState:new()
 	
 	function state:tick(time)
 		local player = self.entity
+		local vx, vy = player:getLinearVelocity()
+		local speed = 5
+		if player.isFixedRotation == false and vx <= speed and vy <= speed then
+			local originalPos = {x = player.x, y = player.y}
+			player.rotation = 0
+			player.isFixedRotation = true
+			player.y = originalPos.y - player.height
+		end
 		player.elapsedRestTime = player.elapsedRestTime + time
 		--print("elapsed rest time: ", player.elapsedRestTime)
 		if player.elapsedRestTime >= player.REST_TIME then

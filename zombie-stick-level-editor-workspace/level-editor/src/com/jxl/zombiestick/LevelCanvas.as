@@ -2,6 +2,7 @@ package com.jxl.zombiestick
 {
 import com.jxl.zombiestick.controls.GameObjectView;
 import com.jxl.zombiestick.events.GameObjectViewEvent;
+import com.jxl.zombiestick.events.LevelCanvasEvent;
 import com.jxl.zombiestick.vo.GameObjectVO;
 import com.jxl.zombiestick.vo.LevelVO;
 
@@ -32,36 +33,13 @@ import spark.primitives.Rect;
 		
 		private var _level:LevelVO;
 		private var levelDirty:Boolean = false;
-		private var _selections:ArrayCollection;
 		private var dragging:Boolean = false;
 		private var startClick:Point;
 		
-        [Bindable(event="selectionsChanged")]
-        public function get selections():ArrayCollection
-		{
-            return _selections;
-        }
-
-        public function set selections(value:ArrayCollection):void
-		{
-			if(_selections !== value)
-			{
-				if(_selections)
-				{
-					_selections.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onSelectionsChanged);
-				}
-	            _selections = value;
-				if(_selections)
-				{
-					_selections.addEventListener(CollectionEvent.COLLECTION_CHANGE, onSelectionsChanged);
-				}
-	            dispatchEvent(new Event("selectionsChanged"));
-			}
-        }
-
         private var backgroundImage:Image;
         private var gameObjects:UIComponent;
-        private var lastSelected:GameObjectView;
+        //private var lastSelected:GameObjectView;
+		
 		
 		public function get level():LevelVO { return _level; }
 		public function set level(value:LevelVO):void
@@ -106,13 +84,6 @@ import spark.primitives.Rect;
 			gameObject.y = y;
         }
 		
-		public function newTable():void
-		{
-			var gameObject:GameObjectVO = new GameObjectVO();
-			gameObject.image = "assets/images/game/table.png";
-			_level.events.addItem(gameObject);
-		}
-
 		protected override function createChildren():void
 		{
 			super.createChildren();
@@ -219,25 +190,28 @@ import spark.primitives.Rect;
 
         private function onMouseDown(event:MouseEvent):void
         {
+			var selectionEvent:LevelCanvasEvent;
 			if(event.shiftKey == false)
 			{
-            	setSelected(event.target as GameObjectView);
+				selectionEvent = new LevelCanvasEvent(LevelCanvasEvent.SET_SELECTION);
+				selectionEvent.gameObject = GameObjectView(event.target).gameObject;
+				dispatchEvent(selectionEvent);
+            	//setSelected(event.target as GameObjectView);
 			}
 			else
 			{
-				addSelected(event.target as GameObjectView);
+				selectionEvent = new LevelCanvasEvent(LevelCanvasEvent.ADD_SELECTION);
+				selectionEvent.gameObject = GameObjectView(event.target).gameObject;
+				dispatchEvent(selectionEvent);
+				//addSelected(event.target as GameObjectView);
 			}
 			
 			if(dragging == false)
 			{
 				startClick = new Point(mouseX, mouseY);
 				addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveInitial);
-				var len:int = selections.length;
-				while(len--)
-				{
-					var gameObject:GameObjectVO = selections[len] as GameObjectVO;
-					gameObject.originalPoint = new Point(gameObject.x, gameObject.y);
-				}
+				
+				dispatchEvent(new LevelCanvasEvent(LevelCanvasEvent.START_MOVE_SELECTIONS));
 			}
 			
 			event.stopImmediatePropagation();
@@ -263,6 +237,7 @@ import spark.primitives.Rect;
 		
 		private function onDragMouseMove(event:MouseEvent):void
 		{
+			/*
 			var len:int = _selections.length;
 			while(len--)
 			{
@@ -270,6 +245,12 @@ import spark.primitives.Rect;
 				gameObject.x = gameObject.originalPoint.x - (startClick.x - mouseX);
 				gameObject.y = gameObject.originalPoint.y - (startClick.y - mouseY);
 			}
+			*/
+			var dragEvent:LevelCanvasEvent = new LevelCanvasEvent(LevelCanvasEvent.DRAG_GAME_OBJECTS);
+			dragEvent.offsetX = startClick.x - mouseX;
+			dragEvent.offsetY = startClick.y - mouseY;
+			dispatchEvent(dragEvent);
+			
 			event.updateAfterEvent();
 			event.stopImmediatePropagation();
 		}
@@ -291,40 +272,9 @@ import spark.primitives.Rect;
 			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveInitial);
 			if(event.target == this || event.target == gameObjects)
 			{
-				setSelected(null);
+				dispatchEvent(new LevelCanvasEvent(LevelCanvasEvent.CLEAR_ALL_SELECTIONS));
+				//setSelected(null);
 			}
-		}
-
-        private function setSelected(view:GameObjectView):void
-        {
-            if(lastSelected)
-                lastSelected.gameObject.selected = false;
-
-            lastSelected = view;
-            if(lastSelected)
-            {
-                lastSelected.gameObject.selected = true;
-				selections = new ArrayCollection([lastSelected.gameObject]);
-            }
-            else
-            {
-				if(selections)
-				{
-					var len:int = selections.length;
-					while(len--)
-					{
-						var gameObject:GameObjectVO = selections[len] as GameObjectVO;
-						gameObject.selected = false;
-					}
-					selections = null;
-				}
-            }
-        }
-		
-		private function addSelected(view:GameObjectView):void
-		{
-			if(selections.contains(view.gameObject) == false)
-				selections.addItem(view.gameObject);
 		}
 		
 		private function onEventsChanged(event:CollectionEvent):void
@@ -347,9 +297,10 @@ import spark.primitives.Rect;
 			gameObjects.addChild(view);
 		}
 
+		// TODO: 2.5.2011, I don't like this guy just manually deleting his crap; he should be listening to the
+		// level's events chanigng, and act accordingly.
 		private function onDelete():void
 		{
-			
 			var len:int = gameObjects.numChildren;
 			while(len--)
 			{
@@ -359,11 +310,10 @@ import spark.primitives.Rect;
 				{
 					view.gameObject 			= null;
 					view.removeEventListener("childSizeChanged", onChildSizeChanged);
-					gameObjects.removeChildAt(len);
-					level.events.removeItemAt(level.events.getItemIndex(go));	
+					gameObjects.removeChildAt(len);	
 				}
 			}
-			lastSelected = null;
+			dispatchEvent(new LevelCanvasEvent(LevelCanvasEvent.DELETE_SELECTED));
 		}
 		
 		private function onChildSizeChanged(event:Event):void
@@ -371,20 +321,6 @@ import spark.primitives.Rect;
 			//invalidateSize();
 			measure();
 		}
-		
-		private function onSelectionsChanged(event:CollectionEvent):void
-		{
-			var len:int = _selections.length;
-			while(len--)
-			{
-				var gameObject:GameObjectVO = _selections[len] as GameObjectVO;
-				gameObject.selected = true;
-			}
-		}
-		
-		
-		
-		
 		
 		private function onKeyDown(event:KeyboardEvent):void
 		{
@@ -425,6 +361,12 @@ import spark.primitives.Rect;
 		
 		private function moveGameObjects(xAmount:Number, yAmount:Number):void
 		{
+			
+			var moveEvent:LevelCanvasEvent = new LevelCanvasEvent(LevelCanvasEvent.MOVE_GAME_OBJECTS);
+			moveEvent.x = xAmount;
+			moveEvent.y = yAmount;
+			dispatchEvent(moveEvent);
+			/*
 			if(_selections)
 			{
 				var len:int = _selections.length;
@@ -435,6 +377,7 @@ import spark.primitives.Rect;
 					gameObject.y += yAmount;
 				}
 			}
+			*/
 		}
 		
 		private function onConfirm(event:CloseEvent):void

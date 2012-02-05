@@ -9,6 +9,7 @@ require "com.jxl.zombiestick.gamegui.levelviews.Table"
 require "com.jxl.zombiestick.gamegui.levelviews.Chair"
 require "com.jxl.zombiestick.gamegui.levelviews.Firehose"
 require "com.jxl.zombiestick.gamegui.levelviews.GenericSensor"
+require "com.jxl.zombiestick.gamegui.levelviews.WindowPiece"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
@@ -344,6 +345,8 @@ function LevelView:new(x, y, width, height)
 			terrain = Chair:new(params, "left")
 		elseif terrainType == "Chair Right" then
 			terrain = Chair:new(params, "right")
+		elseif terrainType == "Window Piece" then
+			terrain = WindowPiece:new(params)
 		elseif terrainType == "Firehose" then
 			terrain = Firehose:new(params)
 			function terrain:collision(event)

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true">
+	
+	<fx:Metadata>
+		[Event(name="deleteGameObject", type="com.jxl.zombiestick.events.LayerItemRendererEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.jxl.zombiestick.events.LayerItemRendererEvent;
+			import com.jxl.zombiestick.vo.GameObjectVO;
+			
+			[Bindable]
+			private var gameObject:GameObjectVO;
+			
+			public override function set data(value:Object):void
+			{
+				super.data = value;
+				
+				if(value == null)
+				{
+					gameObject = null;
+					enabled = false;
+					return;
+				}
+				
+				if(value && value is GameObjectVO)
+				{
+					gameObject = value as GameObjectVO;
+					enabled = true;
+				}
+			}
+			
+			private function onDelete():void
+			{
+				var evt:LayerItemRendererEvent = new LayerItemRendererEvent(LayerItemRendererEvent.DELETE_GAME_OBJECT);
+				evt.gameObject = gameObject;
+				dispatchEvent(evt);
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:HBox width="100%">
+		<s:Label text="{gameObject.type}, {gameObject.subType}"/>
+		<s:Spacer width="100%" />
+		<s:Button label="Delete" click="onDelete()" />
+	</mx:HBox>
+	
+	
+</s:ItemRenderer>

@@ -32,7 +32,8 @@
 			TerrainTypes.CHAIR_RIGHT,
 			TerrainTypes.TABLE,
 			TerrainTypes.FIREHOSE,
-			TerrainTypes.GENERIC_SENSOR
+			TerrainTypes.GENERIC_SENSOR,
+			TerrainTypes.WINDOW_PIECE
 		]);
 		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([
 			CharacterTypes.JESTERXL,

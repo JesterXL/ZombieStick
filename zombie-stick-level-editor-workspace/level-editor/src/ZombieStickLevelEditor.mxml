@@ -12,14 +12,15 @@
 	
 	<fx:Script>
 		<![CDATA[
-		import com.jxl.zombiestick.services.OpenLevelService;
-		import com.jxl.zombiestick.events.OpenLevelServiceEvent;
-		import com.jxl.zombiestick.views.LevelWindow;
-		import com.jxl.zombiestick.vo.LevelVO;
-
-		import mx.managers.PopUpManager;
-
-		import spark.components.Window;
+			import com.jxl.zombiestick.events.OpenLevelServiceEvent;
+			import com.jxl.zombiestick.rl.MainContext;
+			import com.jxl.zombiestick.services.OpenLevelService;
+			import com.jxl.zombiestick.views.LevelWindow;
+			import com.jxl.zombiestick.vo.LevelVO;
+			
+			import mx.managers.PopUpManager;
+			
+			import spark.components.Window;
 
 		private var openLevelService:OpenLevelService;
 
@@ -59,10 +60,13 @@
 		private function onNewLevel():void
 		{
 			var win:LevelWindow = new LevelWindow();
+			var mainContext:MainContext = new MainContext(win);
 			win.open(true);
 			var level:LevelVO = new LevelVO();
-			win.level = level;
 			win.move(nativeWindow.x + width, nativeWindow.y);
+			
+			
+			mainContext.initialize(level);
 		}
 
 
@@ -87,9 +91,13 @@
 		 private function onOpenSuccess(event:OpenLevelServiceEvent):void
 		 {
 			 var win:LevelWindow = new LevelWindow();
+			 var mainContext:MainContext = new MainContext(win);
 			win.open(true);
-			win.level = openLevelService.level;
+			//win.level = openLevelService.level;
 			win.move(nativeWindow.x + width, nativeWindow.y);
+			
+			
+			mainContext.initialize(openLevelService.level);
 		 }
 		]]>
 	</fx:Script>

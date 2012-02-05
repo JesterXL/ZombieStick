@@ -20,7 +20,10 @@ package com.jxl.zombiestick.vo
 			dispatchEvent(new Event("backgroundImageChanged"));
 		}
 		
+		[Bindable]
 		public var events:ArrayCollection = new ArrayCollection();
+		
+		[Bindable]
 		public var movies:ArrayCollection = new ArrayCollection();
 		
 		

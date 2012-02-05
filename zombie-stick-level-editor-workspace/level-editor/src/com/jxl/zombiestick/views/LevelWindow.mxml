@@ -83,16 +83,20 @@
 				</s:Scroller>
 			</s:Group>
 			
-			<levelviews:PropertiesPanel selections="{levelCanvas.selections}" />
+			<levelviews:PropertiesPanel />
 			
 			<!--
 			<levelviews:MoviePanel movies="{level.movies}" />
 			-->
 			
+			<!--
 			<s:VGroup width="200" height="100%">
 				<s:Label text="Selections:" />
 				<s:List dataProvider="{levelCanvas.selections}" labelField="type" width="100%" height="100%" />
 			</s:VGroup>
+			-->
+			
+			<levelviews:LayersPanel />
 			
 		</s:HGroup>
 	</s:VGroup>
