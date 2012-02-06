@@ -6,6 +6,7 @@
 	<fx:Script>
 		<![CDATA[
 			import com.jxl.zombiestick.events.LayerItemRendererEvent;
+			import com.jxl.zombiestick.events.view.LayersPanelEvent;
 			import com.jxl.zombiestick.vo.GameObjectVO;
 			import com.jxl.zombiestick.vo.LevelVO;
 			
@@ -58,6 +59,12 @@
 				level.events.removeItemAt(level.events.getItemIndex(event.gameObject));
 			}
 			
+			private function onLayersChange():void
+			{
+				var event:LayersPanelEvent = new LayersPanelEvent(LayersPanelEvent.SELECTIONS_CHANGED);
+				event.indices = layersList.selectedIndices;
+				dispatchEvent(event);
+			}
 			
 			
 		]]>
@@ -65,8 +72,10 @@
 	
 	
 	<s:Label text="Layers" />
-	<layersviews:LayersList dataProvider="{level.events}" width="100%" height="100%" deleteGameObject="onDeleteGameObject(event)"
+	<layersviews:LayersList id="layersList"
+							dataProvider="{level.events}" width="100%" height="100%" deleteGameObject="onDeleteGameObject(event)"
 							allowMultipleSelection="true"
-							selectedIndices="{selectedIndices}"/>
+							selectedIndices="{selectedIndices}"
+							change="onLayersChange()"/>
 	
 </s:VGroup>

@@ -158,7 +158,7 @@ package com.jxl.zombiestick.controls
 			var MARGIN2:Number = MARGIN * 2;
             if(selected)
             {
-                g.lineStyle(0, 0x990000, 1, true);
+                g.lineStyle(2, 0x990000, 1, true);
             }
 			else if(over)
 			{

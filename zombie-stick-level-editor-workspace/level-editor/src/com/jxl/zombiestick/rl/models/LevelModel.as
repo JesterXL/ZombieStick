@@ -108,6 +108,23 @@ package com.jxl.zombiestick.rl.models
 			}
 		}
 		
+		public function setSelectedIndices(indices:Vector.<int>):void
+		{
+			lastSelected = null;
+			if(level && level.events)
+			{
+				var newSelections:ArrayCollection = new ArrayCollection();
+				var len:int = indices.length;
+				while(len--)
+				{
+					var index:int = indices[len];
+					var go:GameObjectVO = level.events[index];
+					newSelections.addItem(go);
+				}
+				selections = newSelections;
+			}
+		}
+		
 		public function deleteSelected():void
 		{
 			if(selections)
