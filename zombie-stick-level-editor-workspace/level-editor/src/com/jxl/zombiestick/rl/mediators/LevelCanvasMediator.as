@@ -30,6 +30,7 @@ package com.jxl.zombiestick.rl.mediators
 			addViewListener(LevelCanvasEvent.START_MOVE_SELECTIONS, onStartMoveSelections, LevelCanvasEvent);
 			addViewListener(LevelCanvasEvent.DRAG_GAME_OBJECTS, onDrag, LevelCanvasEvent);
 			addViewListener(LevelCanvasEvent.MOVE_GAME_OBJECTS, onMove, LevelCanvasEvent);
+			addViewListener(LevelCanvasEvent.DUPLICATE_OBJECTS, onDuplicateObjects, LevelCanvasEvent);
 			
 			addContextListener("levelChanged", onLevelChanged);
 			
@@ -79,6 +80,11 @@ package com.jxl.zombiestick.rl.mediators
 		private function onMove(event:LevelCanvasEvent):void
 		{
 			model.onMove(event.x, event.y);
+		}
+		
+		private function onDuplicateObjects(event:LevelCanvasEvent):void
+		{
+			model.duplicateSelectedObjects();
 		}
 	}
 }

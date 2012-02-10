@@ -18,6 +18,7 @@ package com.jxl.zombiestick.vo
 		}
 		
 		public function set x(value:Number):void {
+			oldX = _x;
 			_x = value;
 			dispatchEvent(new Event("xChanged"));
 		}
@@ -28,6 +29,7 @@ package com.jxl.zombiestick.vo
 		}
 		
 		public function set y(value:Number):void {
+			oldY = _y;
 			_y = value;
 			dispatchEvent(new Event("yChanged"));
 		}
@@ -156,6 +158,12 @@ package com.jxl.zombiestick.vo
 			dispatchEvent(new Event("customNameChanged"));
 		}
 		
+		[Transient]
+		public var oldX:Number 							= 0;
+		
+		[Transient]
+		public var oldY:Number 							= 0;
+		
 		private var _image:String;	
 		private var _type:String                 		= GameObjectTypes.TERRAIN;
 		private var _subType:String						= TerrainTypes.CRATE;
@@ -181,6 +189,7 @@ package com.jxl.zombiestick.vo
 		
 		public function GameObjectVO()
 		{
+			_id = ++idCounter;
 		}
 		
 		public function toObject():Object
@@ -236,6 +245,8 @@ package com.jxl.zombiestick.vo
 			subType							= object.subType;
 			x 								= object.x;
 			y								= object.y;
+			oldX 							= x;
+			oldY 							= y;
 			width 							= object.width;
 			height 							= object.height;
 			polygons						= new ArrayCollection();
@@ -258,7 +269,20 @@ package com.jxl.zombiestick.vo
 			pause							= object.pause;
 			ledgeExitDirection				= object.ledgeExitDirection;
 		}
-
+		
+		public function clone():GameObjectVO
+		{
+			var cloned:GameObjectVO = new GameObjectVO();
+			var meToObject:Object = toObject();
+			cloned.buildFromObject(meToObject);
+			return cloned;
+		}
+		
+		private var _id:int;
+		
+		public function get id():int { return _id; }
+		
+		private static var idCounter:int = 0;
 
 
 	}

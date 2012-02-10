@@ -10,7 +10,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import com.jxl.zombiestick.events.LayerItemRendererEvent;
+
 			import com.jxl.zombiestick.vo.GameObjectVO;
 			
 			[Bindable]
@@ -33,21 +33,9 @@
 					enabled = true;
 				}
 			}
-			
-			private function onDelete():void
-			{
-				var evt:LayerItemRendererEvent = new LayerItemRendererEvent(LayerItemRendererEvent.DELETE_GAME_OBJECT);
-				evt.gameObject = gameObject;
-				dispatchEvent(evt);
-			}
 		]]>
 	</fx:Script>
 	
-	<mx:HBox width="100%">
-		<s:Label text="{gameObject.type}, {gameObject.subType}"/>
-		<s:Spacer width="100%" />
-		<s:Button label="Delete" click="onDelete()" />
-	</mx:HBox>
-	
+	<s:Label text="{gameObject.id} - {gameObject.type}, {gameObject.subType}"/>
 	
 </s:ItemRenderer>

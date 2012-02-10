@@ -15,6 +15,7 @@ package com.jxl.zombiestick.events
 		public static const START_MOVE_SELECTIONS:String = "startMoveSelections";
 		public static const DRAG_GAME_OBJECTS:String = "dragGameObjects";
 		public static const MOVE_GAME_OBJECTS:String = "moveGameObjects";
+		public static const DUPLICATE_OBJECTS:String = "duplicateObjects";
 		
 		
 		public var gameObject:GameObjectVO;

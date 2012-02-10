@@ -182,5 +182,36 @@ package com.jxl.zombiestick.rl.models
 				}
 			}
 		}
+		
+		public function onResize(width:Number, height:Number):void
+		{
+			if(selections)
+			{
+				var len:int = selections.length;
+				while(len--)
+				{
+					var gameObject:GameObjectVO = selections[len] as GameObjectVO;
+					gameObject.width += width;
+					gameObject.height += height;
+				}
+			}
+		}
+		
+		public function duplicateSelectedObjects():void
+		{
+			if(selections == null || level == null || level.events == null)
+				return;
+			
+			var len:int = selections.length;
+			var newSelections:ArrayCollection = new ArrayCollection();
+			for(var index:int = 0; index < len; index++)
+			{
+				var go:GameObjectVO = selections[index];
+				var cloned:GameObjectVO = go.clone();
+				level.events.addItem(cloned);
+				newSelections.addItem(cloned);
+			}
+			selections = newSelections;
+		}
 	}
 }

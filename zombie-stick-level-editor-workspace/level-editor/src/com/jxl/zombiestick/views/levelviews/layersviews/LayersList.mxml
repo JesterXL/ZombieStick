@@ -4,8 +4,4 @@
 		xmlns:mx="library://ns.adobe.com/flex/mx"
 		itemRenderer="com.jxl.zombiestick.views.levelviews.layersviews.LayerItemRenderer">
 	
-	<fx:Metadata>
-		[Event(name="deleteGameObject", type="com.jxl.zombiestick.events.LayerItemRendererEvent")]
-	</fx:Metadata>
-	
 </s:List>

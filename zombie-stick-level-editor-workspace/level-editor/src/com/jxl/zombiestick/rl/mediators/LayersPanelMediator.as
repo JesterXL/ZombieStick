@@ -28,6 +28,7 @@ package com.jxl.zombiestick.rl.mediators
 			addContextListener("selectionsChanged", onSelectionsChanged);
 			
 			addViewListener(LayersPanelEvent.SELECTIONS_CHANGED, onUserSelectionsChanged, LayersPanelEvent); 
+			addViewListener(LayersPanelEvent.DELETE_SELECTED, onDeleteSelected, LayersPanelEvent);
 			
 			onLevelChanged();
 			onSelectionsChanged();
@@ -40,12 +41,18 @@ package com.jxl.zombiestick.rl.mediators
 		
 		private function onSelectionsChanged(event:Event=null):void
 		{
+			trace("LayersPanelMediator::onSelectionsChanged");
 			view.selections = model.selections;
 		}
 		
 		private function onUserSelectionsChanged(event:LayersPanelEvent):void
 		{
 			model.setSelectedIndices(event.indices);
+		}
+		
+		private function onDeleteSelected(event:LayersPanelEvent):void
+		{
+			model.deleteSelected();
 		}
 	}
 }

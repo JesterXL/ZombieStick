@@ -1,6 +1,5 @@
 package com.jxl.zombiestick.controls
 {
-	import com.jxl.zombiestick.events.GameObjectViewEvent;
 	import com.jxl.zombiestick.vo.GameObjectVO;
 	
 	import flash.display.Graphics;
@@ -17,7 +16,6 @@ package com.jxl.zombiestick.controls
 	
 	import spark.components.Image;
 
-	[Event(name="delete", type="com.jxl.zombiestick.events.GameObjectViewEvent")]
     public class GameObjectView extends UIComponent
 	{
 

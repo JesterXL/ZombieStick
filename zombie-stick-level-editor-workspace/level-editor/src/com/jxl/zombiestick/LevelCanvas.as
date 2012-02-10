@@ -1,7 +1,6 @@
 package com.jxl.zombiestick
 {
 import com.jxl.zombiestick.controls.GameObjectView;
-import com.jxl.zombiestick.events.GameObjectViewEvent;
 import com.jxl.zombiestick.events.LevelCanvasEvent;
 import com.jxl.zombiestick.vo.GameObjectVO;
 import com.jxl.zombiestick.vo.LevelVO;
@@ -284,6 +283,14 @@ import spark.primitives.Rect;
 				case CollectionEventKind.ADD:
 					addNewGameObject(event.items[0] as GameObjectVO);
 					break;
+				
+				case CollectionEventKind.REMOVE:
+					var len:int = event.items.length;
+					while(len--)
+					{
+						removeGameObject(event.items[len]);
+					}
+					break;
 			}
 			invalidateSize();
 		}
@@ -291,28 +298,31 @@ import spark.primitives.Rect;
 		private function addNewGameObject(gameObject:GameObjectVO):void
 		{
 			var view:GameObjectView 	= new GameObjectView();
-			view.addEventListener(GameObjectViewEvent.DELETE, onDelete);
 			view.gameObject 			= gameObject;
 			view.addEventListener("childSizeChanged", onChildSizeChanged, false, 0, true);
 			gameObjects.addChild(view);
+		}
+		
+		private function removeGameObject(gameObject:GameObjectVO):void
+		{
+			var len:int = gameObjects.numChildren;
+			while(len--)
+			{
+				var view:GameObjectView = gameObjects.getChildAt(len) as GameObjectView;
+				if(view.gameObject == gameObject)
+				{
+					view.gameObject = null;
+					view.removeEventListener("childSizeChanged", onChildSizeChanged);
+					gameObjects.removeChildAt(len);
+					return;
+				}
+			}
 		}
 
 		// TODO: 2.5.2011, I don't like this guy just manually deleting his crap; he should be listening to the
 		// level's events chanigng, and act accordingly.
 		private function onDelete():void
 		{
-			var len:int = gameObjects.numChildren;
-			while(len--)
-			{
-				var view:GameObjectView		= gameObjects.getChildAt(len) as GameObjectView;
-				var go:GameObjectVO			= view.gameObject;
-				if(go.selected)
-				{
-					view.gameObject 			= null;
-					view.removeEventListener("childSizeChanged", onChildSizeChanged);
-					gameObjects.removeChildAt(len);	
-				}
-			}
 			dispatchEvent(new LevelCanvasEvent(LevelCanvasEvent.DELETE_SELECTED));
 		}
 		
@@ -356,6 +366,13 @@ import spark.primitives.Rect;
 					Alert.yesLabel = "Delete";
 					Alert.show("Are you sure you wish to delete?", "Confirm Delete", Alert.YES | Alert.CANCEL, this, onConfirm, null, Alert.CANCEL);
 					break;
+				
+				case Keyboard.D:
+					if(event.commandKey)
+					{
+						duplicateObjects();
+					}
+					break;
 			}
 		}
 		
@@ -378,6 +395,11 @@ import spark.primitives.Rect;
 				}
 			}
 			*/
+		}
+		
+		private function duplicateObjects():void
+		{
+			dispatchEvent(new LevelCanvasEvent(LevelCanvasEvent.DUPLICATE_OBJECTS));
 		}
 		
 		private function onConfirm(event:CloseEvent):void

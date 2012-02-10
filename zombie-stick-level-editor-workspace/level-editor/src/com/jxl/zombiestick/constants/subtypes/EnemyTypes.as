@@ -9,6 +9,7 @@ package com.jxl.zombiestick.constants.subtypes
 {
 	public class EnemyTypes
 	{
-		public static const ZOMBIE:String = "Zombie";
+		public static const NONE:String 	= "---";
+		public static const ZOMBIE:String 	= "Zombie";
 	}
 }

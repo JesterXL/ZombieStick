@@ -5,6 +5,7 @@ package com.jxl.zombiestick.events.view
 	public class LayersPanelEvent extends Event
 	{
 		public static const SELECTIONS_CHANGED:String = "selectionsChanged";
+		public static const DELETE_SELECTED:String = "deleteSelected";
 		
 		public var indices:Vector.<int>;
 		

@@ -10,20 +10,27 @@
 			import com.jxl.zombiestick.constants.subtypes.CharacterTypes;
 			import com.jxl.zombiestick.constants.subtypes.EnemyTypes;
 			import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
+			import com.jxl.zombiestick.events.view.PropertiesPanelEvent;
 			import com.jxl.zombiestick.vo.GameObjectVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.CollectionEvent;
 
-		private var _gameObject:GameObjectVO;
 			private var _selections:ArrayCollection;
+			private var selectionsDirty:Boolean = false;
 		private var typeDirty:Boolean = false;
 		private var gameObjectDirty:Boolean = false;
-		private var gameObjectTypes:ArrayCollection = new ArrayCollection([GameObjectTypes.TERRAIN,
+			private var xyDirty:Boolean = false;
+			private var widthHeightDirty:Boolean = false;
+			
+			
+			
+		private var gameObjectTypes:ArrayCollection = new ArrayCollection([GameObjectTypes.NONE,
+			GameObjectTypes.TERRAIN,
 			GameObjectTypes.PLAYER,
 			GameObjectTypes.ENEMY]);
 		private var file:File;
-		private var gameObjectTerrainTypes:ArrayCollection = new ArrayCollection([
+		private var gameObjectTerrainTypes:ArrayCollection = new ArrayCollection([TerrainTypes.NONE,
 			TerrainTypes.FLOOR,
 			TerrainTypes.CRATE,
 			TerrainTypes.GRAPPLE_TARGET,
@@ -35,37 +42,13 @@
 			TerrainTypes.GENERIC_SENSOR,
 			TerrainTypes.WINDOW_PIECE
 		]);
-		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([
+		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([CharacterTypes.NONE,
 			CharacterTypes.JESTERXL,
 			CharacterTypes.FREEMAN
 		]);
-		private var gameObjectEnemyTypes:ArrayCollection = new ArrayCollection([
+		private var gameObjectEnemyTypes:ArrayCollection = new ArrayCollection([EnemyTypes.NONE,
 			EnemyTypes.ZOMBIE
 		]);
-
-		[Bindable]
-		public function get gameObject():GameObjectVO
-		{
-			return _gameObject;
-		}
-
-		public function set gameObject(value:GameObjectVO):void
-		{
-			if(_gameObject)
-			{
-				_gameObject.removeEventListener("typeChanged", onTypeChanged);
-				_gameObject.removeEventListener("subTypeChanged", onSubTypeChanged);
-			}
-			_gameObject = value;
-			if(_gameObject)
-			{
-				_gameObject.addEventListener("typeChanged", onTypeChanged);
-				_gameObject.addEventListener("subTypeChanged", onSubTypeChanged);
-			}
-			gameObjectDirty = true;
-			typeDirty = true;
-			invalidateProperties();
-		}
 			
 			public function get selections():ArrayCollection
 			{
@@ -76,28 +59,44 @@
 			{
 				if(_selections !== value)
 				{
+					selectionsDirty = true;
+					var len:int;
+					var gameObject:GameObjectVO;
+					var index:int;
 					if(_selections)
 					{
 						_selections.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onSelectionsChanged);
+						
+						len = _selections.length;
+						for(index = 0; index < len; index++)
+						{
+							gameObject = _selections[index];
+							gameObject.removeEventListener("typeChanged", onTypeChanged);
+							gameObject.removeEventListener("subTypeChanged", onSubTypeChanged);
+							gameObject.removeEventListener("xChanged", onXYChanged);
+							gameObject.removeEventListener("yChanged", onXYChanged);
+							gameObject.removeEventListener("widthChanged", onWidthHeightChanged);
+							gameObject.removeEventListener("heightChanged", onWidthHeightChanged);
+						}
 					}
 					_selections = value;
 					if(_selections)
 					{
 						_selections.addEventListener(CollectionEvent.COLLECTION_CHANGE, onSelectionsChanged);
-						if(_selections.length < 2)
+						
+						len = _selections.length;
+						for(index = 0; index < len; index++)
 						{
-							gameObject = _selections[0];
-							
-						}
-						else
-						{
-							gameObject = null;
+							gameObject = _selections[index];
+							gameObject.addEventListener("typeChanged", onTypeChanged);
+							gameObject.addEventListener("subTypeChanged", onSubTypeChanged);
+							gameObject.addEventListener("xChanged", onXYChanged);
+							gameObject.addEventListener("yChanged", onXYChanged);
+							gameObject.addEventListener("widthChanged", onWidthHeightChanged);
+							gameObject.addEventListener("heightChanged", onWidthHeightChanged);
 						}
 					}
-					else
-					{
-						gameObject = null;
-					}
+					invalidateProperties();
 				}
 			}
 
@@ -105,62 +104,169 @@
 		{
 			super.commitProperties();
 
-			if (gameObjectDirty)
+			var len:int;
+			var gameObject:GameObjectVO;
+			
+			if (selectionsDirty)
 			{
-				gameObjectDirty = false;
-				if (gameObject)
+				selectionsDirty = false;
+				if(selections == null || selections.length < 1)
 				{
-					enabled = true;
+					enabled = false;
 				}
 				else
 				{
-					enabled = false;
+					enabled = true;
+					
+					/*
+					controlHash = {
+						x: {name: "value", control: xNumericStepper},
+						y: {name: "value", control: yNumericStepper},
+						width: {name: "value", control: widthNumericStepper},
+						height: {name: "value", control: heightNumericStepper},
+						image: {name: "text", control: imageTextInput},
+						imageRelativeToLevelPath: {name: "selected", control: imagePathCheckBox},
+						density: {name: "value", control: densitySlider},
+						friction: {name: "value", control: frictionSlider},
+						bounce: {name: "value", control: bounceSlider},
+						customName: {name: "text", control: customNameTextInput}
+					};
+					*/
+					
+					//applyToControlAndEnableDisable(xNumericStepper, "value", "x");
+					//applyToControlAndEnableDisable(yNumericStepper, "value", "y");
+					//applyToControlAndEnableDisable(widthNumericStepper, "value", "width");
+					//applyToControlAndEnableDisable(heightNumericStepper, "value", "height");
+					
+					xyDirty = true;
+					widthHeightDirty = true;
+					
+					
+					applyToControlAndEnableDisable(imageTextInput, "text", "image");
+					applyToControlAndEnableDisable(imagePathCheckBox, "selected", "imageRelativeToLevelPath");
+					applyToControlAndEnableDisable(densitySlider, "value", "density");
+					applyToControlAndEnableDisable(frictionSlider, "value", "friction");
+					applyToControlAndEnableDisable(bounceSlider, "value", "bounce");
+					applyToControlAndEnableDisable(customNameTextInput, "text", "customName");
 				}
 			}
 
 			if(typeDirty)
 			{
 				typeDirty = false;
-				if(_gameObject)
+				if(selections == null || selections.length < 1)
 				{
-					typeComboBox.selectedItem = _gameObject.type;
+					len = selections.length;
+					var lastValue:* = null;
+					var differ:Boolean = false;
+					while(len--)
+					{
+						gameObject = selections[len];
+						if(lastValue == null)
+						{
+							lastValue = gameObject.type;
+						}
+						else
+						{
+							if(gameObject.type != lastValue)
+							{
+								differ = true;
+								break;
+							}
+						}
+					}
+					
+					if(differ)
+					{
+						typeComboBox.selectedItem = GameObjectTypes.NONE;
+					}
+					else
+					{
+						typeComboBox.selectedItem = lastValue;
+					}
 					updateSubTypeComboBox();
 				}
 			}
+			
+			if(xyDirty)
+			{
+				xyDirty = false;
+				calculatePointAndApplyToControls();
+			}
+			
+			if(widthHeightDirty)
+			{
+				widthHeightDirty = false;
+				calculateRectAndApplyToControls();
+			}
 		}
 			
-			private function onSelectionsChanged(event:CollectionEvent):void
+		//private var controlHash:Object;
+			
+			/*
+			if(controlHash == null)
 			{
-				if(_selections && _selections.length > 0 && _selections.length < 2)
+			controlHash = {
+			x: {name: "value", control: xNumericStepper},
+			y: {name: "value", control: yNumericStepper},
+			width: {name: "value", control: widthNumericStepper},
+			height: {name: "value", control: heightNumericStepper},
+			image: {name: "text", control: imageTextInput},
+			imageRelativeToLevelPath: {name: "selected", control: imagePathCheckBox},
+			density: {name: "value", control: densitySlider},
+			friction: {name: "value", control: frictionSlider},
+			bounce: {name: "value", control: bounceSlider},
+			customName: {name: "text", control: customNameTextInput}
+			};
+			}
+			*/
+		/*
+		private function applySelectionValues():void
+		{
+			
+			
+			if(selections == null || selections.length < 1)
+				return;
+			
+			var len:int = selections.length;
+			var differ:Boolean = false;
+			var lastValue:*;
+			while(len--)
+			{
+				var gameObject:GameObjectVO = selections[len];
+				if(lastValue == null)
 				{
-					gameObject = _selections[0];
+					lastValue = gameObject[gameObjectPropName];
 				}
 				else
 				{
-					gameObject = null;
+					if(gameObject[gameObjectPropName] != lastValue)
+					{
+						differ = true;
+						break;
+					}
 				}
 			}
-
-		private function onXNumericStepperChanged():void
+			
+			if(differ == false)
+			{
+				control.enabled = true;
+				control[propName] = gameObject[gameObjectPropName];
+			}
+			else
+			{
+				control.enabled = false;
+			}
+		}
+		*/
+			
+		private function onSelectionsChanged(event:CollectionEvent):void
 		{
-			gameObject.x = xNumericStepper.value;
+			selectionsDirty = true;
+			invalidateProperties();
 		}
 
-		private function onYNumericStepperChanged():void
-		{
-			gameObject.y = yNumericStepper.value;
-		}
-
-		private function onWidthNumericStepperChanged():void
-		{
-			gameObject.width = widthNumericStepper.value;
-		}
-
-		private function onHeightNumericStepperChanged():void
-		{
-			if(gameObject)
-				gameObject.height = heightNumericStepper.value;
-		}
+		
 
 		private function onTypeChanged(event:Event):void
 		{
@@ -173,57 +279,176 @@
 			typeDirty = true;
 			invalidateProperties();
 		}
+			
+		private function onXYChanged(event:Event):void
+		{
+			xyDirty = true;
+			invalidateProperties();
+		}
+			
+		private function onWidthHeightChanged(event:Event):void
+		{
+			widthHeightDirty = true;
+			invalidateProperties();
+		}
 
 		private function onTypeComboBoxChanged():void
 		{
-			gameObject.type = typeComboBox.selectedItem;
+			if(selections && selections.length > 0)
+			{
+				if(typeComboBox.selectedItem != GameObjectTypes.NONE)
+				{
+					var len:int = selections.length;
+					while(len--)
+					{
+						var gameObject:GameObjectVO = selections[len];
+						gameObject.type = typeComboBox.selectedItem;
+					}
+				}
+			}
+			
 			updateSubTypeComboBox();
 		}
 
 		private function updateSubTypeComboBox():void
 		{
-			if(_gameObject)
+			if(selections && selections.length > 0)
 			{
-				switch(gameObject.type)
+				var len:int = selections.length;
+				var lastValue:String = null;
+				var lastSubType:String = null;
+				var differ:Boolean = false;
+				while(len--)
 				{
-					case GameObjectTypes.ENEMY:
-						subTypeComboBox.dataProvider = gameObjectEnemyTypes;
-					break;
-
-					case GameObjectTypes.PLAYER:
-						subTypeComboBox.dataProvider = gameObjectPlayerTypes;
-					break;
-
-					case GameObjectTypes.TERRAIN:
-						subTypeComboBox.dataProvider = gameObjectTerrainTypes;
-					break;
-				}
-
-				if(subTypeComboBox.dataProvider.getItemIndex(_gameObject.subType) != -1)
-				{
-					 subTypeComboBox.selectedItem = _gameObject.subType;
-				}
-				else
-				{
-					_gameObject.subType = subTypeComboBox.dataProvider[0];
+					var gameObject:GameObjectVO = selections[len];
+					if(lastValue == null)
+					{
+						lastValue = gameObject.type;
+						lastSubType = gameObject.subType;
+					}
+					else
+					{
+						if(gameObject.type != lastValue)
+						{
+							differ = true;
+							break;
+						}
+					}
 				}
 				
-				if(_gameObject.type == GameObjectTypes.TERRAIN && _gameObject.subType == TerrainTypes.LEDGE)
+				if(differ == false)
 				{
-					ledgeExitDirectionFormItem.includeInLayout = ledgeExitDirectionFormItem.visible = true;
+					switch(lastValue)
+					{
+						case GameObjectTypes.ENEMY:
+							subTypeComboBox.dataProvider = gameObjectEnemyTypes;
+							break;
+						
+						case GameObjectTypes.PLAYER:
+							subTypeComboBox.dataProvider = gameObjectPlayerTypes;
+							break;
+						
+						case GameObjectTypes.TERRAIN:
+							subTypeComboBox.dataProvider = gameObjectTerrainTypes;
+							break;
+					}
+					
+					if(subTypeComboBox.dataProvider.getItemIndex(lastSubType) != -1)
+					{
+						subTypeComboBox.selectedItem = lastSubType;
+					}
+					else
+					{
+						subTypeComboBox.selectedIndex = 0;
+					}
+					
+					if(lastValue == GameObjectTypes.TERRAIN && lastSubType == TerrainTypes.LEDGE)
+					{
+						ledgeExitDirectionFormItem.includeInLayout = ledgeExitDirectionFormItem.visible = true;
+					}
+					else
+					{
+						ledgeExitDirectionFormItem.includeInLayout = ledgeExitDirectionFormItem.visible = false;
+					}
 				}
 				else
 				{
-					ledgeExitDirectionFormItem.includeInLayout = ledgeExitDirectionFormItem.visible = false;
+					subTypeComboBox.selectedIndex = 0;
 				}
 			}
 		}
 
 		private function onSubTypeComboBoxChange():void
 		{
-			gameObject.subType = subTypeComboBox.selectedItem;
+			if(selections && selections.length > 0)
+			{
+				if(subTypeComboBox.selectedItem != "none")
+				{
+					var len:int = selections.length;
+					while(len--)
+					{
+						var gameObject:GameObjectVO = selections[len];
+						gameObject.subType = subTypeComboBox.selectedItem;
+					}
+				}
+			}
 		}
 
+		private function calculatePointAndApplyToControls():void
+		{
+			// calculate point, and get the top left most #; based on Flash IDE behavior
+			var point:Point = new Point();
+			var len:int = selections.length;
+			var firstTime:Boolean = true;
+			for(var index:int = 0; index < len; index++)
+			{
+				var gameObject:GameObjectVO = selections[index];
+				if(firstTime == false)
+				{
+					point.x = Math.min(point.x, gameObject.x);
+					point.y = Math.min(point.y, gameObject.y);
+				}
+				else
+				{
+					firstTime = false;
+					point.x = gameObject.x;
+					point.y = gameObject.y;
+				}
+			}
+			xNumericStepper.value = point.x;
+			yNumericStepper.value = point.y;
+		}
+			
+		private function calculateRectAndApplyToControls():void
+		{
+			// calculate rect, and get the widest; based on Flash IDE behavior
+			var rect:Rectangle = new Rectangle();
+			var len:int = selections.length;
+			var firstTime:Boolean = true;
+			for(var index:int = 0; index < len; index++)
+			{
+				var gameObject:GameObjectVO = selections[index];
+				if(firstTime == false)
+				{
+					rect.x = Math.min(rect.x, gameObject.x);
+					rect.y = Math.min(rect.y, gameObject.y);
+					rect.width = Math.max(rect.width, gameObject.width);
+					rect.height = Math.max(rect.height, gameObject.height);
+				}
+				else
+				{
+					firstTime = false;
+					rect.x = gameObject.x;
+					rect.y = gameObject.y;
+					rect.width = gameObject.width;
+					rect.height = gameObject.height;
+				}
+			}
+			widthNumericStepper.value = rect.width;
+			heightNumericStepper.value = rect.height;
+		}
+			
+		// UI Controls Change functions: Update the GameObjectVO
 		private function onBrowseForImage():void
 		{
 			if (file == null)
@@ -236,41 +461,160 @@
 
 		private function onImageSelected(event:Event):void
 		{
-			gameObject.image = file.url;
+			applyToSelections("image", file.url);
 		}
 
 		private function onImagePathRelativeChanged():void
 		{
-			gameObject.imageRelativeToLevelPath = imagePathCheckBox.selected;
+			applyToSelections("imageRelativeToLevelPath", imagePathCheckBox.selected);
 		}
 
 		private function onDensityChange():void
 		{
-			gameObject.density = densitySlider.value;
+			applyToSelections("density", densitySlider.value);
 		}
 
 		private function onFrictionChange():void
 		{
-			gameObject.friction = frictionSlider.value;
+			applyToSelections("friction", frictionSlider.value);
 		}
 
 		private function onBounceChange():void
 		{
-			gameObject.bounce = bounceSlider.value;
+			applyToSelections("bounce", bounceSlider.value);
 		}
 			
 		private function onChangeLedgeExitDirection():void
 		{
-			trace("onChangeLedgeExitDirection, ledgeExitDirectionLeftRadioButton.selected: " + ledgeExitDirectionLeftRadioButton.selected);
 			if(ledgeExitDirectionLeftRadioButton.selected)
 			{
-				gameObject.ledgeExitDirection = "left";
+				applyToSelections("ledgeExitDirection", "left");
 			}
 			else
 			{
-				gameObject.ledgeExitDirection = "right";
+				applyToSelections("ledgeExitDirection", "right");
 			}
 		}
+			
+			private function onCustomNameChange():void
+			{
+				applyToSelections("customName", customNameTextInput.text);
+			}
+			
+			private function getMostTopLeft(prop:String):GameObjectVO
+			{
+				var len:int = selections.length;
+				var firstTime:Boolean = true;
+				var target:GameObjectVO;
+				for(var index:int = 0; index < len; index++)
+				{
+					var gameObject:GameObjectVO = selections[index];
+					if(firstTime == false)
+					{
+						if(gameObject[prop] < target[prop])
+						{
+							target = gameObject;
+						}
+					}
+					else
+					{
+						firstTime = false;
+						target = gameObject;
+					}
+				}
+				return target;
+			}
+			
+			private function onXNumericStepperChanged():void
+			{
+				var event:PropertiesPanelEvent = new PropertiesPanelEvent(PropertiesPanelEvent.MOVE_GAME_OBJECTS);
+				var topLeftGameObject:GameObjectVO = getMostTopLeft("x");
+				event.xAmount = xNumericStepper.value - topLeftGameObject.x;
+				event.yAmount = 0;
+				dispatchEvent(event);
+			}
+			
+			private function onYNumericStepperChanged():void
+			{
+				var event:PropertiesPanelEvent = new PropertiesPanelEvent(PropertiesPanelEvent.MOVE_GAME_OBJECTS);
+				var topLeftGameObject:GameObjectVO = getMostTopLeft("y");
+				event.xAmount = 0;
+				event.yAmount = yNumericStepper.value - topLeftGameObject.y;
+				dispatchEvent(event);
+			}
+			
+			private function onWidthNumericStepperChanged():void
+			{
+				applyToSelections("width", widthNumericStepper.value);
+				/*
+				var event:PropertiesPanelEvent = new PropertiesPanelEvent(PropertiesPanelEvent.RESIZE_GAME_OBJECTS);
+				var firstSelected:GameObjectVO = selections[0];
+				event.widthAmount = widthNumericStepper.value - firstSelected.width;
+				event.heightAmount = 0;
+				dispatchEvent(event);
+				*/
+			}
+			
+			private function onHeightNumericStepperChanged():void
+			{
+				applyToSelections("height", heightNumericStepper.value);
+				/*
+				var event:PropertiesPanelEvent = new PropertiesPanelEvent(PropertiesPanelEvent.RESIZE_GAME_OBJECTS);
+				var firstSelected:GameObjectVO = selections[0];
+				event.widthAmount = 0;
+				event.heightAmount = yNumericStepper.value - firstSelected.height;
+				dispatchEvent(event);
+				*/
+			}
+			
+			private function applyToSelections(propName:String, value:*):void
+			{
+				if(selections == null || selections.length < 1)
+					return;
+				
+				var len:int = selections.length;
+				while(len--)
+				{
+					var gameObject:GameObjectVO = selections[len];
+					gameObject[propName] = value;
+				}
+			}
+			
+			private function applyToControlAndEnableDisable(control:*, propName:String, gameObjectPropName:String):void
+			{
+				if(selections == null || selections.length < 1)
+					return;
+				
+				var len:int = selections.length;
+				var differ:Boolean = false;
+				var lastValue:*;
+				while(len--)
+				{
+					var gameObject:GameObjectVO = selections[len];
+					if(lastValue == null)
+					{
+						lastValue = gameObject[gameObjectPropName];
+					}
+					else
+					{
+						if(gameObject[gameObjectPropName] != lastValue)
+						{
+							differ = true;
+							break;
+						}
+					}
+				}
+				
+				if(differ == false)
+				{
+					control.enabled = true;
+					control[propName] = gameObject[gameObjectPropName];
+				}
+				else
+				{
+					control.enabled = false;
+				}
+			}
 
 		]]>
 	</fx:Script>
@@ -283,23 +627,23 @@
 		<s:FormHeading label="Properties" />
 		
 		<s:FormItem label="X:">
-			<s:NumericStepper id="xNumericStepper" value="{gameObject.x}" change="onXNumericStepperChanged()"
+			<s:NumericStepper id="xNumericStepper" change="onXNumericStepperChanged()"
 							  minimum="-100"
 							  maximum="2880"/>
 		</s:FormItem>
 		<s:FormItem label="Y:">
-			<s:NumericStepper id="yNumericStepper" value="{gameObject.y}" change="onYNumericStepperChanged()"
+			<s:NumericStepper id="yNumericStepper" change="onYNumericStepperChanged()"
 							  minimum="-100"
 							  maximum="2880"/>
 		</s:FormItem>
 		<s:FormItem label="Width:">
-			<s:NumericStepper id="widthNumericStepper" value="{gameObject.width}"
+			<s:NumericStepper id="widthNumericStepper" 
 							  change="onWidthNumericStepperChanged()"
 							  minimum="-100"
 							  maximum="2880"/>
 		</s:FormItem>
 		<s:FormItem label="Height:">
-			<s:NumericStepper id="heightNumericStepper" value="{gameObject.height}"
+			<s:NumericStepper id="heightNumericStepper"
 							  change="onHeightNumericStepperChanged()"
 							  minimum="-100"
 							  maximum="2880"/>
@@ -311,32 +655,31 @@
 			<s:ComboBox id="subTypeComboBox" change="onSubTypeComboBoxChange()" />
 		</s:FormItem>
 		<s:FormItem label="Image:">
-			<s:TextInput id="imageTextInput" editable="false" text="{gameObject.image}" toolTip="{gameObject.image}"/>
+			<s:TextInput id="imageTextInput" editable="false" />
 			<s:Button label="Browse" click="onBrowseForImage()"/>
-			<s:CheckBox id="imagePathCheckBox" label="Relative To Level" selected="{gameObject.imageRelativeToLevelPath}"
+			<s:CheckBox id="imagePathCheckBox" label="Relative To Level"
 						change="onImagePathRelativeChanged()"/>
 		</s:FormItem>
 		<s:FormItem label="Density:">
-			<s:HSlider id="densitySlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.density}" change="onDensityChange()" />
+			<s:HSlider id="densitySlider" minimum="0" maximum="2" stepSize=".1" change="onDensityChange()" />
 		</s:FormItem>
 		<s:FormItem label="Friction:">
-			<s:HSlider id="frictionSlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.friction}" change="onFrictionChange()" />
+			<s:HSlider id="frictionSlider" minimum="0" maximum="2" stepSize=".1" change="onFrictionChange()" />
 		</s:FormItem>
 		<s:FormItem label="Bounce:">
-			<s:HSlider id="bounceSlider" minimum="0" maximum="2" stepSize=".1" value="{gameObject.bounce}" change="onBounceChange()" />
+			<s:HSlider id="bounceSlider" minimum="0" maximum="2" stepSize=".1"  change="onBounceChange()" />
 		</s:FormItem>
 		<s:FormItem label="Exit Direction:" id="ledgeExitDirectionFormItem">
 			<s:RadioButton id="ledgeExitDirectionRightRadioButton" 
 						   label="Right"
-						   click="onChangeLedgeExitDirection()" selected="{gameObject.ledgeExitDirection == 'right'}" />
+						   click="onChangeLedgeExitDirection()" />
 			<s:RadioButton id="ledgeExitDirectionLeftRadioButton" 
 						   label="Left"
-						   click="onChangeLedgeExitDirection()" selected="{gameObject.ledgeExitDirection == 'left'}" />
+						   click="onChangeLedgeExitDirection()" />
 		</s:FormItem>
 		<s:FormItem label="Custom Name:">
 			<s:TextInput id="customNameTextInput"
-						 text="{gameObject.customName}"
-						 change="gameObject.customName = customNameTextInput.text" />
+						 change="onCustomNameChange()" />
 		</s:FormItem>
 	</s:Form>
 
