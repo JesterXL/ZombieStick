@@ -555,6 +555,8 @@
 				else
 				{
 					control.enabled = false;
+					if(control.hasOwnProperty("text"))
+						control.text = "---";
 				}
 			}
 
