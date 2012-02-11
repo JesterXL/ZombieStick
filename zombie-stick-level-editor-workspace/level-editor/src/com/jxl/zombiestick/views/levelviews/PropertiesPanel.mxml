@@ -140,6 +140,7 @@
 					
 					xyDirty = true;
 					widthHeightDirty = true;
+					typeDirty = true;
 					
 					
 					applyToControlAndEnableDisable(imageTextInput, "text", "image");
@@ -154,10 +155,10 @@
 			if(typeDirty)
 			{
 				typeDirty = false;
-				if(selections == null || selections.length < 1)
+				if(selections && selections.length > 0)
 				{
 					len = selections.length;
-					var lastValue:* = null;
+					var lastValue:String = null;
 					var differ:Boolean = false;
 					while(len--)
 					{
@@ -201,72 +202,11 @@
 			}
 		}
 			
-		//private var controlHash:Object;
-			
-			/*
-			if(controlHash == null)
-			{
-			controlHash = {
-			x: {name: "value", control: xNumericStepper},
-			y: {name: "value", control: yNumericStepper},
-			width: {name: "value", control: widthNumericStepper},
-			height: {name: "value", control: heightNumericStepper},
-			image: {name: "text", control: imageTextInput},
-			imageRelativeToLevelPath: {name: "selected", control: imagePathCheckBox},
-			density: {name: "value", control: densitySlider},
-			friction: {name: "value", control: frictionSlider},
-			bounce: {name: "value", control: bounceSlider},
-			customName: {name: "text", control: customNameTextInput}
-			};
-			}
-			*/
-		/*
-		private function applySelectionValues():void
-		{
-			
-			
-			if(selections == null || selections.length < 1)
-				return;
-			
-			var len:int = selections.length;
-			var differ:Boolean = false;
-			var lastValue:*;
-			while(len--)
-			{
-				var gameObject:GameObjectVO = selections[len];
-				if(lastValue == null)
-				{
-					lastValue = gameObject[gameObjectPropName];
-				}
-				else
-				{
-					if(gameObject[gameObjectPropName] != lastValue)
-					{
-						differ = true;
-						break;
-					}
-				}
-			}
-			
-			if(differ == false)
-			{
-				control.enabled = true;
-				control[propName] = gameObject[gameObjectPropName];
-			}
-			else
-			{
-				control.enabled = false;
-			}
-		}
-		*/
-			
 		private function onSelectionsChanged(event:CollectionEvent):void
 		{
 			selectionsDirty = true;
 			invalidateProperties();
 		}
-
-		
 
 		private function onTypeChanged(event:Event):void
 		{
@@ -328,7 +268,7 @@
 					}
 					else
 					{
-						if(gameObject.type != lastValue)
+						if(gameObject.type != lastValue || gameObject.subType != lastSubType)
 						{
 							differ = true;
 							break;
@@ -388,6 +328,8 @@
 					while(len--)
 					{
 						var gameObject:GameObjectVO = selections[len];
+						// [jwarden 2.10.2011] TODO: need to add validation here; you can allow them
+						// to set sub-types to things that shouldn't be.
 						gameObject.subType = subTypeComboBox.selectedItem;
 					}
 				}
