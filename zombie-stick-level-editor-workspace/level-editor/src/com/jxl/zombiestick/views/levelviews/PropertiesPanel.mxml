@@ -40,7 +40,8 @@
 			TerrainTypes.TABLE,
 			TerrainTypes.FIREHOSE,
 			TerrainTypes.GENERIC_SENSOR,
-			TerrainTypes.WINDOW_PIECE
+			TerrainTypes.WINDOW_PIECE,
+			TerrainTypes.DOOR
 		]);
 		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([CharacterTypes.NONE,
 			CharacterTypes.JESTERXL,
@@ -149,6 +150,7 @@
 					applyToControlAndEnableDisable(frictionSlider, "value", "friction");
 					applyToControlAndEnableDisable(bounceSlider, "value", "bounce");
 					applyToControlAndEnableDisable(customNameTextInput, "text", "customName");
+					applyToControlAndEnableDisable(targetDoorTextInput, "text", "targetDoor");
 				}
 			}
 
@@ -443,6 +445,11 @@
 				applyToSelections("customName", customNameTextInput.text);
 			}
 			
+			private function onTargetDoorChanged():void
+			{
+				applyToSelections("targetDoor", targetDoorTextInput.text);
+			}
+			
 			private function getMostTopLeft(prop:String):GameObjectVO
 			{
 				var len:int = selections.length;
@@ -565,7 +572,7 @@
 
 	<s:Form>
 		<s:layout>
-			<s:FormLayout gap="0"/>
+			<s:FormLayout gap="-12" paddingLeft="-8" paddingBottom="-8" paddingRight="-8" paddingTop="-8"/>
 		</s:layout>
 		
 		<s:FormHeading label="Properties" />
@@ -624,6 +631,9 @@
 		<s:FormItem label="Custom Name:">
 			<s:TextInput id="customNameTextInput"
 						 change="onCustomNameChange()" />
+		</s:FormItem>
+		<s:FormItem label="Target Door:">
+			<s:TextInput id="targetDoorTextInput" change="onTargetDoorChanged()" />
 		</s:FormItem>
 	</s:Form>
 

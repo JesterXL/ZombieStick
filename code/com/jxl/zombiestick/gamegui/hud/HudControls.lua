@@ -8,6 +8,7 @@ require "com.jxl.zombiestick.gamegui.hud.TargetButton"
 require "com.jxl.zombiestick.gamegui.hud.GunButton"
 require "com.jxl.zombiestick.gamegui.hud.GrapplingHookGunButton"
 require "com.jxl.zombiestick.gamegui.hud.GunAmmoLine"
+require "com.jxl.zombiestick.gamegui.hud.EnterButton"
 
 require "com.jxl.zombiestick.states.hud.HudControlsJXLState"
 require "com.jxl.zombiestick.states.hud.HudControlsFreemanState"
@@ -78,6 +79,16 @@ function HudControls:new(width, height)
 	grappleButton.isVisible = false
 	grappleButton.alpha = .5
 	
+	local enterButton = EnterButton:new()
+	enterButton.name = "enterButton"
+	controls:insert(enterButton)
+	enterButton.showing = false
+	enterButton.alpha = 0
+	enterButton.x = width - enterButton.width
+	enterButton.y = (height / 2) - (enterButton.height / 2)
+	enterButton.originalWidth = enterButton.width
+	enterButton.originalHeight = enterButton.height
+	
 	function controls:showJXLAttackButton(show)
 		print("HudControls::showJXLAttackButtons, show: ", show)
 		attackButton.isVisible = show
@@ -118,6 +129,24 @@ function HudControls:new(width, height)
 		end
 	end
 	
+	function controls:showDoorButton(show, doorName, targetDoorName)
+		if enterButton.showing ~= show then
+			enterButton.doorName = doorName
+			enterButton.targetDoorName = targetDoorName
+			if enterButton.tween ~= nil then
+				transition.cancel(enterButton.tween)
+			end
+			
+			if show == true then
+				enterButton.showing = show
+				enterButton.tween = transition.to( enterButton, {time=500, alpha=1, width=enterButton.originalWidth, height=enterButton.originalHeight, transition=easing.outExpo})
+			else
+				enterButton.showing = show
+				enterButton.tween = transition.to( enterButton, {time=500, alpha=0, width=(enterButton.originalWidth * .3), height=(enterButton.originalHeight * .3), stransition=easing.outExpo})
+			end
+		end		
+	end
+	
 	function controls:touch(event)
 		print("HudControls::touch, target: ", event.target.name)
 		local t = event.target
@@ -137,6 +166,8 @@ function HudControls:new(width, height)
 			Runtime:dispatchEvent({name="onGunButtonTouch", target=self, phase=event.phase, button=gunButton})
 		elseif t == grappleButton then
 			Runtime:dispatchEvent({name="onGrappleButtonTouch", target=self, phase=event.phase, button=grappleButton})
+		elseif t == enterButton then
+			self:dispatchEvent({name="onEnterButtonTouch", target=self, phase=event.phase, button=enterButton})
 		end
 		return true
 	end
@@ -151,6 +182,7 @@ function HudControls:new(width, height)
 	jumpRightButton:addEventListener("touch", controls)
 	gunButton:addEventListener("touch", controls)
 	grappleButton:addEventListener("touch", controls)
+	enterButton:addEventListener("touch", controls)
 	
 	controls.fsm = StateMachine:new(controls)
 	controls.fsm:addState2(HudControlsJXLState:new())

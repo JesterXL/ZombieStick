@@ -10,6 +10,7 @@ require "com.jxl.zombiestick.gamegui.levelviews.Chair"
 require "com.jxl.zombiestick.gamegui.levelviews.Firehose"
 require "com.jxl.zombiestick.gamegui.levelviews.GenericSensor"
 require "com.jxl.zombiestick.gamegui.levelviews.WindowPiece"
+require "com.jxl.zombiestick.gamegui.levelviews.Door"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
@@ -177,7 +178,6 @@ function LevelView:new(x, y, width, height)
 		self:setBackgroundImage(levelVO.backgroundImageShort)
 		
 		if self.hudControls == nil then
-			print("telling HUD Controls to use width: ", width, ", and height: ", height)
 			local hudControls = HudControls:new(width, height)
 			self:insert(hudControls)
 			hudControls:addEventListener("onLeftButtonTouch", self)
@@ -186,6 +186,7 @@ function LevelView:new(x, y, width, height)
 			hudControls:addEventListener("onJumpButtonTouch", self)
 			hudControls:addEventListener("onJumpLeftButtonTouch", self)
 			hudControls:addEventListener("onJumpRightButtonTouch", self)
+			hudControls:addEventListener("onEnterButtonTouch", self)
 			self.hudControls = hudControls
 		end
 		
@@ -295,6 +296,27 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
+	function level:onEnterButtonTouch(event)
+		if event.phase == "began" then
+			local enterButton = event.button
+			local lc = self.levelChildren
+			local n = lc.numChildren
+			local i
+			print("enterButton: ", enterButton)
+			for i=1,n do
+				local child = lc[i]
+				print("name: ", child.name, ", enterButton.targetDoorName: ", enterButton.targetDoorName)
+				if child.name ~= nil and child.name == enterButton.targetDoorName then
+					print("child.anme: ", child.name, ", enterButton.targetDoorName: ", enterButton.targetDoorName)
+					--print("*** px: ", self.player.x, ", py: ", self.player.y, ", cx: ", child.x, ", cy: ", child.y, ", classType: ", child.classType)
+					self.player.x = child.x
+					self.player.y = child.y
+					return true
+				end
+			end
+		end
+	end
+	
 	function level:setBackgroundImage(filename)
 		if filename ~= nil and filename ~= "" then
 			local img = display.newImage(filename)
@@ -320,7 +342,9 @@ function LevelView:new(x, y, width, height)
 							density = event.density,
 							friction = event.friction,
 							bounce = event.bounce,
-							ledgeExitDirection = event.ledgeExitDirection}
+							ledgeExitDirection = event.ledgeExitDirection,
+							customName = event.customName,
+							targetDoor = event.targetDoor}
 		if terrainType == "Crate" then
 			terrain = Crate:new(params)
 		elseif terrainType == "Floor" then
@@ -359,6 +383,8 @@ function LevelView:new(x, y, width, height)
 			terrain:addEventListener("collision", terrain)
 		elseif terrainType == "Generic Sensor" then
 			terrain = GenericSensor:new(params)
+		elseif terrainType == "Door" then
+			terrain = Door:new(params)
 		end
 		self:insertChild(terrain)
 	end

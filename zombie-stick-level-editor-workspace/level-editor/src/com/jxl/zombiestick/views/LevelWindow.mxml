@@ -50,57 +50,76 @@
 		private function onSaved(event:SaveLevelServiceEvent):void
 		{
 		}
+			
+			private function onZoomIn():void
+			{
+				groupWrapper.scaleX += .1;
+				groupWrapper.scaleY += .1;
+			}
+			
+			private function onZoomOut():void
+			{
+				groupWrapper.scaleX -= .1;
+				groupWrapper.scaleY -= .1;
+			}
+			
+			private function onNormalizeZoom():void
+			{
+				groupWrapper.scaleX = groupWrapper.scaleY = 1;
+			}
 		]]>
 	</fx:Script>
 	
-	<s:VGroup>
-		<s:HGroup>
-			<s:Label text="Background:" />
-			<s:TextInput id="backgroundImagePath" editable="false" text="{level.backgroundImage}" toolTip="{level.backgroundImage}" />
-			<s:Button label="Browse" click="onBrowseForBackgroundImage()" />
-			<s:Button label="New" click="onNew()" />
-			<s:Button label="Save" click="onSave()" />
-		</s:HGroup>
+	<s:Scroller width="100%" height="100%">
 		
-		<s:HGroup>
-			<s:Group>
-				<s:Image source="@Embed(source='/assets/images/iphone.png')"
-						 top="30" left="10"/>
+	
+		<s:VGroup width="100%" height="100%">
+			<s:HGroup>
+				<s:Label text="Background:" />
+				<s:TextInput id="backgroundImagePath" editable="false" text="{level.backgroundImage}" toolTip="{level.backgroundImage}" />
+				<s:Button label="Browse" click="onBrowseForBackgroundImage()" />
+				<s:Button label="New" click="onNew()" />
+				<s:Button label="Save" click="onSave()" />
+			</s:HGroup>
+			
+			<s:HGroup width="100%" height="100%">
+				<s:Group>
+					<s:Image source="@Embed(source='/assets/images/iphone.png')"
+							 top="30" left="10"/>
+					
+					<s:Scroller top="162" left="43"
+								width="320" height="320"
+								id="levelCanvasScroller">
+						<s:Group id="groupWrapper">
+							<s:Rect width="{levelCanvas.width}" height="{levelCanvas.height}">
+								<s:fill>
+									<s:SolidColor color="#FF0000" alpha="0" />
+								</s:fill>
+							</s:Rect>
+							
+							<zombiestick:LevelCanvas id="levelCanvas" level="{level}" />
+							
+						</s:Group>
+					</s:Scroller>
+					<s:HGroup>
+						<s:Button label="+" width="30" click="onZoomIn()" />
+						<s:Button label="100%" width="60" click="onNormalizeZoom()" />
+						<s:Button label="-" width="30" click="onZoomOut()" />	
+					</s:HGroup>
+					
+				</s:Group>
 				
-				<s:Scroller top="162" left="43"
-							width="320" height="320"
-							id="levelCanvasScroller">
-					<s:Group>
-						<s:Rect width="{levelCanvas.width}" height="{levelCanvas.height}">
-							<s:fill>
-								<s:SolidColor color="#FF0000" alpha="0" />
-							</s:fill>
-						</s:Rect>
-						
-						<zombiestick:LevelCanvas id="levelCanvas" level="{level}" />
-						
-					</s:Group>
-				</s:Scroller>
-			</s:Group>
-			
-			<levelviews:PropertiesPanel />
-			
-			<!--
-			<levelviews:MoviePanel movies="{level.movies}" />
-			-->
-			
-			<!--
-			<s:VGroup width="200" height="100%">
-				<s:Label text="Selections:" />
-				<s:List dataProvider="{levelCanvas.selections}" labelField="type" width="100%" height="100%" />
-			</s:VGroup>
-			-->
-			
-			<levelviews:LayersPanel />
-			
-		</s:HGroup>
-	</s:VGroup>
+				<levelviews:PropertiesPanel />
+				
+				<!--
+				<levelviews:MoviePanel movies="{level.movies}" />
+				-->
+				
+				<levelviews:LayersPanel />
+				
+			</s:HGroup>
+		</s:VGroup>
 	
-	
+	</s:Scroller>
 	
 </s:Window>

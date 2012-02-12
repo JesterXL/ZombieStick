@@ -2,7 +2,8 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				xmlns:s="library://ns.adobe.com/flex/spark" 
 				xmlns:mx="library://ns.adobe.com/flex/mx" 
-				autoDrawBackground="false">
+				autoDrawBackground="false"
+				creationComplete="onTimeChange()">
 	
 	<fx:Metadata>
 		[Event(name="editMovie", type="com.jxl.zombiestick.events.MovieItemRendererEvent")]
@@ -49,15 +50,27 @@
 		</s:stroke>
 	</s:Rect>
 	
-	<s:HGroup verticalAlign="middle" gap="4" paddingBottom="4" paddingTop="4" paddingLeft="4" paddingRight="4">
-		<s:Label text="Movie" fontWeight="bold" />
-		<s:Label text="Time:" />
-		<s:NumericStepper id="timeNumericStepper" minimum="0" maximum="300" 
-						  value="{data.when}"
-						  change="onTimeChange()" />
-		<s:Label id="timeLabel" />
-		<mx:LinkButton label="Edit" click="onEditMovie()" />
-		<s:Button label="X" width="40" click="onDelete()" />
-	</s:HGroup>
+	<s:Form>
+		<s:layout>
+			<s:FormLayout gap="-16" paddingBottom="-8" paddingLeft="-8" paddingRight="-8" paddingTop="-8" />
+		</s:layout>
+		
+		<s:FormItem label="Time:">
+			<s:NumericStepper id="timeNumericStepper" minimum="0" maximum="300" 
+							  value="{data.when}"
+							  change="onTimeChange()" />
+			<s:Label id="timeLabel" />
+		</s:FormItem>
+		<s:FormItem label="Name:">
+			<s:TextInput id="nameTextInput" text="{data.name}" change="data.name = nameTextInput.text" />
+		</s:FormItem>
+		<s:FormItem>
+			<s:layout>
+				<s:HorizontalLayout />
+			</s:layout>
+			<s:Button label="Edit" width="100%" click="onEditMovie()" />
+			<mx:LinkButton label="X" width="40" click="onDelete()" />
+		</s:FormItem>
+	</s:Form>
 	
 </s:ItemRenderer>

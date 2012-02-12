@@ -61,6 +61,7 @@ package com.jxl.zombiestick.controls
                 _gameObject.removeEventListener("heightChanged", onGameObjectChanged);
                 _gameObject.removeEventListener("imageChanged", onGameObjectChanged);
 				_gameObject.removeEventListener("selectedChanged", onGameObjectChanged);
+				_gameObject.removeEventListener("visibleChanged", onGameObjectChanged);
             }
             _gameObject = value;
             if(_gameObject)
@@ -71,6 +72,7 @@ package com.jxl.zombiestick.controls
                 _gameObject.addEventListener("heightChanged", onGameObjectChanged);
                 _gameObject.addEventListener("imageChanged", onGameObjectChanged);
 				_gameObject.addEventListener("selectedChanged", onGameObjectChanged);
+				_gameObject.addEventListener("visibleChanged", onGameObjectChanged);
             }
             gameObjectDirty = true;
             invalidateProperties();
@@ -201,7 +203,11 @@ package com.jxl.zombiestick.controls
 				
 				case "selectedChanged":
 					onSelectionChanged();
-                break;
+                	break;
+				
+				case "visibleChanged":
+					visible = gameObject.visible;
+					break;
             }
 			dispatchEvent(new Event("childSizeChanged"));
         }

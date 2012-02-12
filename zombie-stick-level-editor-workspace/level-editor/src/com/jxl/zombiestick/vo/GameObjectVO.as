@@ -158,11 +158,30 @@ package com.jxl.zombiestick.vo
 			dispatchEvent(new Event("customNameChanged"));
 		}
 		
+		[Bindable(event="visibleChanged")]
+		public function get visible():Boolean { return _visible; }
+		public function set visible(value:Boolean):void
+		{
+			_visible = value;
+			dispatchEvent(new Event("visibleChanged"));
+		}
+		
+		[Bindable(event="targetDoorChanged")]
+		public function get targetDoor():String { return _targetDoor; }
+		public function set targetDoor(value:String):void
+		{
+			_targetDoor = value;
+			dispatchEvent(new Event("targetDoorChanged"));
+		}
+		
 		[Transient]
 		public var oldX:Number 							= 0;
 		
 		[Transient]
 		public var oldY:Number 							= 0;
+		
+		private var _visible:Boolean					= true;
+		
 		
 		private var _image:String;	
 		private var _type:String                 		= GameObjectTypes.TERRAIN;
@@ -173,6 +192,7 @@ package com.jxl.zombiestick.vo
 		private var _height:Number                		= 35;
 		private var _selected:Boolean 					= false;
 		private var _customName:String 					= "";
+		private var _targetDoor:String 					= "";
 		
 		public var originalPoint:Point;
 		
@@ -229,6 +249,8 @@ package com.jxl.zombiestick.vo
 				obj.when						= when;
 				obj.pause						= pause;
 				obj.ledgeExitDirection			= _ledgeExitDirection;
+				obj.customName 					= _customName;
+				obj.targetDoor					= _targetDoor;
 				return obj;
 			}
 			catch(err:Error)
@@ -268,6 +290,8 @@ package com.jxl.zombiestick.vo
 			when							= object.when;
 			pause							= object.pause;
 			ledgeExitDirection				= object.ledgeExitDirection;
+			customName						= object.customName;
+			targetDoor 						= object.targetDoor;
 		}
 		
 		public function clone():GameObjectVO
