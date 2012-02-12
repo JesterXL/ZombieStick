@@ -3,7 +3,7 @@ FirehoseState = {}
 
 function FirehoseState:new()
 	local state = BaseState:new("firehose")
-	state.apex = false
+	state.apex = nil
 	
 	function state:onEnterState(event)
 		print("FirehoseState::onEnterState")
@@ -15,7 +15,6 @@ function FirehoseState:new()
 		player.jumpGravity = -4
 		player.jumpStartY = player.y
 		player.lastJump = system.getTimer()
-		player.apex = false
 		player.angularVelocity = 0
 		player:setLinearVelocity(0, 0)
 		--player.x = firehose.x - player.width
@@ -24,10 +23,14 @@ function FirehoseState:new()
 		player:applyLinearImpulse(-8, -6, player.width / 2, player.height / 2)
 		
 		Runtime:addEventListener("onGenericSensorCollision", self)
+		
+		self.apex = false
 	end
 	
 	function state:onExitState(event)
 		print("FirehoseState::onEnterState")
+		
+		self.lastY = nil
 		
 		if self.distanceJoint then
 			self.distanceJoint:removeSelf()
@@ -44,7 +47,7 @@ function FirehoseState:new()
 			while len > 0 do
 				local link = firehoseLinks[len]
 				local joint = firehoseJoints[len]
-				print("joint: ", joint, ", len: ", len)
+				--print("joint: ", joint, ", len: ", len)
 				joint:removeSelf()
 				link:removeSelf()
 				len = len - 1
