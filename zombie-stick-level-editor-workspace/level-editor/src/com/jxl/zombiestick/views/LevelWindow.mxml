@@ -111,9 +111,7 @@
 				
 				<levelviews:PropertiesPanel />
 				
-				<!--
-				<levelviews:MoviePanel movies="{level.movies}" />
-				-->
+				<levelviews:MoviePanel />
 				
 				<levelviews:LayersPanel />
 				

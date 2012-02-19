@@ -105,23 +105,20 @@ package com.jxl.zombiestick.vo
 			backgroundImage			= object.backgroundImage;
 			levelDirectory			= object.levelDirectory;
 			events					= new ArrayCollection();
+			movies 					= new ArrayCollection();
 			var len:int;
 			var movie:MovieVO;
 			var gameObject:GameObjectVO;
+			var index:int;
 			if(object.events && object.events.length > 0)
 			{
 				len = object.events.length;
-				for(var index:int = 0; index < len; index++)
+				for(index = 0; index < len; index++)
 				{
 					var eventObject:Object = object.events[index];
+					trace("eventObject.classType: " + eventObject.classType);
 					switch(eventObject.classType)
 					{
-						case "movie":
-							movie = new MovieVO();
-							movie.buildFromObject(eventObject);
-							events.addItem(movie);
-							break;
-						
 						case "gameObject":
 							gameObject = new GameObjectVO();
 							gameObject.buildFromObject(eventObject);
@@ -134,6 +131,18 @@ package com.jxl.zombiestick.vo
 							break;
 							
 					}
+				}
+			}
+			
+			if(object.movies && object.movies.length > 0)
+			{
+				len = object.movies.length;
+				for(index = 0; index < len; index++)
+				{	
+					var movieObj:Object = object.movies[index];
+					movie = new MovieVO();
+					movie.buildFromObject(movieObj);
+					movies.addItem(movie);
 				}
 			}
 		}

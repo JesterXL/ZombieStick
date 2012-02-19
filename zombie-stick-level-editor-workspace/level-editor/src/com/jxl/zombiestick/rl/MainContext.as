@@ -6,10 +6,12 @@ package com.jxl.zombiestick.rl
 	import com.jxl.zombiestick.rl.mediators.LayersPanelMediator;
 	import com.jxl.zombiestick.rl.mediators.LevelCanvasMediator;
 	import com.jxl.zombiestick.rl.mediators.LevelWindowMediator;
+	import com.jxl.zombiestick.rl.mediators.MoviePanelMediator;
 	import com.jxl.zombiestick.rl.mediators.PropertiesPanelMediator;
 	import com.jxl.zombiestick.rl.models.LevelModel;
 	import com.jxl.zombiestick.views.LevelWindow;
 	import com.jxl.zombiestick.views.levelviews.LayersPanel;
+	import com.jxl.zombiestick.views.levelviews.MoviePanel;
 	import com.jxl.zombiestick.views.levelviews.PropertiesPanel;
 	import com.jxl.zombiestick.vo.LevelVO;
 	
@@ -32,6 +34,7 @@ package com.jxl.zombiestick.rl
 			mediatorMap.mapView(LevelCanvas, LevelCanvasMediator);
 			mediatorMap.mapView(PropertiesPanel, PropertiesPanelMediator);
 			mediatorMap.mapView(LayersPanel, LayersPanelMediator);
+			mediatorMap.mapView(MoviePanel, MoviePanelMediator);
 			
 			commandMap.mapEvent(StartupEvent.STARTUP, StartupCommand, StartupEvent, true);
 			

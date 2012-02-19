@@ -275,7 +275,7 @@ function StateMachine:new(entity)
 		self.lastTickTime = time
 		if self.changeStateAtTick == true then
 			self.changeStateAtTick = false
-			print("StateMachine::tick, self.stateToChangeTo: ", self.stateToChangeTo)
+			--print("StateMachine::tick, self.stateToChangeTo: ", self.stateToChangeTo)
 			self:changeState(self.stateToChangeTo)
 			--self:setStateToChangeTo(nil)
 		end

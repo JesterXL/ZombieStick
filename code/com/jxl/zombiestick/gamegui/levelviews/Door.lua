@@ -8,12 +8,12 @@ function Door:new(params)
 	door.classType = "Door"
 	door.name = params.customName
 	door.targetDoor = params.targetDoor
-	print("Door, name: ", params.customName, ", targetDoor: ", params.targetDoor)
+	--print("Door, name: ", params.customName, ", targetDoor: ", params.targetDoor)
 	door.x = params.x
 	door.y = params.y
 	
 	function door:collision(event)
-		print("*** collision, classType: ", event.other.classType, ", phase: ", event.phase)
+		--print("*** collision, classType: ", event.other.classType, ", phase: ", event.phase)
 		if event.other.classType == "PlayerJXL" or event.other.classType == "PlayerFreeman" then
 			Runtime:dispatchEvent({name="onDoorCollision", target=self, other=event.other, phase=event.phase})
 			return true

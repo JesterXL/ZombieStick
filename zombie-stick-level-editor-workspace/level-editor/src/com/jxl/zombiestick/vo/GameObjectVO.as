@@ -174,6 +174,14 @@ package com.jxl.zombiestick.vo
 			dispatchEvent(new Event("targetDoorChanged"));
 		}
 		
+		[Bindable(event="targetMovieChanged")]
+		public function get targetMovie():String { return _targetMovie; }
+		public function set targetMovie(value:String):void
+		{
+			_targetMovie = value;
+			dispatchEvent(new Event("targetMovieChanged"));
+		}
+		
 		[Transient]
 		public var oldX:Number 							= 0;
 		
@@ -193,6 +201,7 @@ package com.jxl.zombiestick.vo
 		private var _selected:Boolean 					= false;
 		private var _customName:String 					= "";
 		private var _targetDoor:String 					= "";
+		private var _targetMovie:String 				= "";
 		
 		public var originalPoint:Point;
 		
@@ -251,6 +260,7 @@ package com.jxl.zombiestick.vo
 				obj.ledgeExitDirection			= _ledgeExitDirection;
 				obj.customName 					= _customName;
 				obj.targetDoor					= _targetDoor;
+				obj.targetMovie					= _targetMovie;
 				return obj;
 			}
 			catch(err:Error)
@@ -292,6 +302,7 @@ package com.jxl.zombiestick.vo
 			ledgeExitDirection				= object.ledgeExitDirection;
 			customName						= object.customName;
 			targetDoor 						= object.targetDoor;
+			targetMovie 					= object.targetMovie;
 		}
 		
 		public function clone():GameObjectVO

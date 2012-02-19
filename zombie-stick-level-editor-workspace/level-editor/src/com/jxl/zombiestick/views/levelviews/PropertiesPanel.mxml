@@ -151,6 +151,7 @@
 					applyToControlAndEnableDisable(bounceSlider, "value", "bounce");
 					applyToControlAndEnableDisable(customNameTextInput, "text", "customName");
 					applyToControlAndEnableDisable(targetDoorTextInput, "text", "targetDoor");
+					applyToControlAndEnableDisable(targetMovieTextInput, "text", "targetMovie");
 				}
 			}
 
@@ -450,6 +451,11 @@
 				applyToSelections("targetDoor", targetDoorTextInput.text);
 			}
 			
+			private function onTargetMovieChanged():void
+			{
+				applyToSelections("targetMovie", targetMovieTextInput.text);
+			}
+			
 			private function getMostTopLeft(prop:String):GameObjectVO
 			{
 				var len:int = selections.length;
@@ -634,6 +640,9 @@
 		</s:FormItem>
 		<s:FormItem label="Target Door:">
 			<s:TextInput id="targetDoorTextInput" change="onTargetDoorChanged()" />
+		</s:FormItem>
+		<s:FormItem label="Target Movie:">
+			<s:TextInput id="targetMovieTextInput" change="onTargetMovieChanged()" />
 		</s:FormItem>
 	</s:Form>
 

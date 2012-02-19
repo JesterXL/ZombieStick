@@ -27,18 +27,25 @@ function DialogueView:new(right)
 		text.isEditable = false
 		text.align = "left"
 	else
-		text = display.newText("", 0, 0, native.systemFont, 16)
+		-- text = display.newText("", 0, 0, native.systemFont, 16)
+		text = display.newRetinaText("", 0, 0, 278, 68)
 	end
+
 	text:setReferencePoint(display.TopLeftReferencePoint)
-	text:setTextColor(255, 255, 255)
-	text.size = 16
-	text.font = native.newFont( native.systemFont, 16 )
+	
+	--text:setTextColor(255, 255, 255)
+	--text.size = 16
+	--text.font = native.newFont( native.systemFont, 16 )
+	
+	
+	
 	group:insert(text)
 	
 	
 	function group:setText(value)
 		-- TODO: wipe this in (animate mask or whatever)
 		text.text = value
+		--text:setText(value)
 		
 		local platform = system.getInfo("platformName")
 		if platform == "Android" or platform == "iPhone OS" then
@@ -46,12 +53,13 @@ function DialogueView:new(right)
 			text.y = 16
 		else
 			if group.right == false then
-				text.x = 100 + (text.width / 2)
+				text.x = 100
 			else
-				text.x = 16 + (text.width / 2)
+				text.x = 8
 			end
-			text.y = 16 + (text.height / 2)
+			text.y = 16
 		end
+		
 	end
 
 	function group:setCharacter(character, emotion)

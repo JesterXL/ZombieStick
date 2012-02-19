@@ -56,6 +56,7 @@ function LevelView:new(x, y, width, height)
 	
 	level.players = nil
 	level.enemies = nil
+	level.movies = nil
 	
 	function level:insertChild(child)
 		assert(child ~= nil, "Child cannot be nil.")
@@ -174,6 +175,7 @@ function LevelView:new(x, y, width, height)
 		self:removeLevelChildren()
 		self.players = {}
 		self.enemies = {}
+		self.movies = {}
 		
 		self:setBackgroundImage(levelVO.backgroundImageShort)
 		
@@ -204,6 +206,11 @@ function LevelView:new(x, y, width, height)
 			end
 			i = i + 1
 		end
+		
+		self.movies = levelVO.movies
+		
+		Runtime:removeEventListener("onGenericSensorCollision", self)
+		Runtime:addEventListener("onGenericSensorCollision", self)
 		
 		--self.background:toBack()
 		--self.levelChildren:toFront()
@@ -344,7 +351,8 @@ function LevelView:new(x, y, width, height)
 							bounce = event.bounce,
 							ledgeExitDirection = event.ledgeExitDirection,
 							customName = event.customName,
-							targetDoor = event.targetDoor}
+							targetDoor = event.targetDoor,
+							targetMovie = event.targetMovie}
 		if terrainType == "Crate" then
 			terrain = Crate:new(params)
 		elseif terrainType == "Floor" then
@@ -484,6 +492,58 @@ function LevelView:new(x, y, width, height)
 			enemy:setTargets(players)
 			i = i + 1
 		end
+	end
+	
+	function level:onGenericSensorCollision(event)
+		local sensor = event.target
+		if sensor.targetMovie ~= nil and sensor.targetMovie ~= "" then
+			local movies = self.movies
+			local i = 1
+			local movie
+			while movies[i] do
+				movie = movies[i]
+				if movie.name == sensor.targetMovie then
+					break
+				end
+				i = i + 1
+			end
+			
+			if movie.played == true then
+				return true
+			end
+			
+			if movie.pause == true then
+				self.gameLoop:pause()
+				self.hudControls.isVisible = false
+				self.characterSelectView.isVisible = false
+				self.player.fsm:changeState("idle")
+			end
+			
+			self.currentMovie = movie
+			
+			if self.moviePlayer == nil then
+				local moviePlayer = MoviePlayerView:new()
+				self.moviePlayer = moviePlayer
+				moviePlayer:addEventListener("onMovieEnded", self)
+				moviePlayer:startMovie(movie)
+				self:insert(moviePlayer)
+			end
+			
+		end
+	end
+	
+	function level:onMovieEnded(event)
+		if self.currentMovie.pause == true then
+			self.gameLoop:start()
+			self.hudControls.isVisible = true
+			self.characterSelectView.isVisible = true
+		end
+		
+		self.currentMovie.played = true
+		
+		self.currentMovie = nil
+		
+		self.player.fsm:changeState("ready")
 	end
 	
 	LevelView.instance = level

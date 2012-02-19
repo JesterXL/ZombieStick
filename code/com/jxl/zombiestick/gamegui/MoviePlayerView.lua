@@ -15,6 +15,7 @@ function MoviePlayerView:new()
 	group.tweenIn = nil
 	group.tweenOut = nil
 	group.firstTime = false
+	group.complete = nil
 	group:addEventListener("touch", function() return true end)
 	group:addEventListener("tap", function() return true end)
 
@@ -26,6 +27,9 @@ function MoviePlayerView:new()
 		self.firstTime = true
 		self.currentView = 1
 		self.lastDialogueView = nil
+		self.complete = false
+		self.isVisible = true
+		self.isHitTestable = true
 		group:nextDialogue()
 	end
 
@@ -46,7 +50,7 @@ function MoviePlayerView:new()
 		local targetY = dialogueView.y
 		targetY = targetY - (dialogueView.height / 2)
 		dialogueView.alpha = 1
-		self.tweenOut = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_OUT_TIME, y=targetY, alpha=0, transition=easing.inExpo, onComplete=group.onHideDialogueComplete})
+		self.tweenOut = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_OUT_TIME, y=targetY, alpha=0, transition=easing.outExpo, onComplete=group.onHideDialogueComplete})
 		return true
 	end
 	
@@ -129,14 +133,20 @@ function MoviePlayerView:new()
 			
 		else
 			-- end of conversation
+			self.complete = true
 			self:hideDialogue(self.lastDialogueView)
-			print("MoviePlayerView::dispatching movieEnded")
-			self:dispatchEvent({name="movieEnded", target=self})
+			self.isVisible = false
+			self.isHitTestable = false
+			--print("MoviePlayerView::dispatching movieEnded")
+			self:dispatchEvent({name="onMovieEnded", target=self})
 		end
 
 	end
 	
 	function group:touch(event)
+		if self.complete == true then
+			return false
+		end
 		if event.phase == "ended" then
 			self:nextDialogue()
 			return true

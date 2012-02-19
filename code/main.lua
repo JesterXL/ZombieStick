@@ -16,6 +16,7 @@ physics.setGravity(0, 9.8)
 
 display.setStatusBar( display.HiddenStatusBar )
 
+
 local stage = display.getCurrentStage()
 
 function showProps(o)
@@ -88,8 +89,8 @@ end
 local function testMoviePlayerViewForLevel()
 	local level = LoadLevelService:new("sample.json")
 	local moviePlayer = MoviePlayerView:new()
-	--moviePlayer:startMovie(level.movies[1])
-	moviePlayer:startMovie(level.movies[2])
+	moviePlayer:startMovie(level.movies[1])
+	--moviePlayer:startMovie(level.movies[2])
 end
 
 

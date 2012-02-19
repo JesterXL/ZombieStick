@@ -6,9 +6,11 @@ function GenericSensor:new(params)
 	genericSensor.strokeWidth = 2
 	genericSensor:setFillColor(255, 0, 0, 0)
 	genericSensor.classType = "GenericSensor"
-	genericSensor.name = params.name
+	genericSensor.customName = params.customName
 	genericSensor.x = params.x
 	genericSensor.y = params.y
+	genericSensor.targetDoor = params.targetDoor
+	genericSensor.targetMovie = params.targetMovie
 	
 	function genericSensor:collision(event)
 		if event.other.name == "JXL" then
