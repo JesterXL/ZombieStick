@@ -254,6 +254,42 @@ local function testElevator()
 	elevator:addEventListener("onDownComplete", t)
 end
 
+function testElevatorButtons()
+	require "com.jxl.zombiestick.gamegui.hud.ElevatorControls"
+	local controls = ElevatorControls:new()
+	local t = {}
+	function t:onUpTouched()
+		print("up")
+	end
+	function t:onDownTouched()
+		print("down")
+	end
+	controls:addEventListener("onUpTouched", t)
+	controls:addEventListener("onDownTouched", t)
+end
+
+function testElevatorAndButtons()
+	require "com.jxl.zombiestick.gamegui.levelviews.Elevator"
+	require "com.jxl.zombiestick.core.GameLoop"
+	
+	local gameLoop = GameLoop:new()
+	gameLoop:start()
+	local elevator = Elevator:new(10, 10, 400)
+	gameLoop:addLoop(elevator)
+	
+	require "com.jxl.zombiestick.gamegui.hud.ElevatorControls"
+	local controls = ElevatorControls:new()
+	local t = {}
+	function t:onUpTouched()
+		elevator:goUp()
+	end
+	function t:onDownTouched()
+		elevator:goDown()
+	end
+	controls:addEventListener("onUpTouched", t)
+	controls:addEventListener("onDownTouched", t)
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -271,6 +307,8 @@ end
 --testTargetButton()
 --testGrappleState()
 --testGunAmmoLine()
-testElevator()
+--testElevator()
+--testElevatorButtons()
+testElevatorAndButtons()
 
 --testLevelViewBuildFromJSON()

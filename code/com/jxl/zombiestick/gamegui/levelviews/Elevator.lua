@@ -59,7 +59,8 @@ function Elevator:new(x, y, height)
 
 		physics.addBody(rect, { friction=0.5, bounce=0.1, density=1.2, shape=shape1 },
 								{ friction=0.5, bounce=0.1, density=1.2, shape=shape3 })
-
+								
+		--rect.isFixedRotation = true
 		return rect
 	end
 
