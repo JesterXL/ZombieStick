@@ -41,7 +41,8 @@
 			TerrainTypes.FIREHOSE,
 			TerrainTypes.GENERIC_SENSOR,
 			TerrainTypes.WINDOW_PIECE,
-			TerrainTypes.DOOR
+			TerrainTypes.DOOR,
+			TerrainTypes.ELEVATOR
 		]);
 		private var gameObjectPlayerTypes:ArrayCollection = new ArrayCollection([CharacterTypes.NONE,
 			CharacterTypes.JESTERXL,

@@ -1,30 +1,33 @@
 Elevator = {}
 
-function Elevator:new(x, y, height)
+function Elevator:new(startX, startY, startHeight, proxyGroup)
 
 	local elevator = display.newGroup()
-	elevator.x = x
-	elevator.y = y
 	elevator.lastTick = nil
 	elevator.moving = false
 	elevator.direction = nil
 	elevator.startLength = nil
 	local globalAlpha = 100
-	local startHeight = height
 	
-	function elevator:getWall(x, y, width, height)
-		local wall = display.newRect( x, y, width, height)
+	function elevator:getWall(wallX, wallY, wallWidth, wallHeight)
+		local wall = display.newRect(0, 0, wallWidth, wallHeight)
+		wall:setReferencePoint(display.TopLeftReferencePoint)
+		proxyGroup:insert(wall)
+		wall.x = wallX
+		wall.y = wallY
 		wall:setFillColor( 255, 0, 0, globalAlpha)
-		self:insert(wall)
+		
 		physics.addBody(wall, "static", { friction=0.5, bounce=0.0, density=2 } )
 		return wall
 	end
 
-	function elevator:getBox(x, y)
-		local rect = display.newRect(x, y, 100, 100)
+	function elevator:getBox(boxX, boxY)
+		local rect = display.newRect(0, 0, 100, 100)
 		rect:setReferencePoint(display.TopLeftReferencePoint)
+		proxyGroup:insert(rect)
+		rect.x = boxX
+		rect.y = boxY
 		rect:setFillColor( 0, 255, 0, globalAlpha)
-		self:insert(rect)
 		
 		local shape1 = {0,0, 100,0, 100,20, 0,20, 0,0}
 		local shape2 = {0,0, 20,0, 20,100, 0,100, 0,0}
@@ -56,20 +59,20 @@ function Elevator:new(x, y, height)
 			shape3[i] = value
 			i = i + 1
 		end
+		
+		
 
-		physics.addBody(rect, { friction=0.5, bounce=0.1, density=1.2, shape=shape1 },
-								{ friction=0.5, bounce=0.1, density=1.2, shape=shape3 })
+		physics.addBody(rect, {friction=0.5, bounce=0.1, density=1.2, shape=shape3, 
+								filter = { categoryBits = constants.COLLISION_FILTER_GROUND_CATEGORY,
+		 									maskBits = constants.COLLISION_FILTER_GROUND_MASK
+										 }
+							  })
+		rect.isBullet = true
 								
 		--rect.isFixedRotation = true
-		return rect
-	end
-
-	function elevator:getElevatorCounterWeight(x, y, width, height)
-		local rect = display.newRect(x, y, width, height)
-		--rect:setReferencePoint(display.TopLeftReferencePoint)
-		rect:setFillColor( 0, 255, 0, globalAlpha)
-		self:insert(rect)
-		physics.addBody(rect, "static", { friction=0.5, bounce=.2, density=1.2 } )
+		
+		rect:addEventListener("collision", self)
+		
 		return rect
 	end
 	
@@ -79,9 +82,9 @@ function Elevator:new(x, y, height)
 		end
 		self.line = display.newLine(startX, startY, endX, endY)
 		self.line:setReferencePoint(display.TopLeftReferencePoint)
+		proxyGroup:insert(self.line)
 		self.line.width = 2
-		self.line:setColor(255, 255, 255)
-		self:insert(self.line)
+		self.line:setColor(255, 0, 0)
 	end
 
 	function elevator:goUp()
@@ -118,7 +121,7 @@ function Elevator:new(x, y, height)
 		local pulleyConnector = self.pulleyConnector
 		local box = self.box
 		if self.moving == false then
-			self:redrawLine(pulleyConnector.x, pulleyConnector.y + 10, box.x + (box.width / 2), box.y + 10)
+			self:redrawLine(pulleyConnector.x + (pulleyConnector.width / 2), pulleyConnector.y + 10, box.x + (box.width / 2), box.y + 10)
 			return true
 		end
 		
@@ -152,18 +155,30 @@ function Elevator:new(x, y, height)
 			end
 		end
 		
-		self:redrawLine(pulleyConnector.x, pulleyConnector.y + 10, box.x + (box.width / 2), box.y + 10)
+		self:redrawLine(pulleyConnector.x + (pulleyConnector.width / 2), pulleyConnector.y + 10, box.x + (box.width / 2), box.y + 10)
 	end
 
 	function elevator:initialize()
-		self.pulleyConnector = self:getWall(self.x + 60, self.y, 20, 20)
+		local pulleyConnector = self:getWall(startX + 40, startY, 20, 20)
+		self.pulleyConnector = pulleyConnector
 		
-		self.box = self:getBox(0, startHeight - 100, 100, 100)
+		local box = self:getBox(startX, startY + startHeight - 100)
+		self.box = box
 
-		self.pulleyJoint = physics.newJoint( "distance", self.box, self.pulleyConnector, self.box.x + (self.box.width / 2), self.box.y, self.pulleyConnector.x, self.pulleyConnector.y + 10 )
-		self.pulleyJoint.frequency = 1
-		self.pulleyJoint.dampingRatio = .5
-		self.startLength = self.pulleyJoint.length
+		local pulleyJoint = physics.newJoint( "distance", box, pulleyConnector, box.x + (box.width / 2), box.y, pulleyConnector.x + (pulleyConnector.width / 2), pulleyConnector.y + 10 )
+		self.pulleyJoint = pulleyJoint
+		pulleyJoint.frequency = 1
+		pulleyJoint.dampingRatio = .5
+		self.startLength = pulleyJoint.length
+		
+		--local background = display.newRect(0, 0, self.width, self.height)
+		--self.background = background
+		--background:setFillColor(0, 255, 0, 100)
+		--self:insert(background)
+	end
+	
+	function elevator:collision(event)
+		Runtime:dispatchEvent({name="onElevatorCollision", target=self, phase=event.phase})
 	end
 	
 	elevator:initialize()

@@ -13,6 +13,7 @@ require("physics")
 physics.setDrawMode("hybrid")
 physics.start()
 physics.setGravity(0, 9.8)
+physics.setPositionIterations( 10 )
 
 display.setStatusBar( display.HiddenStatusBar )
 
@@ -269,25 +270,54 @@ function testElevatorButtons()
 end
 
 function testElevatorAndButtons()
+	
+	--physics:pause()
+	
+	mainGroup = display.newGroup()
+	
 	require "com.jxl.zombiestick.gamegui.levelviews.Elevator"
 	require "com.jxl.zombiestick.core.GameLoop"
 	
+	local rect = display.newRect(110, 10, 10, 10)
+	rect:setFillColor(255, 255, 255)
+	
 	local gameLoop = GameLoop:new()
 	gameLoop:start()
-	local elevator = Elevator:new(10, 10, 400)
+	local elevator = Elevator:new(200, 10, 400, mainGroup)
 	gameLoop:addLoop(elevator)
 	
 	require "com.jxl.zombiestick.gamegui.hud.ElevatorControls"
 	local controls = ElevatorControls:new()
 	local t = {}
-	function t:onUpTouched()
+	function t:onUpElevatorButtonTouched()
 		elevator:goUp()
 	end
-	function t:onDownTouched()
+	function t:onDownElevatorButtonTouched()
 		elevator:goDown()
 	end
-	controls:addEventListener("onUpTouched", t)
-	controls:addEventListener("onDownTouched", t)
+	controls:addEventListener("onUpElevatorButtonTouched", t)
+	controls:addEventListener("onDownElevatorButtonTouched", t)
+	--[[
+	mainGroup:insert(elevator)
+	mainGroup.x = 400
+	local scroller = {}
+	function scroller:timer()
+		print("weeee")
+		transition.to(mainGroup, {time=2000, x=-500, transition=easing.outExpo})
+	end
+	timer.performWithDelay(1000, scroller)
+	]]--
+end
+
+function testRect()
+	local rect = display.newRect(0, 0, 20, 20)
+	rect.x = 100
+	rect.y = 20
+	
+	local group = display.newGroup()
+	group:insert(rect)
+	group.x = 50
+	group.y = 50
 end
 
 --testScreenSize()
@@ -309,6 +339,7 @@ end
 --testGunAmmoLine()
 --testElevator()
 --testElevatorButtons()
-testElevatorAndButtons()
+--testElevatorAndButtons()
+--testRect()
 
---testLevelViewBuildFromJSON()
+testLevelViewBuildFromJSON()

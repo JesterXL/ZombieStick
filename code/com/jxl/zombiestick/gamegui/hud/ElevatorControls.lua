@@ -15,10 +15,10 @@ function ElevatorControls:new(x, y)
 	function elevatorControls:touch(event)
 		if event.phase == "began" then
 			if event.target == elevatorControls.upButton then
-				self:dispatchEvent({name="onUpTouched", target=self})
+				self:dispatchEvent({name="onUpElevatorButtonTouched", target=self})
 				return true
 			elseif event.target == elevatorControls.downButton then
-				self:dispatchEvent({name="onDownTouched", target=self})
+				self:dispatchEvent({name="onDownElevatorButtonTouched", target=self})
 				return true
 			end
 		end

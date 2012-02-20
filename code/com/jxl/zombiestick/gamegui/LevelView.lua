@@ -11,10 +11,14 @@ require "com.jxl.zombiestick.gamegui.levelviews.Firehose"
 require "com.jxl.zombiestick.gamegui.levelviews.GenericSensor"
 require "com.jxl.zombiestick.gamegui.levelviews.WindowPiece"
 require "com.jxl.zombiestick.gamegui.levelviews.Door"
+require "com.jxl.zombiestick.gamegui.levelviews.Elevator"
+
+require "com.jxl.zombiestick.gamegui.hud.ElevatorControls"
 
 require "com.jxl.zombiestick.players.PlayerJXL"
 require "com.jxl.zombiestick.players.PlayerFreeman"
 require "com.jxl.zombiestick.players.weapons.SwordPolygon"
+
 
 require "com.jxl.zombiestick.enemies.Zombie"
 
@@ -393,6 +397,11 @@ function LevelView:new(x, y, width, height)
 			terrain = GenericSensor:new(params)
 		elseif terrainType == "Door" then
 			terrain = Door:new(params)
+		elseif terrainType == "Elevator" then
+			Runtime:removeEventListener("onElevatorCollision", self)
+			Runtime:addEventListener("onElevatorCollision", self)
+			terrain = Elevator:new(params.x, params.y, params.height, self.levelChildren)
+			self.gameLoop:addLoop(terrain)
 		end
 		self:insertChild(terrain)
 	end
@@ -530,6 +539,35 @@ function LevelView:new(x, y, width, height)
 			end
 			
 		end
+	end
+	
+	function level:onElevatorCollision(event)
+		if event.phase == "began" then
+			self.currentElevator = event.target
+			if self.elevatorControls == nil then
+				local elevatorControls = ElevatorControls:new()
+				self.elevatorControls = elevatorControls
+			--	elevatorControls.x = self.width - elevatorControls.width
+			--	elevatorControls.y = 4
+				elevatorControls:addEventListener("onUpElevatorButtonTouched", self)
+				elevatorControls:addEventListener("onDownElevatorButtonTouched", self)
+			end
+			self.elevatorControls.isVisible = true
+		else
+			if self.elevatorControls then
+				self.elevatorControls.isVisible = false
+			end
+			self.currentElevator = nil
+		end	
+	end
+	
+	function level:onUpElevatorButtonTouched(event)
+		print("self.currentElevator: ", self.currentElevator)
+		self.currentElevator:goUp()
+	end
+	
+	function level:onDownElevatorButtonTouched(event)
+		self.currentElevator:goDown()
 	end
 	
 	function level:onMovieEnded(event)
