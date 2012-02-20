@@ -10,7 +10,7 @@ require "com.jxl.zombiestick.enemies.Zombie"
 require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
-physics.setDrawMode("normal")
+physics.setDrawMode("hybrid")
 physics.start()
 physics.setGravity(0, 9.8)
 
@@ -234,6 +234,26 @@ local function testGunAmmoLine()
 	
 end
 
+local function testElevator()
+	require "com.jxl.zombiestick.gamegui.levelviews.Elevator"
+	require "com.jxl.zombiestick.core.GameLoop"
+	
+	local gameLoop = GameLoop:new()
+	gameLoop:start()
+	local elevator = Elevator:new(10, 10, 400)
+	elevator:goUp()
+	gameLoop:addLoop(elevator)
+	local t = {}
+	function t:onUpComplete()
+		elevator:goDown()
+	end
+	function t:onDownComplete()
+		elevator:goUp()
+	end
+	elevator:addEventListener("onUpComplete", t)
+	elevator:addEventListener("onDownComplete", t)
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -251,5 +271,6 @@ end
 --testTargetButton()
 --testGrappleState()
 --testGunAmmoLine()
+testElevator()
 
-testLevelViewBuildFromJSON()
+--testLevelViewBuildFromJSON()
