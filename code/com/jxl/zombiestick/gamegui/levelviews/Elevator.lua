@@ -1,12 +1,15 @@
 Elevator = {}
 
-function Elevator:new(startX, startY, startHeight, proxyGroup)
+function Elevator:new(startX, startY, startHeight, proxyGroup, customName)
 
 	local elevator = display.newGroup()
+	elevator.classType = "Elevator"
 	elevator.lastTick = nil
 	elevator.moving = false
 	elevator.direction = nil
 	elevator.startLength = nil
+	elevator.customName = customName
+	elevator.performedJolt = nil -- helps Box2D get unstuck
 	local globalAlpha = 100
 	
 	function elevator:getWall(wallX, wallY, wallWidth, wallHeight)
@@ -59,17 +62,14 @@ function Elevator:new(startX, startY, startHeight, proxyGroup)
 			shape3[i] = value
 			i = i + 1
 		end
-		
-		
 
-		physics.addBody(rect, {friction=0.5, bounce=0.1, density=1.2, shape=shape3, 
-								filter = { categoryBits = constants.COLLISION_FILTER_GROUND_CATEGORY,
-		 									maskBits = constants.COLLISION_FILTER_GROUND_MASK
+		physics.addBody(rect, {friction=0.5, bounce=0.1, density=2, shape=shape3, 
+								filter = { categoryBits = constants.COLLISION_FILTER_TERRAIN_CATEGORY,
+		 									maskBits = constants.COLLISION_FILTER_TERRAIN_MASK
 										 }
 							  })
-		rect.isBullet = true
-								
-		--rect.isFixedRotation = true
+		rect.isBullet = true	
+		rect.isFixedRotation = true
 		
 		rect:addEventListener("collision", self)
 		
@@ -88,11 +88,15 @@ function Elevator:new(startX, startY, startHeight, proxyGroup)
 	end
 
 	function elevator:goUp()
+		print("Elevator::goUp")
+		self.performedJolt = false
 		self.moving = true
 		self.direction = "up"
 	end
 	
 	function elevator:goDown()
+		print("Elevator::goDown")
+		self.performedJolt = false
 		self.moving = true
 		self.direction = "down"	
 	end
@@ -141,13 +145,22 @@ function Elevator:new(startX, startY, startHeight, proxyGroup)
 		
 		
 		local pulleyJoint = self.pulleyJoint
+		print("pulleyJoint.length: ", pulleyJoint.length)
 		if direction == "up" then
-			if pulleyJoint.length > 50 then
+			if self.performedJolt == false then
+				self.performedJolt = true
+				box:applyLinearImpulse(0, -1, box.x + (box.width / 2), box.y + (box.height / 2))
+			end
+			if pulleyJoint.length > 0 then
 				pulleyJoint.length = pulleyJoint.length + yAmount
 			else
 				self:onUpComplete()
 			end
 		elseif direction == "down" then
+			if self.performedJolt == false then
+				self.performedJolt = true
+				box:applyLinearImpulse(0, 1, box.x + (box.width / 2), box.y + (box.height / 2))
+			end
 			if pulleyJoint.length < self.startLength then
 				pulleyJoint.length = pulleyJoint.length + yAmount
 			else
@@ -159,13 +172,13 @@ function Elevator:new(startX, startY, startHeight, proxyGroup)
 	end
 
 	function elevator:initialize()
-		local pulleyConnector = self:getWall(startX + 40, startY, 20, 20)
+		local pulleyConnector = self:getWall(startX + 40, startY, 20, 15)
 		self.pulleyConnector = pulleyConnector
 		
 		local box = self:getBox(startX, startY + startHeight - 100)
 		self.box = box
 
-		local pulleyJoint = physics.newJoint( "distance", box, pulleyConnector, box.x + (box.width / 2), box.y, pulleyConnector.x + (pulleyConnector.width / 2), pulleyConnector.y + 10 )
+		local pulleyJoint = physics.newJoint( "distance", box, pulleyConnector, box.x + (box.width / 2), box.y, pulleyConnector.x + (pulleyConnector.width / 2), pulleyConnector.y + pulleyConnector.height )
 		self.pulleyJoint = pulleyJoint
 		pulleyJoint.frequency = 1
 		pulleyJoint.dampingRatio = .5
@@ -178,7 +191,9 @@ function Elevator:new(startX, startY, startHeight, proxyGroup)
 	end
 	
 	function elevator:collision(event)
-		Runtime:dispatchEvent({name="onElevatorCollision", target=self, phase=event.phase})
+		if event.other.classType == "PlayerJXL" or event.other.classType == "PlayerFreeman" then
+			Runtime:dispatchEvent({name="onElevatorCollision", target=self, phase=event.phase})
+		end
 	end
 	
 	elevator:initialize()

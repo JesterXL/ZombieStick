@@ -12,6 +12,7 @@ require "com.jxl.zombiestick.gamegui.levelviews.GenericSensor"
 require "com.jxl.zombiestick.gamegui.levelviews.WindowPiece"
 require "com.jxl.zombiestick.gamegui.levelviews.Door"
 require "com.jxl.zombiestick.gamegui.levelviews.Elevator"
+require "com.jxl.zombiestick.gamegui.levelviews.ElevatorSwitch"
 
 require "com.jxl.zombiestick.gamegui.hud.ElevatorControls"
 
@@ -356,7 +357,8 @@ function LevelView:new(x, y, width, height)
 							ledgeExitDirection = event.ledgeExitDirection,
 							customName = event.customName,
 							targetDoor = event.targetDoor,
-							targetMovie = event.targetMovie}
+							targetMovie = event.targetMovie,
+							targetElevator = event.targetElevator}
 		if terrainType == "Crate" then
 			terrain = Crate:new(params)
 		elseif terrainType == "Floor" then
@@ -400,8 +402,12 @@ function LevelView:new(x, y, width, height)
 		elseif terrainType == "Elevator" then
 			Runtime:removeEventListener("onElevatorCollision", self)
 			Runtime:addEventListener("onElevatorCollision", self)
-			terrain = Elevator:new(params.x, params.y, params.height, self.levelChildren)
+			terrain = Elevator:new(params.x, params.y, params.height, self.levelChildren, params.customName)
 			self.gameLoop:addLoop(terrain)
+		elseif terrainType == "Elevator Switch" then
+			Runtime:removeEventListener("onElevatorSwitchCollision", self)
+			Runtime:addEventListener("onElevatorSwitchCollision", self)
+			terrain = ElevatorSwitch:new(params)
 		end
 		self:insertChild(terrain)
 	end
@@ -541,32 +547,63 @@ function LevelView:new(x, y, width, height)
 		end
 	end
 	
+	function level:createElevatorControls()
+		if self.elevatorControls == nil then
+			local elevatorControls = ElevatorControls:new()
+			self.elevatorControls = elevatorControls
+		--	elevatorControls.x = self.width - elevatorControls.width
+		--	elevatorControls.y = 4
+			elevatorControls:addEventListener("onUpElevatorButtonTouched", self)
+			elevatorControls:addEventListener("onDownElevatorButtonTouched", self)
+		end
+	end
+	
+	function level:getElevatorByName(targetName)
+		local i = 1
+		local lc = self.levelChildren
+		while lc[i] do
+			local child = lc[i]
+			if child and child.classType == "Elevator" and child.customName == targetName then
+				return child
+			end
+			i = i + 1
+		end
+		return false
+	end
+	
 	function level:onElevatorCollision(event)
 		if event.phase == "began" then
 			self.currentElevator = event.target
-			if self.elevatorControls == nil then
-				local elevatorControls = ElevatorControls:new()
-				self.elevatorControls = elevatorControls
-			--	elevatorControls.x = self.width - elevatorControls.width
-			--	elevatorControls.y = 4
-				elevatorControls:addEventListener("onUpElevatorButtonTouched", self)
-				elevatorControls:addEventListener("onDownElevatorButtonTouched", self)
-			end
+			self:createElevatorControls()
 			self.elevatorControls.isVisible = true
 		else
-			if self.elevatorControls then
+			if self.elevatorControls ~= nil then
 				self.elevatorControls.isVisible = false
 			end
 			self.currentElevator = nil
 		end	
 	end
 	
+	function level:onElevatorSwitchCollision(event)
+		if event.phase == "began" then
+			self.currentElevator = self:getElevatorByName(event.target.targetElevator)
+			self:createElevatorControls()
+			self.elevatorControls.isVisible = true
+		else
+			if self.elevatorControls ~= nil then
+				self.elevatorControls.isVisible = false
+			end
+			self.currentElevator = nil
+		end
+	end
+	
 	function level:onUpElevatorButtonTouched(event)
-		print("self.currentElevator: ", self.currentElevator)
+		print("LevelView::onUpElevatorButtonTouched")
 		self.currentElevator:goUp()
 	end
 	
 	function level:onDownElevatorButtonTouched(event)
+		print("LevelView::onDownElevatorButtonTouched")
 		self.currentElevator:goDown()
 	end
 	

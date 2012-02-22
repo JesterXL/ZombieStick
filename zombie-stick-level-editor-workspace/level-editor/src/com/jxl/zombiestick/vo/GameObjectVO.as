@@ -182,6 +182,14 @@ package com.jxl.zombiestick.vo
 			dispatchEvent(new Event("targetMovieChanged"));
 		}
 		
+		[Bindable(event="targetElevatorChanged")]
+		public function get targetElevator():String { return _targetElevator; }
+		public function set targetElevator(value:String):void
+		{
+			_targetElevator = value;
+			dispatchEvent(new Event("targetElevatorChanged"));
+		}
+		
 		[Transient]
 		public var oldX:Number 							= 0;
 		
@@ -202,6 +210,7 @@ package com.jxl.zombiestick.vo
 		private var _customName:String 					= "";
 		private var _targetDoor:String 					= "";
 		private var _targetMovie:String 				= "";
+		private var _targetElevator:String 				= "";
 		
 		public var originalPoint:Point;
 		
@@ -239,6 +248,7 @@ package com.jxl.zombiestick.vo
 				obj.y							= _y;
 				obj.width 						= _width;
 				obj.height 						= _height;
+				obj.targetElevator				= _targetElevator;
 				var len:int;
 				if(polygons && polygons.length > 0)
 				{
@@ -303,6 +313,7 @@ package com.jxl.zombiestick.vo
 			customName						= object.customName;
 			targetDoor 						= object.targetDoor;
 			targetMovie 					= object.targetMovie;
+			targetElevator 					= object.targetElevator;
 		}
 		
 		public function clone():GameObjectVO

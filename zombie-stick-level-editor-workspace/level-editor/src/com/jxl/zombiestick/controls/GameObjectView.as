@@ -1,5 +1,6 @@
 package com.jxl.zombiestick.controls
 {
+	import com.jxl.zombiestick.constants.subtypes.TerrainTypes;
 	import com.jxl.zombiestick.vo.GameObjectVO;
 	
 	import flash.display.Graphics;
@@ -26,6 +27,7 @@ package com.jxl.zombiestick.controls
 
         private var backgroundShape:Shape;
         private var borderShape:Shape;
+		private var elevatorShape:Shape;
         private var imageView:Image;
 		private var over:Boolean = false;
 		
@@ -62,6 +64,7 @@ package com.jxl.zombiestick.controls
                 _gameObject.removeEventListener("imageChanged", onGameObjectChanged);
 				_gameObject.removeEventListener("selectedChanged", onGameObjectChanged);
 				_gameObject.removeEventListener("visibleChanged", onGameObjectChanged);
+				_gameObject.removeEventListener("subTypeChanged", onGameObjectChanged);
             }
             _gameObject = value;
             if(_gameObject)
@@ -73,6 +76,7 @@ package com.jxl.zombiestick.controls
                 _gameObject.addEventListener("imageChanged", onGameObjectChanged);
 				_gameObject.addEventListener("selectedChanged", onGameObjectChanged);
 				_gameObject.addEventListener("visibleChanged", onGameObjectChanged);
+				_gameObject.addEventListener("subTypeChanged", onGameObjectChanged);
             }
             gameObjectDirty = true;
             invalidateProperties();
@@ -147,7 +151,37 @@ package com.jxl.zombiestick.controls
 
             imageView.setActualSize(width,  height);
 			
-			
+			if(_gameObject && _gameObject.subType == TerrainTypes.ELEVATOR)
+			{
+				if(elevatorShape == null)
+				{
+					elevatorShape = new Shape();
+					addChild(elevatorShape);
+				}
+				g = elevatorShape.graphics;
+				g.clear();
+				
+				g.lineStyle(0, 0x000000);
+				g.drawRect(0, 0, 100, 20);
+				
+				g.moveTo(0, 20);
+				g.drawRect(0, 20, 100, 80);
+				
+				g.moveTo(0, height - 100);
+				g.drawRect(0, height - 100, 100, 80);
+				g.moveTo(0, height - 20);
+				g.drawRect(0, height - 20, 100, 20);
+				
+				g.endFill();
+			}
+			else
+			{
+				if(elevatorShape)
+				{
+					elevatorShape.graphics.clear();
+					removeChild(elevatorShape);
+				}
+			}
         }
 
         private function drawSelected():void
@@ -207,6 +241,10 @@ package com.jxl.zombiestick.controls
 				
 				case "visibleChanged":
 					visible = gameObject.visible;
+					break;
+				
+				case "subTypeChanged":
+					invalidateDisplayList();
 					break;
             }
 			dispatchEvent(new Event("childSizeChanged"));

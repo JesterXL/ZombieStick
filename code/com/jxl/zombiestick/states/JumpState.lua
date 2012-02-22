@@ -72,7 +72,9 @@ function JumpState:new(stateName)
 	
 	function state:collision(event)
 		local player = self.entity
-		if event.other.name == "Floor" or event.other.name == "Crate" or event.other.name == "Table" or event.other.name == "Chair" then
+		local target = event.other.name
+		print("target: ", target)
+		if target == "Floor" or target == "Crate" or target == "Table" or target == "Chair" or event.other.classType == "Elevator" then
 			player:removeEventListener("collision", self)
 			player:showSprite("stand")
 			self.stateMachine:changeStateToAtNextTick("ready")
