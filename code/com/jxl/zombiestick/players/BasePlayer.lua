@@ -32,6 +32,8 @@ function BasePlayer:new()
 	player.moveStamina = 1
 	player.stamina = 10
 	player.maxStamina = 10
+
+	player.staminaTextPool = {}
 	
 	player.fsm = StateMachine:new(player)
 	
@@ -154,18 +156,63 @@ function BasePlayer:new()
 	end
 	
 	function player:setStamina(value)
+		local oldValue = self.stamina
 		self.stamina = value
 		if self.stamina <= 1 then
 			self:setSpeed(self.tiredSpeed)
 		else
 			self:setSpeed(self.maxSpeed)
 		end
+
+		local difference = value - oldValue
+		self:showStaminaText(25, 0, difference)
+
 		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, maxStamina = self.maxStamina, oldValue=oldValue, value=value})
 	end
 	
 	function player:setSpeed(value)
 		assert(value ~= nil, "You cannot set speed to a nil value.")
 		self.speed = value
+	end
+
+	function player:showStaminaText(targetX, targetY, amount)
+		local field
+		if table.maxn(self.staminaTextPool) > 0 then
+			field = self.staminaTextPool[1]
+			assert(field ~= nil, "Failed to get item from pool")
+			table.remove(self.staminaTextPool, table.indexOf(self.staminaTextPool, field))
+			assert(field ~= nil, "After cleanup, field got nil.")
+		else
+			field = display.newText("", 0, 0, 60, 60)
+			function field:onComplete(obj)
+				if self.tween then
+					transition.cancel(field.tween)
+					field.tween = nil
+				end
+				if self.alphaTween then
+					transition.cancel(field.alphaTween)
+					field.alphaTween = nil
+				end
+				table.insert(player.staminaTextPool, field)
+			end
+		end
+		assert(field ~= nil, "After if statement, field is nil.")
+		field:setReferencePoint(display.TopLeftReferencePoint)
+		self:insert(field)
+		field.x = targetX
+		field.y = targetY
+		field.alpha = 1
+		local amountText = tostring(amount)
+		if amount > 0 then
+			amountText = "+" .. amountText
+			field:setTextColor(0, 0, 255)
+		else
+			field:setTextColor(190, 0, 255)
+		end
+		field.text = amountText
+		local newTargetY = targetY - 40
+		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
+		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
 	end
 	
 	return player

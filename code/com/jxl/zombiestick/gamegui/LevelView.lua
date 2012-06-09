@@ -235,8 +235,10 @@ function LevelView:new(x, y, width, height)
 		self.gameLoop:reset()
 		self.gameLoop:start()
 		
-		self:setPlayer(self:getPlayerType("PlayerFreeman"))
-		self.hudControls.fsm:changeStateToAtNextTick("HudControlsFreeman")
+		-- [jwarden 6.9.2012] TODO: need to make this read from the level
+		-- vs. manually updated setPlayer and hudControls state
+		self:setPlayer(self:getPlayerType("PlayerJXL"))
+		self.hudControls.fsm:changeStateToAtNextTick("HudControlsJXL")
 		self.player.fsm:changeStateToAtNextTick("ready")
 	end
 	

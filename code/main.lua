@@ -109,8 +109,8 @@ local function testLevelViewBuildFromJSON()
 	local levelView = LevelView:new(0, 0, stage.contentWidth, stage.contentHeight)
 	--local level = LoadLevelService:new("sample.json")
 	--local level = LoadLevelService:new("level-test.json")
-	--local level = LoadLevelService:new("Level1.json")
-	local level = LoadLevelService:new("Level1-freeman.json")
+	local level = LoadLevelService:new("Level1.json")
+	--local level = LoadLevelService:new("Level1-freeman.json")
 	levelView:drawLevel(level)
 	levelView:startScrolling()
 end
@@ -685,6 +685,72 @@ function testHudControlsState()
 	hudControls.fsm:changeStateToAtNextTick("HudControlsFreeman")
 end
 
+function testStaminaHeadText()
+	
+
+	function showStaminaText(targetX, targetY, amount)
+		local field = display.newRetinaText("", 0, 0, 60, 60)
+		field:setReferencePoint(display.TopLeftReferencePoint)
+		field.x = targetX
+		field.y = targetY
+		local amountText = tostring(amount)
+		if amount > 0 then
+			amountText = "+" .. amountText
+		elseif amount < 0 then
+			amountText = "-" .. amountText
+		end
+		field.text = amountText
+		local newTargetY = targetY - 40
+		field.tween = transition.to(field, {y=newTargetY, time=1000, transition=easing.outExpo})
+		field.alphaTween = transition.to(field, {alpha=0, time=300, delay=800})
+	end
+
+	function onTouch(event)
+		if event.phase == "began" then
+			showStaminaText(event.x, event.y, 2)
+		end
+	end
+	Runtime:addEventListener("touch", onTouch)
+
+end
+
+function testObjectPool()
+	require "com.jxl.zombiestick.core.ObjectPool"
+	require "com.jxl.zombiestick.core.GameLoop"
+
+	local group = display.newGroup()
+
+	local pool = ObjectPool:new()
+	assert(pool.items ~= nil, "Items are nil.")
+	assert(table.maxn(pool.items) == 0, "Incorrect length")
+
+	print(type(display.newText))
+	print(type(ObjectPool))
+	print("display.newText: ", display.newText)
+	print("display.newText is not nil: ", (display.newText ~= nil))
+	local text = pool:get(display.newText, {"test", 0, 0, 60, 60})
+	assert(text ~= nil, "text is nil")
+	assert(text.text == "test", "text is not equal to 'test'")
+	assert(text.name == nil, "text's name is not nil")
+
+	assert(GameLoop ~= nil, "GameLoop class is nil.")
+	print("GameLoop: ", GameLoop)
+	print("GameLoop type: ", type(GameLoop))
+	local loop = pool:get(GameLoop)
+	assert(loop ~= nil, "gameLoop is nil")
+
+	group:insert(text)
+
+	text.name = "JesseText"
+
+	pool:add(text)
+
+	local newText = pool:get()
+
+end
+
+
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -716,5 +782,6 @@ end
 --testMath()
 --testErrorAbort()
 --testHudControlsState()
-
+--testStaminaHeadText()
+--testObjectPool()
 testLevelViewBuildFromJSON()

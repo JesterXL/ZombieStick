@@ -3,7 +3,7 @@ ReloadState = {}
 
 function ReloadState:new()
 	local state = BaseState:new("reload")
-	local BULLET_LOAD_TIME = 500
+	local BULLET_LOAD_TIME = 100
 	
 	function state:onEnterState(event)
 		print("ReloadState::onEnterState")

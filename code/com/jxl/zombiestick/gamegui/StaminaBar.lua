@@ -3,7 +3,7 @@ require "com.jxl.core.components.ProgressBar"
 StaminaBar = {}
  
 function StaminaBar:new()
-	local group = ProgressBar:new(0, 0, 0, 0, 255, 0)
+	local group = ProgressBar:new(255, 255, 255, 0, 0, 255)
 	
 	function group:onPlayerStaminaChanged(event)
 		if event.target.classType == self.targetClassType then
