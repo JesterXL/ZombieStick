@@ -8,7 +8,7 @@ function JumpLeftState:new()
 	
 	state.superOnEnterState = state.onEnterState
 	function state:onEnterState(event)
-		print("JumpLeftState::onEnterState")
+		--print("JumpLeftState::onEnterState")
 		self:superOnEnterState(event)
 		
 		local player = self.entity

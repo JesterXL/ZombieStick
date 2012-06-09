@@ -53,7 +53,7 @@ function FreemanAttackState:new()
 		local lc = levelView.levelChildren
 		
 		local targetX, targetY
-		--print("player.lastAttackX: ", player.lastAttackX)
+		print("player.lastAttackX: ", player.lastAttackX)
 		local localX, localY = levelView:localToContent(player.lastAttackX, player.lastAttackY)
 		local variance = 80
 		targetX = localX + (lc.x * -1) + (math.random() * variance) - (variance / 2)

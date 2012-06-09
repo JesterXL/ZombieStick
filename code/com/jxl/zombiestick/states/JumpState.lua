@@ -11,7 +11,7 @@ function JumpState:new(stateName)
 	state.ledge = nil
 	
 	function state:onEnterState(event)
-		print("JumpState::onEnterState")
+		--print("JumpState::onEnterState")
 		
 		self.hitLedge = false
 		
@@ -31,7 +31,7 @@ function JumpState:new(stateName)
 	end
 	
 	function state:onExitState(event)
-		print("JumpState::onEnterState")
+		--print("JumpState::onEnterState")
 		
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)

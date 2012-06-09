@@ -5,7 +5,7 @@ function ReadyState:new()
 	local state = BaseState:new("ready")
 	
 	function state:onEnterState(event)
-		print("ReadyState::onEnterState")
+		--print("ReadyState::onEnterState")
 		local player = self.entity
 		player.REST_TIME = 2000
 		player.INACTIVE_TIME = 3000
@@ -27,7 +27,7 @@ function ReadyState:new()
 	end
 	
 	function state:onExitState(event)
-		print("ReadyState::onExitState")
+		--print("ReadyState::onExitState")
 		
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)

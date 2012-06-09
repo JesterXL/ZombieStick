@@ -16,19 +16,12 @@ function BasePlayer:new()
 	player.jumpStartY = nil
 	player.JUMP_INTERVAL = 100
 	
-	-- moved from states
-	
 	-- ready --
 	player.REST_TIME = 2000
 	player.INACTIVE_TIME = 3000
 	player.startRestTime = nil
 	player.elapsedRestTime = nil
 	player.recharge = false
-	
-	-- resting --
-	--state.REST_TIME = 500
-	--state.startTime = nil
-	--state.elapsedTime = nil
 	
 	-- moving --
 	player.startMoveTime = nil
@@ -37,10 +30,8 @@ function BasePlayer:new()
 	player.maxSpeed = 3
 	player.tiredSpeed = 1
 	player.moveStamina = 1
-	
-	
-	
-	--
+	player.stamina = 10
+	player.maxStamina = 10
 	
 	player.fsm = StateMachine:new(player)
 	
@@ -49,31 +40,6 @@ function BasePlayer:new()
 			self.fsm:tick(time)
 		end
 		return true
-		--[[
-		if self.moving == true then
-			self:handleMove(time)
-			if system.getTimer() - self.startMoveTime >= self.MOVE_STAMINA_TIME then
-				self:reduceStamina(self.moveStamina)
-				self.startMoveTime = system.getTimer()
-			end
-		elseif self.attacking == true then
-			if system.getTimer() - self.lastAttack >= self.ATTACK_INTERVAL then
-				self:onAttackComplete()
-			end
-		elseif self.jumping == true then
-			self.y = self.y + self.jumpGravity
-			if system.getTimer() - self.lastJump >= self.JUMP_INTERVAL then
-				-- [jwarden 1.2.2012] NOTE: this needs to ease based on time
-				self.jumpGravity = self.jumpGravity + .1
-				if self.jumpStartY - self.y >= 45 then self.jumpGravity = 0 end
-				if self.jumpGravity > 9.8 then self.jumpGravity = 9.8 end
-				if self.jumpGravity > 0 then
-					self:addEventListener("collision", player.onJumpCollision)
-				end
-			end
-		end
-		]]--	
-		
 	end
 	
 	function player:handleMove(time)
@@ -115,51 +81,6 @@ function BasePlayer:new()
 			spriteHolder.x = spriteHolder.width
 		end
 	end
-	
-	--[[
-	function player:moveRight()
-		--print("moveRight: ", self.jumping)
-		if self.attacking == false and self.jumping == false then
-			self:setDirection("right")
-			self:showSprite("move")
-			self:performedAction("move")
-			self:startMoving()
-			return true
-		end
-	end
-	
-	function player:moveLeft()
-		--print("moveLeft: ", self.jumping)
-		if self.attacking == false and self.jumping == false then
-			self:setDirection("left")
-			self:showSprite("move")
-			self:performedAction("move")
-			self:startMoving()
-			return true
-		end
-	end
-	]]--
-	
-	--[[
-	function player:stand()
-		if self.attacking == false and self.jumping == false then
-			self:stopMoving()
-			self:showSprite("stand")
-		end
-	end
-	]]--
-	
-	--[[
-	function player:attack()
-		if self:canAttack() == false then return false end
-		
-		self.attacking = true
-		self:showSprite("attack")
-		self.lastAttack = system.getTimer()
-		self:performedAction("attack")
-		return true
-	end
-	]]--
 	
 	function player:canAttack()
 		if self.attacking == true then return false end
@@ -208,77 +129,6 @@ function BasePlayer:new()
 		end
 	end
 	
-	-- moved to JumpState
-	--[[
-	function player:jump()
-		if self:canJump() == false then return false end
-		
-		self.jumping = true
-		self:showSprite("jump")
-		self:performedAction("jump")
-		--self:addEventListener("collision", player.onJumpCollision)
-		--self:applyLinearImpulse(0, self.jumpForce, 40, 32)
-		self.jumpGravity = -4
-		self.jumpStartY = self.y
-		self.lastJump = system.getTimer()
-	end
-	]]--
-	
-	--[[
-	function player:jumpForward()
-		if self:canJump() == false then return false end
-		
-		self.jumping = true
-		self:showSprite("jump")
-		self:performedAction("jump")
-		
-		local xForce
-		if self.direction == "right" then
-			xForce = self.jumpForwardForce
-		else
-			xForce = -self.jumpForwardForce
-		end
-		
-		self:addEventListener("collision", player.onJumpCollision)
-		local multiplier = 60
-		self:applyForce(xForce* multiplier, self.jumpForce * multiplier, 40, 32)
-	end
-	]]--
-	
-	-- moved to JumpState
-	--[[
-	function player.onJumpCollision(event)
-		local self = player
-		local anime = self.sprite
-		if event.phase == "began" and anime.currentFrame <= 4 then
-			anime.currentFrame = 5
-			anime:play()
-			self:removeEventListener("collision", player.onJumpCollision)
-		end
-	end
-	]]--
-	
-	-- called from subclass
-	-- moved to JumpState
-	--[[
-	function player.onJumpCompleted(event)
-		if event.phase == "end" then
-			if event.target.currentFrame ~= 6 then
-				print("What the hell")
-			end
-			local self = player
-			event.target:removeEventListener("sprite", player.onJumpCompleted)
-			self:showSprite("stand")
-			self.jumping = false
-			self:dispatchEvent({name="onJumpCompleted", target=self})
-		else
-			if event.target.currentFrame == 4 then
-				event.target:pause()
-			end
-		end
-	end
-	]]--
-	
 	function player:performedAction(actionType)
 		if actionType == "attack" then
 			self:reduceStamina(self.attackStamina)
@@ -310,7 +160,7 @@ function BasePlayer:new()
 		else
 			self:setSpeed(self.maxSpeed)
 		end
-		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, oldValue=oldValue, value=value})
+		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, maxStamina = self.maxStamina, oldValue=oldValue, value=value})
 	end
 	
 	function player:setSpeed(value)

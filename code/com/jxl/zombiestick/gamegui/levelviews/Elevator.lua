@@ -69,9 +69,11 @@ function Elevator:new(startX, startY, startHeight, proxyGroup, customName)
 										 }
 							  })
 		rect.isBullet = true	
-		rect.isFixedRotation = true
+		rect.isFixedRotation = false
 		
 		rect:addEventListener("collision", self)
+		
+		rect:applyLinearImpulse(1, 0, rect.x, rect.y + rect.height / 2)
 		
 		return rect
 	end

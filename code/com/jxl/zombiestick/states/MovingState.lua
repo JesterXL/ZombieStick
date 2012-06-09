@@ -7,7 +7,7 @@ function MovingState:new(stateName)
 	
 	
 	function state:onEnterState(event)
-		print("MovingState::onEnterState, showProps: ", showProps(event))
+		--print("MovingState::onEnterState, showProps: ", showProps(event))
 		
 		local player = self.entity
 		
@@ -24,7 +24,7 @@ function MovingState:new(stateName)
 	end
 	
 	function state:onExitState(event)
-		print("MovingState::onExitState")
+		--print("MovingState::onExitState")
 		
 		local player = self.entity
 		local force

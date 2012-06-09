@@ -177,6 +177,7 @@ function StateMachine:new(entity)
 	end
 	
 	function stateMachine:changeState(stateTo)
+		print("StateMachine::changeState, stateTo: ", stateTo)
 		assert(type(stateTo) == "string", "stateTo is supposed to be a String, not: ", stateTo)
 		local state = self.state
 		local states = self.states

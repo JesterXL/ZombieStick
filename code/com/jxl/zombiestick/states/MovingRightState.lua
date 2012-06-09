@@ -7,7 +7,7 @@ function MovingRightState:new()
 	
 	state.superOnEnterState = state.onEnterState
 	function state:onEnterState(event)
-		print("MovingRightState::onEnterState")
+		--print("MovingRightState::onEnterState")
 		self:superOnEnterState(event)
 		self.entity:setDirection("right")
 		self.entity:showSprite("move")

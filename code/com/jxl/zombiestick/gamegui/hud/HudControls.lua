@@ -88,14 +88,20 @@ function HudControls:new(width, height)
 	enterButton.y = (height / 2) - (enterButton.height / 2)
 	enterButton.originalWidth = enterButton.width
 	enterButton.originalHeight = enterButton.height
+
+	function controls:tick(time)
+		if self.fsm ~= nil then
+			self.fsm:tick(time)
+		end
+	end
 	
 	function controls:showJXLAttackButton(show)
-		print("HudControls::showJXLAttackButtons, show: ", show)
+		--print("HudControls::showJXLAttackButtons, show: ", show)
 		attackButton.isVisible = show
 	end
 	
 	local function onTouch(event)
-		print("HudControls::onTouch")
+		--print("HudControls::onTouch")
 		if event.phase == "began" then
 			if gunButton.alpha == 1 then
 				controls:dispatchEvent({name="onAttackButtonTouch", target=controls, 
@@ -105,7 +111,7 @@ function HudControls:new(width, height)
 	end
 	
 	function controls:showFreemanAttackButton(show)
-		print("HudControls::showFreemanAttackButton, show: ", show)
+		--print("HudControls::showFreemanAttackButton, show: ", show)
 		gunButton.isVisible = show
 		gunAmmoLine.isVisible = show
 		grappleButton.isVisible = show
@@ -117,7 +123,7 @@ function HudControls:new(width, height)
 	end
 	
 	function controls:setFreemanWeapon(weapon)
-		print("HudControls::setFreemanWeapon, weapon: ", weapon)
+		--print("HudControls::setFreemanWeapon, weapon: ", weapon)
 		if weapon == "gun" then
 			gunButton.alpha = 1
 			grappleButton.alpha = .5
@@ -148,7 +154,7 @@ function HudControls:new(width, height)
 	end
 	
 	function controls:touch(event)
-		print("HudControls::touch, target: ", event.target.name)
+		--print("HudControls::touch, target: ", event.target.name)
 		local t = event.target
 		if t == leftButton then
 			self:dispatchEvent({name="onLeftButtonTouch", target=self, phase=event.phase, button=leftButton})
@@ -170,6 +176,26 @@ function HudControls:new(width, height)
 			self:dispatchEvent({name="onEnterButtonTouch", target=self, phase=event.phase, button=enterButton})
 		end
 		return true
+	end
+
+	function controls:destroy()
+		leftButton:removeEventListener("touch", controls)
+		rightButton:removeEventListener("touch", controls)
+		attackButton:removeEventListener("touch", controls)
+		jumpButton:removeEventListener("touch", controls)
+		jumpLeftButton:removeEventListener("touch", controls)
+		jumpRightButton:removeEventListener("touch", controls)
+		gunButton:removeEventListener("touch", controls)
+		grappleButton:removeEventListener("touch", controls)
+		enterButton:removeEventListener("touch", controls)
+
+		if enterButton.tween ~= nil then
+			transition.cancel(enterButton.tween)
+		end
+
+		Runtime:removeEventListener("touch", onTouch)
+		
+		controls.fsm = nil
 	end
 	
 

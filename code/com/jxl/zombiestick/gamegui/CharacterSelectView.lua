@@ -1,3 +1,5 @@
+require "com.jxl.zombiestick.gamegui.HealthBar"
+require "com.jxl.zombiestick.gamegui.StaminaBar"
 CharacterSelectView = {}
 
 -- [jwarden 10.30.2011] TODO: players needs to eventually dispatch a change event so I can redraw
@@ -33,11 +35,18 @@ function CharacterSelectView:new(x, y)
 			stateLabel:setTextColor(255, 255, 255)
 			stateLabel.text = "--"
 			stateLabel.size = 11
+
+			local healthBar = HealthBar:new()
+			local staminaBar = StaminaBar:new()
 			
 			if player.classType == "PlayerJXL" then
 				image = display.newImage("gamegui_dialogueview_jesterxl_normal.jpg")
+				healthBar.targetClassType = "PlayerJXL"
+				staminaBar.targetClassType = "PlayerJXL"
 			elseif player.classType == "PlayerFreeman" then
 				image = display.newImage("gamegui_dialogueview_freeman_normal.png")
+				healthBar.targetClassType = "PlayerFreeman"
+				staminaBar.targetClassType = "PlayerFreeman"
 			end
 			image:setReferencePoint(display.TopLeftReferencePoint)
 			--image:setMask(frameMask)
@@ -45,13 +54,25 @@ function CharacterSelectView:new(x, y)
 			image.maskY = 5
 			image.name = player.classType
 			frame.name = "frame_" .. player.classType
+
+			self:insert(healthBar)
+			self:insert(staminaBar)
 			self:insert(image)
 			self:insert(frame)
 			self:insert(stateLabel)
+
 			frame.x = startX
 			image.x = startX
+
 			stateLabel.x = startX - (stateLabel.width / 2)
 			stateLabel.y = image.y + image.height
+
+			healthBar.x = image.x
+			healthBar.y = image.y + image.height + 2
+
+			staminaBar.x = healthBar.x
+			staminaBar.y = healthBar.y + healthBar.height + 2
+			
 			local labelName = "label_" .. player.classType
 			stateLabel.name = labelName
 			stateLabel.originalX = startX

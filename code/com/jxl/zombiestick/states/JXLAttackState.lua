@@ -29,10 +29,10 @@ function JXLAttackState:new()
 		local playerBounds = player:getBounds()
 		if player.direction == "left" then
 			sword.x = player.x + playerBounds[1]
-			targetX = sword.x - sword.width
+			targetX = sword.x - (sword.width + 5)
 		else
-			sword.x = player.x + playerBounds[1] + playerBounds[3] + sword.width
-			targetX = sword.x + sword.width
+			sword.x = player.x + playerBounds[1]
+			targetX = player.x + playerBounds[3] + 10
 		end
 		
 		if sword.tween ~= nil then
@@ -63,8 +63,13 @@ function JXLAttackState:new()
 		
 		player:removeEventListener("onAttackAnimationCompleted", state)
 		
-		player.swordPolygon:removeSelf()
-		player.swordPolyon = nil
+		if player.swordPolygon then
+			if player.swordPolygon.tween ~= nil then
+				transition.cancel(player.swordPolygon.tween)
+			end
+			player.swordPolygon:removeSelf()
+			player.swordPolyon = nil
+		end
 		
 		player.attacking = false
 		player:showSprite("stand")

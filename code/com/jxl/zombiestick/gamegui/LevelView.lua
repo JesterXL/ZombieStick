@@ -195,6 +195,7 @@ function LevelView:new(x, y, width, height)
 			hudControls:addEventListener("onJumpRightButtonTouch", self)
 			hudControls:addEventListener("onEnterButtonTouch", self)
 			self.hudControls = hudControls
+			self.gameLoop:addLoop(hudControls)
 		end
 		
 		local events = levelVO.events
@@ -234,8 +235,8 @@ function LevelView:new(x, y, width, height)
 		self.gameLoop:reset()
 		self.gameLoop:start()
 		
-		self:setPlayer(self:getPlayerType("PlayerJXL"))
-		self.hudControls.fsm:changeStateToAtNextTick("HudControlsJXL")
+		self:setPlayer(self:getPlayerType("PlayerFreeman"))
+		self.hudControls.fsm:changeStateToAtNextTick("HudControlsFreeman")
 		self.player.fsm:changeStateToAtNextTick("ready")
 	end
 	
@@ -425,7 +426,7 @@ function LevelView:new(x, y, width, height)
 		elseif subType == "Freeman" then
 			player = PlayerFreeman:new(params)
 		end
-		
+		assert(player ~= nil, "Player cannot be nil.")
 		table.insert(self.players, player)
 		
 		if self.player == nil and player.classType == "PlayerJXL" then

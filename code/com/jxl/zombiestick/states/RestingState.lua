@@ -5,7 +5,7 @@ function RestingState:new()
 	local state = BaseState:new("resting")
 	
 	function state:onEnterState(event)
-		print("RestingState::onEnterState")
+		--print("RestingState::onEnterState")
 		local player = self.entity
 		player.oldRestTime = player.REST_TIME
 		player.REST_TIME = 200
@@ -20,7 +20,7 @@ function RestingState:new()
 	end
 	
 	function state:onExitState(event)
-		print("RestingState::onExitState")
+		--print("RestingState::onExitState")
 		local player = self.entity
 		player.REST_TIME = player.oldRestTime
 		

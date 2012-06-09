@@ -147,7 +147,7 @@ function Zombie:new()
 			}} ), 
 			"Zombie failed to add to physics.")
 	
-	zombie.isFixedRotation=true
+	zombie.isFixedRotation = true
 	zombie:showSprite("move")
 	
 	return zombie

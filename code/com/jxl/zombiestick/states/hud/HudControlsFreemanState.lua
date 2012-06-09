@@ -3,7 +3,8 @@ require "com.jxl.core.statemachine.BaseState"
 HudControlsFreemanState = {}
 
 function HudControlsFreemanState:new()
-
+	print("HudControlsFreemanState::new")
+	
 	local state = BaseState:new("HudControlsFreeman")
 	
 	function state:onEnterState(event)
