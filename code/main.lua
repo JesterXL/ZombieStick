@@ -749,6 +749,204 @@ function testObjectPool()
 
 end
 
+function testGenericButton()
+	require "com.jxl.zombiestick.gamegui.buttons.GenericButton"
+	local button = GenericButton:new("Default")
+end
+
+function testClockwiseAndCounterclockwiseSwipeButton()
+	local stage = display.getCurrentStage()
+	
+	local background = display.newRect(0, 0, stage.width, stage.height)
+	background.strokeWidth = 4
+	background:setStrokeColor(255, 0, 0)
+	background:setFillColor(25, 255, 255)
+
+	require "com.jxl.zombiestick.gamegui.buttons.ClockwiseSwipeButton"
+	local button = ClockwiseSwipeButton:new()
+	button.x = 100
+	button.y = 100
+	function onClockwiseSwipe(event)
+		print("onClockwiseSwipe")
+		field.text = "onClockwiseSwipe " .. tostring(system.getTimer())
+	end
+	button:addEventListener("onClockwiseSwipe", onClockwiseSwipe)
+
+	require "com.jxl.zombiestick.gamegui.buttons.CounterclockwiseSwipeButton"
+	local counter = CounterclockwiseSwipeButton:new()
+	counter.x = button.x + button.width
+	counter.y = button.y
+	function onCounterclockwiseSwipe(event)
+		print("onCounterclockwiseSwipe")
+		field.text = "onCounterclockwiseSwipe " .. tostring(system.getTimer())
+	end
+	counter:addEventListener("onCounterclockwiseSwipe", onCounterclockwiseSwipe)
+
+	field = display.newText("test", 0, 0, native.systemFont, 16)
+	field:setReferencePoint(display.TopLeftReferencePoint)
+	field:setTextColor(0, 0, 0)
+	field.x = 100
+	field.y = 300
+
+end
+
+function testCircleButton()
+	require "com.jxl.zombiestick.gamegui.buttons.CircleButton"
+	require "com.jxl.zombiestick.gamegui.buttons.ClockwiseSwipeButton"
+
+	local button = CircleButton:new(200, 200)
+	local field = display.newText("--", 0, 0, native.systemFont, 16)
+	field:setTextColor(255, 255, 255)
+	field:setReferencePoint(display.TopLeftReferencePoint)
+
+	function onHitListChanged(event)
+		--local str = "---------\n"
+		local str = ""
+		local i = 1
+		local hitList = button.hitList
+		
+		while hitList[i] do
+			str = str .. hitList[i].name .. ","
+			i = i + 1
+		end
+		--print(str)
+		field.text = str
+		field.x = (field.width / 2)
+	end
+
+	function onCircleSwipe(event)
+		print("onCircleSwipe, direction: ", event.direction)
+		if anime == nil then
+			anime = ClockwiseSwipeButton:new()
+		else
+			anime.isVisible = true
+		end
+		anime.x = button.x + button.width
+		anime.y = 0
+		anime:play()
+		anime.alpha = 1
+
+		if hideTimer == nil then
+			hideTimer = {}
+			function hideTimer:timer(event)
+				anime:pause()
+				transition.to(anime, {alpha=0, time=300})
+			end
+		else
+			timer.cancel(hideTimer.timerHandler)
+		end
+		hideTimer.timerHandler = timer.performWithDelay(500, hideTimer)
+	end
+
+	button:addEventListener("onHitListChanged", onHitListChanged)
+	button:addEventListener("onCircleSwipe", onCircleSwipe)
+	button.x = 10
+	button.y = 10
+
+	field.y = button.y + button.height + 4
+	
+	--local fore = display.newRect(button.x, button.y, button.width, button.height)
+	--fore.strokeWidth = 4
+	--fore:setStrokeColor(255, 0, 0)
+	--fore:setFillColor(0, 0, 190, 100)
+end
+
+function testArrayIndexOf()
+	local list = {}
+	local cow = {name = "Moo"}
+	table.insert(list, cow)
+	print("indexOf cow: ", table.indexOf(list, cow))
+	local nothing = {}
+	print("indexOf nothing: ", table.indexOf(nothing, cow))
+end
+
+function testHole()
+	local hole = display.newImage("hole.png")
+	function hole:touch(event)
+		print("phase: ", event.phase)
+	end
+	hole:addEventListener("touch", hole)
+	hole.isHitTestMasked = true
+	print("hole.isHitTestMasked: ", hole.isHitTestMasked)
+end
+
+function testSwipeButton()
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeButton"
+	local stage = display.getCurrentStage()
+	local button = SwipeButton:new(stage.width, stage.height)
+	function onSwipe(event)
+		print("angle: ", event.angle)
+	end
+	button:addEventListener("onSwipe", onSwipe)
+end
+
+function testSwipeDownButton()
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
+	local button = SwipeDownButton:new()
+	button.x = 0
+	button.y = 0
+
+	function onSwipeDown(event)
+		print("onSwipeDown")
+	end
+	button:addEventListener("onSwipeDown", onSwipeDown)
+end
+
+function testSwipeButtons()
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeUpButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeRightButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeLeftButton"
+
+	local downButton = SwipeDownButton:new()
+	downButton.x = 0
+	downButton.y = 0
+
+	local upButton = SwipeUpButton:new()
+	upButton.x = downButton.x + downButton.width
+	upButton.y = 0
+
+	local rightButton = SwipeRightButton:new()
+	rightButton.x = 0
+	rightButton.y = downButton.y + downButton.height
+
+	local leftButton = SwipeLeftButton:new()
+	leftButton.x = rightButton.x + rightButton.width
+	leftButton.y = rightButton.y
+
+	function onSwipeDown(event)
+		print("onSwipeDown")
+		field.text = "onSwipeDown " .. system.getTimer()
+	end
+
+	function onSwipeUp(event)
+		print("onSwipeUp")
+		field.text = "onSwipeUp " .. system.getTimer()
+	end
+
+	function onSwipeRight(event)
+		print("onSwipeRight")
+		field.text = "onSwipeRight " .. system.getTimer()
+	end
+
+	function onSwipeLeft(event)
+		print("onSwipeLeft")
+		field.text = "onSwipeLeft " .. system.getTimer()
+	end
+
+	downButton:addEventListener("onSwipeDown", onSwipeDown)
+	upButton:addEventListener("onSwipeUp", onSwipeUp)
+	rightButton:addEventListener("onSwipeRight", onSwipeRight)
+	leftButton:addEventListener("onSwipeLeft", onSwipeLeft)
+
+	field = display.newText("test", 0, 0, native.systemFont, 16)
+	field:setReferencePoint(display.TopLeftReferencePoint)
+	field:setTextColor(255, 255, 255)
+	field.x = 100
+	field.y = 300
+end
+
+
 
 
 --testScreenSize()
@@ -784,4 +982,13 @@ end
 --testHudControlsState()
 --testStaminaHeadText()
 --testObjectPool()
-testLevelViewBuildFromJSON()
+--testGenericButton()
+--testClockwiseAndCounterclockwiseSwipeButton()
+--testCircleButton()
+--testArrayIndexOf()
+--testHole()
+--testSwipeButton()
+--testSwipeDownButton()
+testSwipeButtons()
+
+--testLevelViewBuildFromJSON()
