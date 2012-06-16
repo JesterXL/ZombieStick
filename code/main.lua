@@ -626,12 +626,20 @@ end
 
 function testButtonSeries()
 	require "com.jxl.zombiestick.gamegui.hud.ButtonSeries"
-	require "com.jxl.zombiestick.core.GameLoop"
-	local buttonSeries = ButtonSeries:new()
-	local gameLoop = GameLoop:new()
-	gameLoop:start()
-	gameLoop:addLoop(buttonSeries)
-	buttonSeries:setSeriesAndStart(buttonSeries.defaultSeries)
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeUpButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeRightButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeLeftButton"
+	local buttons = {SwipeUpButton, SwipeRightButton, SwipeDownButton, SwipeLeftButton}
+	local buttonSeries = ButtonSeries:new(buttons)
+	buttonSeries.x = 100
+	buttonSeries.y = 100
+	buttonSeries:start()
+	function onButtonSeriesComplete(event)
+		print("onButtonSeriesComplete")
+	end
+	buttonSeries:addEventListener("onButtonSeriesComplete", onButtonSeriesComplete)
+
 end
 
 function testRotation()
@@ -963,7 +971,6 @@ function testPlayerHealth()
 	timer.performWithDelay(4000, other, 1)
 
 end
-
 
 
 

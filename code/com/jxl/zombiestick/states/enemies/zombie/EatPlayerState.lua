@@ -11,10 +11,10 @@ function EatPlayerState:new()
 	function state:onEnterState(event)
 		print("EatPlayerState::onEnterState")
 		local zombie = self.entity
-		self.startTime = 0
+		self.startTime = self.MUNCH_TIME
 
 		zombie:stopMoving()
-		
+
 		Runtime:addEventListener("onZombieHit", self)
 		zombie:addEventListener("onTargetPlayerRemoved", self)
 
