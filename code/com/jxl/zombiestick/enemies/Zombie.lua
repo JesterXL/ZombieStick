@@ -1,3 +1,7 @@
+require "com.jxl.core.statemachine.StateMachine"
+require "com.jxl.zombiestick.states.enemies.zombie.IdleState"
+require "com.jxl.zombiestick.states.enemies.zombie.EatPlayerState"
+require "com.jxl.zombiestick.states.enemies.zombie.TemporarilyInjuredState"
 
 Zombie = {}
 
@@ -21,6 +25,8 @@ function Zombie:new()
 	zombie.hitPoints = 4
 	zombie.maxHitPoints = 4
 	zombie.dead = false
+	zombie.targetPlayer = nil
+	zombie.collisionTargets = nil
 	
 	function zombie:showSprite(name)
 		local spriteAnime
@@ -41,11 +47,13 @@ function Zombie:new()
 	
 	function zombie:setTargets(targets)
 		self.targets = targets
-		if self.targets ~= nil and #self.targets > 0 then
-			self:startMoving()
-		else
-			self:stopMoving()
-		end	
+		-- [jwarden 6.15.2012] TODO: move to a state
+		-- [DEPRECATED] states handle this now
+		--if self.targets ~= nil and #self.targets > 0 then
+		--	self:startMoving()
+		--else
+		--	self:stopMoving()
+		--end	
 	end
 	
 	function zombie:startMoving()
@@ -124,12 +132,44 @@ function Zombie:new()
 	end
 	
 	function zombie:tick(time)
+		if self.dead == true then
+			return true
+		end
+
 		if self.moving == true then
 			self:moveTowardTargets(time)
+		end
+
+		if self.fsm ~= nil then
+			self.fsm:tick(time)
+		end
+	end
+
+	function zombie:collision(event)
+		if self.dead == true then return true end
+
+		--print("))))))))) phase: ", event.phase, ", class: ", event.other.classType)
+		if event.phase == "began" then
+			if event.other.classType == "PlayerJXL" then
+				if self.collisionTargets == nil then
+					self.collisionTargets = {}
+				end
+				if table.indexOf(event.other) == nil then
+					table.insert(self.collisionTargets, event.other)
+				end
+			end
+		elseif event.phase == "ended" then
+			if event.other.classType == "PlayerJXL" then
+				table.remove(self.collisionTargets, table.indexOf(event.other))
+				if self.targetPlayer ~= nil and event.other == self.targetPlayer then
+					self:dispatchEvent({name="onTargetPlayerRemoved", target=self})
+				end
+			end
 		end
 	end
 	
 	function zombie:destroy()
+		self.dead = true
 		self:stopMoving()
 		local t = {zombie = self}
 		function t:timer(event)
@@ -149,6 +189,18 @@ function Zombie:new()
 	
 	zombie.isFixedRotation = true
 	zombie:showSprite("move")
+
+	zombie:addEventListener("collision", zombie)
+
+	-- TODO: finish these; make the Zombie grapple and bite
+	zombie.fsm = StateMachine:new(zombie)
+
+	--zombie.fsm:addState2(MovingLeftState:new())
+	--zombie.fsm:addState2(MovingRightState:new())
+	zombie.fsm:addState2(IdleState:new())
+	zombie.fsm:addState2(EatPlayerState:new())
+	zombie.fsm:addState2(TemporarilyInjuredState:new())
+	zombie.fsm:setInitialState("idle", zombie)
 	
 	return zombie
 	

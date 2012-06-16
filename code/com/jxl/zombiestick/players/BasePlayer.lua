@@ -1,10 +1,13 @@
 require "com.jxl.core.statemachine.StateMachine"
+require "com.jxl.zombiestick.constants"
 
 BasePlayer = {}
 
 function BasePlayer:new()
 	local player = display.newGroup()
 	
+	--player.classType = "BasePlayer"
+
 	player.spriteHolder = display.newGroup()
 	player:insert(player.spriteHolder)
 	
@@ -32,10 +35,16 @@ function BasePlayer:new()
 	player.moveStamina = 1
 	player.stamina = 10
 	player.maxStamina = 10
+	player.health = 10
+	player.maxHealth = 10
 
 	player.staminaTextPool = {}
+	player.healthTextPool = {}
 	
-	player.fsm = StateMachine:new(player)
+	function player:init()
+		self.fsm = StateMachine:new(self)
+	end
+	
 	
 	function player:tick(time)
 		if self.fsm ~= nil then
@@ -169,6 +178,31 @@ function BasePlayer:new()
 
 		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, maxStamina = self.maxStamina, oldValue=oldValue, value=value})
 	end
+
+	function player:reduceHealth(amount)
+		assert(amount ~= nil, "Error: BasePlayer::reduceHealth, You cannot pass a nil amount.")
+		self:setHealth(self.health - amount)
+	end
+
+	function player:rechargeHealth()
+		if self.health ~= self.maxHealth then
+			self:setHealth(self.health + 1)
+		end
+	end
+
+	function player:setHealth(value)
+		local oldValue = self.health
+		self.health = value
+		if self.health < 0 then
+			self.health = 0
+		end
+		-- TODO: put uber slow speeds here if hurt AND/OR tired
+
+		local difference = value - oldValue
+		self:showHealthText(25, 0, difference)
+
+		Runtime:dispatchEvent({name="onPlayerHealthChanged", target=self, maxHealth = self.maxHealth, oldValue = oldValue, value=value})
+	end
 	
 	function player:setSpeed(value)
 		assert(value ~= nil, "You cannot set speed to a nil value.")
@@ -205,9 +239,49 @@ function BasePlayer:new()
 		local amountText = tostring(amount)
 		if amount > 0 then
 			amountText = "+" .. amountText
-			field:setTextColor(0, 0, 255)
+			field:setTextColor(unpack(constants.STAMINA_FIELD_POSITIVE_COLOR))
 		else
-			field:setTextColor(190, 0, 255)
+			field:setTextColor(unpack(constants.STAMINA_FIELD_NEGATIVE_COLOR))
+		end
+		field.text = amountText
+		local newTargetY = targetY - 40
+		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
+		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
+	end
+
+	function player:showHealthText(targetX, targetY, amount)
+		local field
+		if table.maxn(self.healthTextPool) > 0 then
+			field = self.healthTextPool[1]
+			assert(field ~= nil, "Failed to get item from pool")
+			table.remove(self.healthTextPool, table.indexOf(self.healthTextPool, field))
+			assert(field ~= nil, "After cleanup, field got nil.")
+		else
+			field = display.newText("", 0, 0, 60, 60)
+			function field:onComplete(obj)
+				if self.tween then
+					transition.cancel(field.tween)
+					field.tween = nil
+				end
+				if self.alphaTween then
+					transition.cancel(field.alphaTween)
+					field.alphaTween = nil
+				end
+				table.insert(player.healthTextPool, field)
+			end
+		end
+		assert(field ~= nil, "After if statement, field is nil.")
+		field:setReferencePoint(display.TopLeftReferencePoint)
+		self:insert(field)
+		field.x = targetX
+		field.y = targetY
+		field.alpha = 1
+		local amountText = tostring(amount)
+		if amount > 0 then
+			amountText = "+" .. amountText
+			field:setTextColor(unpack(constants.HEALTH_FIELD_POSITIVE_COLOR))
+		else
+			field:setTextColor(unpack(constants.HEALTH_FIELD_NEGATIVE_COLOR))
 		end
 		field.text = amountText
 		local newTargetY = targetY - 40

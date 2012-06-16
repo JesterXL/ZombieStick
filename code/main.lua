@@ -946,6 +946,24 @@ function testSwipeButtons()
 	field.y = 300
 end
 
+function testPlayerHealth()
+	require "com.jxl.zombiestick.players.PlayerJXL"
+	local player = PlayerJXL:new({x=100, y=100, usePhysics=false})
+
+	local t = {}
+	function t:timer(event)
+		player:reduceHealth(1)
+	end
+	timer.performWithDelay(1000, t, 3)
+
+	local other = {}
+	function other:timer(event)
+		player:rechargeHealth()
+	end
+	timer.performWithDelay(4000, other, 1)
+
+end
+
 
 
 
@@ -989,6 +1007,7 @@ end
 --testHole()
 --testSwipeButton()
 --testSwipeDownButton()
-testSwipeButtons()
+--testSwipeButtons()
+--testPlayerHealth()
 
---testLevelViewBuildFromJSON()
+testLevelViewBuildFromJSON()

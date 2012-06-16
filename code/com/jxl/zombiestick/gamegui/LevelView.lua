@@ -623,6 +623,25 @@ function LevelView:new(x, y, width, height)
 		
 		self.player.fsm:changeState("ready")
 	end
+
+	function level:getTargetsAroundMe(item, distance)
+		local players = self.players
+		if players == nil or #players < 1 then return nil end
+		local targets = {}
+		local i = 1
+		local deltaX, deltaY, player, playerDistance
+		while players[i] do
+			player = players[i]
+			deltaX = item.x - target.x
+			deltaY = item.y - target.y
+			playerDistance = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+			if playerDistance <= distance then
+				table.insert(targets, player)
+			end
+			i = i + 1
+		end
+		return targets
+	end
 	
 	LevelView.instance = level
 	

@@ -2,6 +2,7 @@ SwordPolygon = {}
 
 function SwordPolygon:new(x, y, width, height)
 	local sword = display.newRect(0, 0, width, height)
+	sword.classType = "SwordPolygon"
 	sword:setReferencePoint(display.TopLeftReferencePoint)
 	sword.x = x
 	sword.y = y

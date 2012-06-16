@@ -47,8 +47,8 @@ function JXLAttackState:new()
 			end
 			function sword:collision(event)
 				if event.phase == "began" then
-					if event.other.name == "Zombie" then
-						event.other:applyDamage(2)
+					if event.other.classType == "Zombie" then
+						Runtime:dispatchEvent({name="onZombieHit", target=self, damage=2, zombie=event.other})
 					end
 				end
 			end

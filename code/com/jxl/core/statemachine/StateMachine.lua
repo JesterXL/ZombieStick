@@ -3,6 +3,11 @@ StateMachine = {}
 
 function StateMachine:new(entity)
 	
+	if entity == nil then error("entity cannot be nil.") end
+	if entity.classType == nil then error("entity.classType cannot be nil.") end
+	
+	--print("StateMachine::new, entity.classType: ", entity.classType)
+	
 	local stateMachine = {}
 	stateMachine.states = {}
 	stateMachine.id = nil
@@ -38,6 +43,7 @@ function StateMachine:new(entity)
 	end
 	
 	function stateMachine:addState2(state)
+		if state == nil then error("You cannot add a nil state.") end
 		--print("StateMachine::addState2, state: ", state.name)
 		if self.states[state.name] ~= nil then
 			print("WARNING: StateMachne::addedState2, overriding existing state: " .. state.name)
@@ -96,7 +102,7 @@ function StateMachine:new(entity)
 	end
 	
 	function stateMachine:canChangeStateTo(stateName)
-		--print("StateMachine::canChageStateTo, stateName: ", stateName)
+		--print("StateMachine::canChageStateTo for " .. self.entity.classType .. " stateName: ", stateName)
 		local theState = self.states[stateName]
 		local score = 0
 		local win = 2
@@ -177,7 +183,7 @@ function StateMachine:new(entity)
 	end
 	
 	function stateMachine:changeState(stateTo)
-		print("StateMachine::changeState, stateTo: ", stateTo)
+		--print("StateMachine::changeState, stateTo: ", stateTo)
 		assert(type(stateTo) == "string", "stateTo is supposed to be a String, not: ", stateTo)
 		local state = self.state
 		local states = self.states

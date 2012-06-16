@@ -107,15 +107,18 @@ function PlayerJXL:new(params)
 	player.y = params.y
 	
 	local playerShape = player:getBounds()
-	assert(physics.addBody( player, "dynamic", 
-		{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, 
-			shape=playerShape,
-			filter = { categoryBits = constants.COLLISION_FILTER_PLAYER_CATEGORY, 
-			maskBits = constants.COLLISION_FILTER_PLAYER_MASK }} ), 
-			"PlayerJXL failed to add to physics.")
+	if params.usePhysics ~= false then
+		assert(physics.addBody( player, "dynamic", 
+			{ density=params.density, friction=params.friction, bounce=params.bounce, isBullet=true, 
+				shape=playerShape,
+				filter = { categoryBits = constants.COLLISION_FILTER_PLAYER_CATEGORY, 
+				maskBits = constants.COLLISION_FILTER_PLAYER_MASK }} ), 
+				"PlayerJXL failed to add to physics.")
+	end
 			
 	player.isFixedRotation = true
 	
+	player:init()
 	--player.fsm:changeState(ReadyState:new(player))
 	
 	player.fsm:addState2(ReadyState:new())
