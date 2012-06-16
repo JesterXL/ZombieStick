@@ -9,6 +9,7 @@ require "com.jxl.zombiestick.gamegui.hud.GunButton"
 require "com.jxl.zombiestick.gamegui.hud.GrapplingHookGunButton"
 require "com.jxl.zombiestick.gamegui.hud.GunAmmoLine"
 require "com.jxl.zombiestick.gamegui.hud.EnterButton"
+require "com.jxl.zombiestick.gamegui.hud.HealButton"
 
 require "com.jxl.zombiestick.states.hud.HudControlsJXLState"
 require "com.jxl.zombiestick.states.hud.HudControlsFreemanState"
@@ -88,6 +89,12 @@ function HudControls:new(width, height)
 	enterButton.y = (height / 2) - (enterButton.height / 2)
 	enterButton.originalWidth = enterButton.width
 	enterButton.originalHeight = enterButton.height
+
+	local healButton = HealButton:new()
+	healButton.name = "healButton"
+	controls:insert(healButton)
+	healButton.x = jumpLeftButton.x - healButton.width - 4
+	healButton.y = jumpLeftButton.y
 
 	function controls:tick(time)
 		if self.fsm ~= nil then
@@ -174,6 +181,8 @@ function HudControls:new(width, height)
 			Runtime:dispatchEvent({name="onGrappleButtonTouch", target=self, phase=event.phase, button=grappleButton})
 		elseif t == enterButton then
 			self:dispatchEvent({name="onEnterButtonTouch", target=self, phase=event.phase, button=enterButton})
+		elseif t == healButton then
+			Runtime:dispatchEvent({name="onHealButtonTouch", target=self, phase=event.phase, button=healButton})
 		end
 		return true
 	end
@@ -188,6 +197,7 @@ function HudControls:new(width, height)
 		gunButton:removeEventListener("touch", controls)
 		grappleButton:removeEventListener("touch", controls)
 		enterButton:removeEventListener("touch", controls)
+		healButton:removeEventListener("touch", controls)
 
 		if enterButton.tween ~= nil then
 			transition.cancel(enterButton.tween)
@@ -209,6 +219,7 @@ function HudControls:new(width, height)
 	gunButton:addEventListener("touch", controls)
 	grappleButton:addEventListener("touch", controls)
 	enterButton:addEventListener("touch", controls)
+	healButton:addEventListener("touch", controls)
 	
 	controls.fsm = StateMachine:new(controls)
 	controls.fsm:addState2(HudControlsJXLState:new())

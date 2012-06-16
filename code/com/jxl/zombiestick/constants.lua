@@ -36,3 +36,5 @@ constants.STAMINA_FIELD_NEGATIVE_COLOR 				= {190, 0, 255}
 
 constants.HEALTH_FIELD_POSITIVE_COLOR 				= {0, 255, 0}
 constants.HEALTH_FIELD_NEGATIVE_COLOR 				= {255, 0, 0}
+
+constants.INJURY_BITE 								= "biteInjury"

@@ -81,18 +81,6 @@ function LevelView:new(x, y, width, height)
 		self.background:toBack()
 	end
 	
-	function level:getButton(name, x, y)
-		local button = display.newRect(0, 0, 32, 32)
-		self.buttonChildren:insert(button)
-		button.name = name
-		button.strokeWidth = 1
-		button:setFillColor(255, 0, 0, 100)
-		button:setStrokeColor(255, 0, 0)
-		button.x = x
-		button.y = y
-		return button
-	end
-	
 	-- old
 	--[[
 	function level.scrollScreen()

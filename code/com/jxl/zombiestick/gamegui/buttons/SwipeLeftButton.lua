@@ -23,7 +23,7 @@ function SwipeLeftButton:new()
 
 	function button:onSwipe(event)
 		if event.angle == 0 then
-			self:dispatchEvent({name="onSwipeLeft", target=self})
+			self:dispatchEvent({name="onSwipedCorrectly", target=self})
 		end
 	end
 

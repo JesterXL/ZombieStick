@@ -8,18 +8,9 @@ function IdleState:new()
 		local player = self.entity
 		--player.angularVelocity = 0
 
-		Runtime:addEventListener("onZombieHit", self)
 	end
 	
 	function state:onExitState(event)
-		Runtime:removeEventListener("onZombieHit", self)
-	end
-
-	function state:onZombieHit(event)
-		if event.zombie == self.entity then
-			self.entity:applyDamage(event.damage)
-			self.stateMachine:changeStateToAtNextTick("temporarilyInjured")
-		end
 	end
 
 	return state

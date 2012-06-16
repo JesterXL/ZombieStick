@@ -46,6 +46,7 @@ function RestingState:new()
 		--print("elapsed rest time: ", player.elapsedRestTime)
 		if player.elapsedRestTime >= player.REST_TIME then
 			player:rechargeStamina()
+			player:rechargeHealth()
 			self:reset()
 		end
 	end

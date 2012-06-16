@@ -23,7 +23,7 @@ function SwipeUpButton:new()
 
 	function button:onSwipe(event)
 		if event.angle == 90 then
-			self:dispatchEvent({name="onSwipeUp", target=self})
+			self:dispatchEvent({name="onSwipedCorrectly", target=self})
 		end
 	end
 

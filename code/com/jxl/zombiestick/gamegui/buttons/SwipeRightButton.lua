@@ -23,7 +23,7 @@ function SwipeRightButton:new()
 
 	function button:onSwipe(event)
 		if event.angle == 180 then
-			self:dispatchEvent({name="onSwipeRight", target=self})
+			self:dispatchEvent({name="onSwipedCorrectly", target=self})
 		end
 	end
 

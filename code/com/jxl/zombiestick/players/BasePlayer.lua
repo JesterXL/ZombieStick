@@ -24,7 +24,6 @@ function BasePlayer:new()
 	player.INACTIVE_TIME = 3000
 	player.startRestTime = nil
 	player.elapsedRestTime = nil
-	player.recharge = false
 	
 	-- moving --
 	player.startMoveTime = nil
@@ -40,6 +39,7 @@ function BasePlayer:new()
 
 	player.staminaTextPool = {}
 	player.healthTextPool = {}
+	player.injuries = {}
 	
 	function player:init()
 		self.fsm = StateMachine:new(self)
@@ -47,6 +47,36 @@ function BasePlayer:new()
 	
 	
 	function player:tick(time)
+
+		local injuries = self.injuries
+		if injuries and #injuries > 0 then
+			local i = 1
+			while injuries[i] do
+				local vo = injuries[i]
+				local destroyIt = false
+				vo.currentTime = vo.currentTime + time
+				vo.totalTimeAlive = vo.totalTimeAlive + time
+				if vo.currentTime >= vo.applyInterval then
+					if vo.liveForever == false and vo.totalTimeAlive >= vo.lifetime then
+						destroyIt = true
+					end
+
+					-- time's up, time to apply the injury
+					vo.currentTime = 0
+					-- for now we use a switch statement
+					local injuryType = vo.injuryType
+					if injuryType == constants.INJURY_BITE then
+						self:setHealth(self.health + vo.amount)
+					end
+				end
+				if destroyIt == true then
+					table.remove(injuries, vo)
+				else
+					i = i + 1
+				end
+			end
+		end
+
 		if self.fsm ~= nil then
 			self.fsm:tick(time)
 		end
@@ -185,12 +215,16 @@ function BasePlayer:new()
 	end
 
 	function player:rechargeHealth()
+		local injuries = self.injuries
+		if #injuries > 0 then return false end
+		
 		if self.health ~= self.maxHealth then
 			self:setHealth(self.health + 1)
 		end
 	end
 
 	function player:setHealth(value)
+		assert(value ~= nil, "Error: BasePlayer::setHealth, you cannot pass a nil amount.")
 		local oldValue = self.health
 		self.health = value
 		if self.health < 0 then
@@ -287,6 +321,38 @@ function BasePlayer:new()
 		local newTargetY = targetY - 40
 		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
 		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
+	end
+
+	function player:addInjury(injuryVO)
+		local injuries = self.injuries
+		if table.indexOf(injuries, injuryVO) == nil then
+			table.insert(self.injuries, injuryVO)
+			return true
+		else
+			error("injuryVO already added to array")
+		end
+	end
+
+	function player:hasInjury(injuryType)
+		assert(injuryType ~= nil, "You cannot pass a nil injuryType.")
+		local injuries = self.injuries
+		if injuries == nil then return false end
+		if #injuries < 1 then return false end
+
+		local i = 1
+		while injuries[i] do
+			local vo = injuries[i]
+			if vo.type == injuryType then return true end
+			i = i + 1
+		end
+	end
+
+	function player:removeLatestInjury()
+		local injuries = self.injuries
+		if injuries == nil then return false end
+		if #injuries < 1 then return false end
+
+		table.remove(injuries, #injuries)
 	end
 	
 	return player

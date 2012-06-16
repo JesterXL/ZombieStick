@@ -1,24 +1,21 @@
 require "com.jxl.core.statemachine.BaseState"
-ReadyState = {}
+require "com.jxl.zombiestick.gamegui.hud.ButtonSeries"
+require "com.jxl.zombiestick.gamegui.buttons.CounterclockwiseSwipeButton"
+require "com.jxl.zombiestick.gamegui.buttons.SwipeRightButton"
+require "com.jxl.zombiestick.gamegui.buttons.SwipeLeftButton"
+require "com.jxl.zombiestick.gamegui.buttons.SwipeUpButton"
+require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
 
-function ReadyState:new()
-	local state = BaseState:new("ready")
-	state.recharge = false
+SelfHealState = {}
+
+function SelfHealState:new()
+	local state = BaseState:new("selfHeal")
+	state.buttonSeries = nil
 	
 	function state:onEnterState(event)
-		--print("ReadyState::onEnterState")
+		print("SelfHealState::onEnterState")
 		local player = self.entity
-		player.REST_TIME = 2000
-		player.INACTIVE_TIME = 3000
-		player.startRestTime = nil
-		player.elapsedRestTime = nil
-		
-		self.recharge = false
-		
-		self:reset()
-		
-		player:showSprite("stand")
-		
+
 		Runtime:addEventListener("onMoveLeftStarted", self)
 		Runtime:addEventListener("onMoveRightStarted", self)
 		Runtime:addEventListener("onAttackStarted", self)
@@ -26,12 +23,34 @@ function ReadyState:new()
 		Runtime:addEventListener("onJumpStarted", self)
 		Runtime:addEventListener("onJumpLeftStarted", self)
 		Runtime:addEventListener("onJumpRightStarted", self)
-		Runtime:addEventListener("onHealButtonTouch", self)
+
+		-- TODO: inspect the injury-type. This'll allow me to customize the
+		-- button series we're supposed to show (different one for bites vs. lacerations).
+		-- Also, give the player a chance to do make-shift healing vs. doing it right.
+		-- They can just wrap gauze around a wound to slow down the bleeding vs. cleaning it right.
+		-- This allows them to heal in time-sensitive situations and keep them alive long enough
+		-- until the have a breather.
+
+		local buttons = {SwipeDownButton,
+						SwipeUpButton,
+						CounterclockwiseSwipeButton,
+						CounterclockwiseSwipeButton,
+						CounterclockwiseSwipeButton,
+						SwipeRightButton,
+						SwipeLeftButton,
+						SwipeRightButton,
+						SwipeLeftButton}
+		local buttonSeries = ButtonSeries:new(buttons)
+		buttonSeries.x = 100
+		buttonSeries.y = 100
+		buttonSeries:start()
+		buttonSeries:addEventListener("onButtonSeriesComplete", self)
+		LevelView.instance.buttonChildren:insert(buttonSeries)
+		self.buttonSeries = buttonSeries
 	end
 	
 	function state:onExitState(event)
-		--print("ReadyState::onExitState")
-		
+		print("SelfHealState::onExitState")
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)
 		Runtime:removeEventListener("onAttackStarted", self)
@@ -39,29 +58,21 @@ function ReadyState:new()
 		Runtime:removeEventListener("onJumpStarted", self)
 		Runtime:removeEventListener("onJumpLeftStarted", self)
 		Runtime:removeEventListener("onJumpRightStarted", self)
-		Runtime:removeEventListener("onHealButtonTouch", self)
 	end
 	
 	function state:tick(time)
 		local player = self.entity
-		player.elapsedRestTime = player.elapsedRestTime + time
-		if player.elapsedRestTime >= player.INACTIVE_TIME then
-			--player.fsm:changeState("resting", player)
-			self.stateMachine:changeStateToAtNextTick("resting")
-		elseif player.elapsedRestTime >= player.REST_TIME and self.recharge == false then
-			self.recharge = true
-			player:rechargeStamina()
-			player:rechargeHealth()
-		end
+		
 	end
-	
-	function state:reset()
+
+	function state:onButtonSeriesComplete(event)
+		print("SelfHealState::onButtonSeriesComplete")
+		-- remove latest injury vs. specific one
 		local player = self.entity
-		player.startRestTime = system.getTimer()
-		player.elapsedRestTime = 0
-		self.recharge = false
+		player:removeLatestInjury()
+		self.stateMachine:changeStateToAtNextTick("ready")
 	end
-	
+
 	function state:onMoveLeftStarted(event)
 		self.stateMachine:changeStateToAtNextTick("movingLeft")
 	end
@@ -71,12 +82,10 @@ function ReadyState:new()
 	end
 	
 	function state:onAttackStarted(event)
-		print("ReadyState::onAttackStarted")
 		self.stateMachine:changeStateToAtNextTick("attack")
 	end
 	
 	function state:onGrappleTargetTouched(event)
-		print("ReadyState::onGrappleTargetTouched")
 		self.stateMachine:changeStateToAtNextTick("grapple")
 	end
 	
@@ -95,8 +104,8 @@ function ReadyState:new()
 	function state:onHealButtonTouch(event)
 		self.stateMachine:changeStateToAtNextTick("selfHeal")
 	end
-
+	
 	return state
 end
 
-return ReadyState
+return SelfHealState

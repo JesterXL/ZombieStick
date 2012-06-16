@@ -23,7 +23,7 @@ function SwipeDownButton:new()
 
 	function button:onSwipe(event)
 		if event.angle == -90 then
-			self:dispatchEvent({name="onSwipeDown", target=self})
+			self:dispatchEvent({name="onSwipedCorrectly", target=self})
 		end
 	end
 

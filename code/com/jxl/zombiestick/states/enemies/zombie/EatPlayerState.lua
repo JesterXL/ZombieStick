@@ -1,4 +1,6 @@
 require "com.jxl.core.statemachine.BaseState"
+require "com.jxl.zombiestick.constants"
+require "com.jxl.zombiestick.vo.InjuryVO"
 
 EatPlayerState = {}
 
@@ -38,6 +40,11 @@ function EatPlayerState:new()
 			local player = zombie.targetPlayer
 			if player then
 				player:reduceHealth(self.DAMAGE)
+				if player:hasInjury(constants.INJURY_BITE) == false then
+					-- let's wound that mofo!
+					local vo = InjuryVO:new(2 * 1000, constants.INJURY_BITE, -1)
+					player:addInjury(vo)
+				end
 				self.startTime = 0
 			end
 		end

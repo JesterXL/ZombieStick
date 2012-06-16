@@ -26,9 +26,8 @@ function ClockwiseSwipeButton:new()
 	button:insert(circleButton)
 
 	function button:onCircleSwipe(event)
-		print("onCircleSwipe")
 		if event.direction == CircleButton.CLOCKWISE then
-			self:dispatchEvent({name="onClockwiseSwipe", target=self})
+			self:dispatchEvent({name="onSwipedCorrectly", target=self})
 		end
 	end
 

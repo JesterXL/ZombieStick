@@ -624,24 +624,6 @@ function testForLoop()
 	end
 end
 
-function testButtonSeries()
-	require "com.jxl.zombiestick.gamegui.hud.ButtonSeries"
-	require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
-	require "com.jxl.zombiestick.gamegui.buttons.SwipeUpButton"
-	require "com.jxl.zombiestick.gamegui.buttons.SwipeRightButton"
-	require "com.jxl.zombiestick.gamegui.buttons.SwipeLeftButton"
-	local buttons = {SwipeUpButton, SwipeRightButton, SwipeDownButton, SwipeLeftButton}
-	local buttonSeries = ButtonSeries:new(buttons)
-	buttonSeries.x = 100
-	buttonSeries.y = 100
-	buttonSeries:start()
-	function onButtonSeriesComplete(event)
-		print("onButtonSeriesComplete")
-	end
-	buttonSeries:addEventListener("onButtonSeriesComplete", onButtonSeriesComplete)
-
-end
-
 function testRotation()
 	rect = display.newRect(0, 0, 100, 100)
 	
@@ -972,7 +954,65 @@ function testPlayerHealth()
 
 end
 
+function testButtonSeries()
+	require "com.jxl.zombiestick.gamegui.hud.ButtonSeries"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeUpButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeRightButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeLeftButton"
+	local buttons = {SwipeUpButton, SwipeRightButton, SwipeDownButton, SwipeLeftButton}
+	local buttonSeries = ButtonSeries:new(buttons)
+	buttonSeries.x = 100
+	buttonSeries.y = 100
+	buttonSeries:start()
+	function onButtonSeriesComplete(event)
+		print("onButtonSeriesComplete")
+	end
+	buttonSeries:addEventListener("onButtonSeriesComplete", onButtonSeriesComplete)
 
+end
+
+function testHealButtonSeries()
+	require "com.jxl.zombiestick.gamegui.hud.ButtonSeries"
+	require "com.jxl.zombiestick.gamegui.buttons.CounterclockwiseSwipeButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeRightButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeLeftButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeUpButton"
+	require "com.jxl.zombiestick.gamegui.buttons.SwipeDownButton"
+	local buttons = {SwipeDownButton,
+						SwipeUpButton,
+						CounterclockwiseSwipeButton,
+						CounterclockwiseSwipeButton,
+						CounterclockwiseSwipeButton,
+						SwipeRightButton,
+						SwipeLeftButton,
+						SwipeRightButton,
+						SwipeLeftButton}
+	local buttonSeries = ButtonSeries:new(buttons)
+	buttonSeries.x = 100
+	buttonSeries.y = 100
+	buttonSeries:start()
+	function onButtonSeriesComplete(event)
+		print("onButtonSeriesComplete")
+	end
+	buttonSeries:addEventListener("onButtonSeriesComplete", onButtonSeriesComplete)
+
+end
+
+
+function testArray()
+	local t = {1, 2, 3, 4, 5}
+	print(t, " and length: ", #t)
+	table.remove(t, 1)
+	print("first: ", t[1])
+	print("length now: ", #t)
+	table.remove(t, #t - 1)
+	print("new length: ", #t)
+	print("#3: ", t[3])
+	table.remove(t, #t)
+	print("final length: ", #t)
+	print("2: ", t[2], " vs ", t[#t])
+end
 
 --testScreenSize()
 --testFreemanBullet()
@@ -999,7 +1039,6 @@ end
 --testFallingDrawBridegeForce()
 --testSwipes()
 --testForLoop()
---testButtonSeries()
 --testAngle()
 --testRotation()
 --testMath()
@@ -1016,5 +1055,8 @@ end
 --testSwipeDownButton()
 --testSwipeButtons()
 --testPlayerHealth()
+--testButtonSeries()
+--testHealButtonSeries()
+--testArray()
 
 testLevelViewBuildFromJSON()

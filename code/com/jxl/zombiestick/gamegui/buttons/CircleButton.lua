@@ -10,7 +10,7 @@ function CircleButton:new(startWidth, startHeight)
 	buttons.southHit 		= false
 	buttons.hitList			= {}
 
-	local CIRCLE_ALPHA 		= 0
+	local CIRCLE_ALPHA 		= 100
 	local BACKGROUND_ALPHA 	= 0
 
 	local CLOCKWISE 		= "clockwise"
