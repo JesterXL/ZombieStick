@@ -1,7 +1,6 @@
 require "com.jxl.core.statemachine.BaseState"
 RestingState = {}
 
-<<<<<<< HEAD
 function RestingState:new()
 	local state = BaseState:new("resting")
 	
@@ -10,18 +9,6 @@ function RestingState:new()
 		local player = self.entity
 		player.oldRestTime = player.REST_TIME
 		player.REST_TIME = 200
-=======
-function RestingState:new(playerJXL)
-	local state = {}
-	state.playerJXL = playerJXL
-	state.REST_TIME = 500
-	state.startTime = nil
-	state.elapsedTime = nil
-	state.fsm = playerJXL.fsm
-	
-	function state:enter()
-		print("RestingState::enter")
->>>>>>> 5bd2b3507a1abdd01dd36c6822af8531688dc733
 		self:reset()
 		
 		Runtime:addEventListener("onMoveLeftStarted", self)
