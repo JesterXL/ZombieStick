@@ -13,7 +13,7 @@ require("physics")
 
 -- TODO: elevators need a switch board so if you fall off, you can call it again.
 
-physics.setDrawMode("hybrid")
+physics.setDrawMode("normal")
 physics.start()
 physics.setGravity(0, 9.8)
 physics.setPositionIterations( 10 )
@@ -1014,6 +1014,36 @@ function testArray()
 	print("2: ", t[2], " vs ", t[#t])
 end
 
+function testTaps()
+	local rect = display.newRect(100, 100, 100, 100)
+	rect:setReferencePoint(display.TopLeftReferencePoint)
+	rect:setFillColor(255, 0, 0, 180)
+
+	function rect:tap(event)
+		print("numTaps: ", event.numTaps)
+	end
+	rect:addEventListener("tap", rect)
+end
+
+function testTapButton()
+	require "com.jxl.zombiestick.gamegui.buttons.TapButton"
+	local button = TapButton:new()
+	button.x = 100
+	button.y = 100
+end 
+
+function testLevelCover()
+
+	local rect = display.newRect(0, 0, 800, 800)
+	rect:setReferencePoint(display.TopLeftReferencePoint)
+	rect:setFillColor(0, 0, 0)
+	rect.x = 0
+	rect.y = 0
+	rect.alpha = 0
+
+	transition.to(rect, {time=5 * 1000, alpha=0.8})
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -1058,5 +1088,9 @@ end
 --testButtonSeries()
 --testHealButtonSeries()
 --testArray()
+--testTaps()
+--testTapButton()
+
 
 testLevelViewBuildFromJSON()
+--testLevelCover()

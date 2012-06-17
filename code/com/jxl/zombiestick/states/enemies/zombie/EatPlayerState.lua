@@ -17,7 +17,7 @@ function EatPlayerState:new()
 
 		zombie:stopMoving()
 
-		Runtime:addEventListener("onZombieHit", self)
+		zombie:addEventListener("onZombieHit", self)
 		zombie:addEventListener("onTargetPlayerRemoved", self)
 
 		if zombie.targetPlayer == nil then
@@ -28,7 +28,7 @@ function EatPlayerState:new()
 	function state:onExitState(event)
 		print("EatPlayerState::onExitState")
 		local zombie = self.entity
-		Runtime:removeEventListener("onZombieHit", self)
+		zombie:removeEventListener("onZombieHit", self)
 		zombie:removeEventListener("onTargetPlayerRemoved", self)
 		zombie.targetPlayer = nil
 	end
@@ -51,10 +51,7 @@ function EatPlayerState:new()
 	end
 
 	function state:onZombieHit(event)
-		if event.zombie == self.entity then
-			self.entity:applyDamage(event.damage)
-			self.stateMachine:changeStateToAtNextTick("temporarilyInjured")
-		end
+		self.stateMachine:changeStateToAtNextTick("temporarilyInjured")
 	end
 
 	function state:onTargetPlayerRemoved(event)

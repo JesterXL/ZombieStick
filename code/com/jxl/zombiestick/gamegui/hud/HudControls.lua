@@ -106,6 +106,16 @@ function HudControls:new(width, height)
 		--print("HudControls::showJXLAttackButtons, show: ", show)
 		attackButton.isVisible = show
 	end
+
+	function controls:enableHealing(show)
+		if show then
+			healButton.alpha = 1
+			healButton.enabled = true
+		else
+			healButton.alpha = 0.5
+			healButton.enabled = false
+		end
+	end
 	
 	local function onTouch(event)
 		--print("HudControls::onTouch")
@@ -181,7 +191,7 @@ function HudControls:new(width, height)
 			Runtime:dispatchEvent({name="onGrappleButtonTouch", target=self, phase=event.phase, button=grappleButton})
 		elseif t == enterButton then
 			self:dispatchEvent({name="onEnterButtonTouch", target=self, phase=event.phase, button=enterButton})
-		elseif t == healButton then
+		elseif t == healButton and healButton.enabled then
 			Runtime:dispatchEvent({name="onHealButtonTouch", target=self, phase=event.phase, button=healButton})
 		end
 		return true

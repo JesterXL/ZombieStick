@@ -167,6 +167,7 @@ function LevelView:new(x, y, width, height)
 		
 		self:removeLevelChildren()
 		self.players = {}
+		Runtime:dispatchEvent({name="onLevelViewPlayersChanged", target=self, players=self.players})
 		self.enemies = {}
 		self.movies = {}
 		
@@ -418,6 +419,7 @@ function LevelView:new(x, y, width, height)
 		end
 		assert(player ~= nil, "Player cannot be nil.")
 		table.insert(self.players, player)
+		Runtime:dispatchEvent({name="onLevelViewPlayersChanged", target=self, players=self.players})
 		
 		if self.player == nil and player.classType == "PlayerJXL" then
 			self:setPlayer(player)

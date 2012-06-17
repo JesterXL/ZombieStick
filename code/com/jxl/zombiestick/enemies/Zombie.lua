@@ -22,11 +22,12 @@ function Zombie:new()
 	zombie.targets = nil
 	zombie.moving = false
 	zombie.speed = .01
-	zombie.hitPoints = 4
-	zombie.maxHitPoints = 4
+	zombie.health = 4
+	zombie.maxHealth = 4
 	zombie.dead = false
 	zombie.targetPlayer = nil
 	zombie.collisionTargets = nil
+	zombie.healthTextPool = {}
 	
 	function zombie:showSprite(name)
 		local spriteAnime
@@ -47,29 +48,23 @@ function Zombie:new()
 	
 	function zombie:setTargets(targets)
 		self.targets = targets
-		-- [jwarden 6.15.2012] TODO: move to a state
-		-- [DEPRECATED] states handle this now
-		--if self.targets ~= nil and #self.targets > 0 then
-		--	self:startMoving()
-		--else
-		--	self:stopMoving()
-		--end	
 	end
 	
 	function zombie:startMoving()
 		if self.moving == false then
 			self.moving = true
+			self.sprite:play()
 		end
 	end
 	
 	function zombie:stopMoving()
 		if self.moving == true then
 			self.moving = false
+			self.sprite:pause()
 		end
 	end
 	
 	function zombie:moveTowardTargets(time)
-		--print("Zombie::moveTowardTargets")
 		if self.targets == nil then
 			return true
 		end
@@ -115,15 +110,28 @@ function Zombie:new()
 			--self.y = self.y - moveY
 		end
 	end
-	
-	function zombie:applyDamage(amount)
-		if self.dead == true then return true end
-		
-		self.hitPoints = self.hitPoints - amount
-		if self.hitPoints <= 0 then
+
+	function zombie:setHealth(value)
+		assert(value ~= nil, "Error: Zombie::setHealth, you cannot pass a nil amount.")
+		local oldValue = self.health
+		self.health = value
+		if self.health < 0 then
+			self.health = 0
+		end
+		-- TODO: put uber slow speeds here if hurt AND/OR tired
+
+		local difference = value - oldValue
+		self:showHealthText(25, 0, difference)
+
+		if self.health <= 0 and self.dead == false then
 			self.dead = true
 			self:destroy()
 		end
+	end
+	
+	function zombie:applyDamage(amount)
+		if self.dead == true then return true end
+		self:setHealth(self.health - amount)
 	end
 	
 	function zombie:updateAnime()
@@ -167,6 +175,11 @@ function Zombie:new()
 			end
 		end
 	end
+
+	function zombie:onHit(damage)
+		self:applyDamage(damage)
+		self:dispatchEvent({name="onZombieHit", target=self, damage=damage})
+	end
 	
 	function zombie:destroy()
 		self.dead = true
@@ -176,6 +189,46 @@ function Zombie:new()
 			self.zombie:removeSelf()
 		end
 		timer.performWithDelay(300, t)
+	end
+
+	function zombie:showHealthText(targetX, targetY, amount)
+		local field
+		if table.maxn(self.healthTextPool) > 0 then
+			field = self.healthTextPool[1]
+			assert(field ~= nil, "Failed to get item from pool")
+			table.remove(self.healthTextPool, table.indexOf(self.healthTextPool, field))
+			assert(field ~= nil, "After cleanup, field got nil.")
+		else
+			field = display.newText("", 0, 0, 60, 60, native.systemFont, constants.FLOATING_TEXT_FONT_SIZE)
+			function field:onComplete(obj)
+				if self.tween then
+					transition.cancel(field.tween)
+					field.tween = nil
+				end
+				if self.alphaTween then
+					transition.cancel(field.alphaTween)
+					field.alphaTween = nil
+				end
+				table.insert(zombie.healthTextPool, field)
+			end
+		end
+		assert(field ~= nil, "After if statement, field is nil.")
+		field:setReferencePoint(display.TopLeftReferencePoint)
+		self:insert(field)
+		field.x = targetX
+		field.y = targetY
+		field.alpha = 1
+		local amountText = tostring(amount)
+		if amount > 0 then
+			amountText = "+" .. amountText
+			field:setTextColor(unpack(constants.HEALTH_FIELD_POSITIVE_COLOR))
+		else
+			field:setTextColor(unpack(constants.HEALTH_FIELD_NEGATIVE_COLOR))
+		end
+		field.text = amountText
+		local newTargetY = targetY - 40
+		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
+		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
 	end
 			
 	

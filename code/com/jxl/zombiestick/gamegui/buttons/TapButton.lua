@@ -2,23 +2,35 @@ TapButton = {}
 
 function TapButton:new()
 
-	local button = display.newGroup()
+	
 
 	if TapButton.sheet == nil then
-		local sheet = sprite.newSpriteSheet("player_jesterxl_sheet.png", 64, 64)
-		local standSet = sprite.newSpriteSet(sheet, 1, 6)
-		sprite.add(standSet, "PlayerJXLStand", 1, 6, 1000, 0)
-		local moveSet = sprite.newSpriteSet(sheet, 9, 8)
-		sprite.add(moveSet, "PlayerJXLMove", 1, 8, 500, 0)
-		local jumpSet = sprite.newSpriteSet(sheet, 17, 6)
-		sprite.add(jumpSet, "PlayerJXLJump", 1, 6, 600, 1)
-		local attackSet = sprite.newSpriteSet(sheet, 25, 6)
-		sprite.add(attackSet, "PlayerJXLAttack", 1, 6, 300, 1)
-		local hangSet = sprite.newSpriteSet(sheet, 31, 1)
-		-- sprite.add( spriteSet, sequenceName, startFrame, frameCount, time, [loopParam] )
-		sprite.add(hangSet, "PlayerJXLHang", 1, 1, 1000)
+		local sheet = sprite.newSpriteSheet("button-tap-sheet.png", 60, 65)
+		local standSet = sprite.newSpriteSet(sheet, 1, 4)
+		sprite.add(standSet, "ButtonTap", 1, 4, 1000, 0)
+		TapButton.sheet = sheet
+		TapButton.standSet = standSet
+	end
+
+	local button = sprite.newSprite(TapButton.standSet)
+	button:setReferencePoint(display.TopLeftReferencePoint)
+	button:prepare("ButtonTap")
+	button:play()
+
+	function button:tap(event)
+		local taps = event.numTaps
+		if taps == 1 then
+			self.timeScale = 1
+		elseif taps == 2 then
+			self.timeScale = 2
+		elseif taps == 3 then
+			self.timeScale = 3
+		elseif taps > 3 then
+			self.timeScale = 4
+		end
 	end
 		
+	button:addEventListener("tap", button)
 
 	return button
 

@@ -10,6 +10,7 @@ function IdleState:new()
 	function state:onEnterState(event)
 		print("IdleState::onEnterState")
 		local zombie = self.entity
+		zombie:addEventListener("onZombieHit", self)
 		zombie:startMoving()
 		--player.angularVelocity = 0
 		state.startTime = 0
@@ -18,7 +19,8 @@ function IdleState:new()
 	
 	function state:onExitState(event)
 		print("IdleState::onExitState")
-		local player = self.entity
+		local zombie = self.entity
+		zombie:removeEventListener("onZombieHit", self)
 	end
 
 	function state:tick(time)
@@ -27,6 +29,10 @@ function IdleState:new()
 			self.startTime = 0
 			self:handleCollisionTargets()
 		end
+	end
+
+	function state:onZombieHit(event)
+		self.stateMachine:changeStateToAtNextTick("temporarilyInjured")
 	end
 
 	function state:handleCollisionTargets()

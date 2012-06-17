@@ -34,8 +34,8 @@ function BasePlayer:new()
 	player.moveStamina = 1
 	player.stamina = 10
 	player.maxStamina = 10
-	player.health = 10
-	player.maxHealth = 10
+	player.health = 40
+	player.maxHealth = 40
 
 	player.staminaTextPool = {}
 	player.healthTextPool = {}
@@ -251,7 +251,7 @@ function BasePlayer:new()
 			table.remove(self.staminaTextPool, table.indexOf(self.staminaTextPool, field))
 			assert(field ~= nil, "After cleanup, field got nil.")
 		else
-			field = display.newText("", 0, 0, 60, 60)
+			field = display.newText("", 0, 0, 60, 60, native.systemFont, constants.FLOATING_TEXT_FONT_SIZE)
 			function field:onComplete(obj)
 				if self.tween then
 					transition.cancel(field.tween)
@@ -291,7 +291,7 @@ function BasePlayer:new()
 			table.remove(self.healthTextPool, table.indexOf(self.healthTextPool, field))
 			assert(field ~= nil, "After cleanup, field got nil.")
 		else
-			field = display.newText("", 0, 0, 60, 60)
+			field = display.newText("", 0, 0, 60, 60, native.systemFont, constants.FLOATING_TEXT_FONT_SIZE)
 			function field:onComplete(obj)
 				if self.tween then
 					transition.cancel(field.tween)
@@ -326,7 +326,8 @@ function BasePlayer:new()
 	function player:addInjury(injuryVO)
 		local injuries = self.injuries
 		if table.indexOf(injuries, injuryVO) == nil then
-			table.insert(self.injuries, injuryVO)
+			table.insert(injuries, injuryVO)
+			Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
 			return true
 		else
 			error("injuryVO already added to array")
@@ -353,6 +354,7 @@ function BasePlayer:new()
 		if #injuries < 1 then return false end
 
 		table.remove(injuries, #injuries)
+		Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
 	end
 	
 	return player

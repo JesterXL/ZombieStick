@@ -10,12 +10,12 @@ function TemporarilyInjuredState:new()
 		local zombie = self.entity
 		zombie:stopMoving()
 		state.startTime = 0
-		Runtime:addEventListener("onZombieHit", self)
+		zombie:addEventListener("onZombieHit", self)
 	end
 	
 	function state:onExitState(event)
 		local zombie = self.entity
-		Runtime:removeEventListener("onZombieHit", self)
+		zombie:removeEventListener("onZombieHit", self)
 	end
 
 	function state:tick(time)
@@ -27,10 +27,7 @@ function TemporarilyInjuredState:new()
 	end
 
 	function state:onZombieHit(event)
-		if event.zombie == self.entity then
-			self.entity:applyDamage(event.damage)
-			self.startTime = 0
-		end
+		self.startTime = 0
 	end
 
 	return state
