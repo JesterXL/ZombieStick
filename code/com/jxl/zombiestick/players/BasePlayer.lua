@@ -57,7 +57,7 @@ function BasePlayer:new()
 				vo.currentTime = vo.currentTime + time
 				vo.totalTimeAlive = vo.totalTimeAlive + time
 				if vo.currentTime >= vo.applyInterval then
-					if vo.liveForever == false and vo.totalTimeAlive >= vo.lifetime then
+					if vo.livesForever == false and vo.totalTimeAlive >= vo.lifetime then
 						destroyIt = true
 					end
 
@@ -67,10 +67,12 @@ function BasePlayer:new()
 					local injuryType = vo.injuryType
 					if injuryType == constants.INJURY_BITE then
 						self:setHealth(self.health + vo.amount)
+					elseif injuryType == constants.INJURY_LACERATION then
+						self:setHealth(self.health + vo.amount)
 					end
 				end
 				if destroyIt == true then
-					table.remove(injuries, vo)
+					table.remove(injuries, table.indexOf(vo))
 				else
 					i = i + 1
 				end
