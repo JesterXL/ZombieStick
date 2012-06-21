@@ -25,7 +25,7 @@ function EatPlayerState:new()
 		if targetPlayer == nil then
 			self.stateMachine:changeStateToAtNextTick("idle")
 		else
-			targetPlayer:onGrapple(true)
+			targetPlayer:addGrappler(zombie)
 		end
 	end
 	
@@ -34,7 +34,7 @@ function EatPlayerState:new()
 		local zombie = self.entity
 		zombie:removeEventListener("onZombieHit", self)
 		zombie:removeEventListener("onTargetPlayerRemoved", self)
-		zombie.targetPlayer:onGrapple(false)
+		zombie.targetPlayer:removeGrappler(zombie)
 		zombie.targetPlayer = nil
 	end
 

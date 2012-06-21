@@ -38,11 +38,11 @@ function BasePlayer:new()
 	player.maxStamina = 10
 	player.health = 40
 	player.maxHealth = 40
-	player.grappled = false
 
 	player.staminaTextPool = {}
 	player.healthTextPool = {}
 	player.injuries = {}
+	player.grapplers = {}
 	
 	function player:init()
 		self.fsm = StateMachine:new(self)
@@ -184,15 +184,38 @@ function BasePlayer:new()
 		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, maxStamina = self.maxStamina, oldValue=oldValue, value=value})
 	end
 
-	function player:onGrapple(grapple)
+	-- TODO/BUG: 6.21.2012, if 2 Zombies grapple the character, this will make him think he isn't
+	-- grappled. We'll have to use an array, similiar to how injuries work. This'll allow us to
+	-- compound the grappling. 3 or more and you won't be able to move! Perfect opportunity
+	-- for some Tai Kwon Do to do special break moves vs. just simple attacking. For JXL, this
+	-- should be the only option since he can't use his machetes in close quarters.
+
+	-- TODO: ok, fixed bug... but the martial arts option is more fun.
+	function player:addGrappler(dudeGrabbingMeUpInThisMug)
 		-- if you're grappled, you're slowed down
-		self.grappled = grapple
+		local grapplers = self.grapplers
+		if table.indexOf(grapplers, dudeGrabbingMeUpInThisMug) == nil then
+			table.insert(grapplers, dudeGrabbingMeUpInThisMug)
+			self:resolveSpeed()
+			return true
+		else
+			error("grappler already added to array")
+		end
+	end
+
+	function player:removeGrappler(grappler)
+		local grapplers = self.grapplers
+		if grapplers == nil then return false end
+		if #grapplers < 1 then return false end
+		table.remove(grapplers, table.indexOf(grappler))
 		self:resolveSpeed()
 	end
 
 	function player:resolveSpeed()
 		local targetSpeed = self.maxSpeed
-		if self.grappled == true then targetSpeed = self.grappledSpeed end
+		local grapplers = self.grapplers
+		print("grapplers lenght: ", #grapplers)
+		if #grapplers > 0 then targetSpeed = self.grappledSpeed end
 		if self.stamina <= 1 then targetSpeed = self.tiredSpeed end
 		self:setSpeed(targetSpeed)
 	end
@@ -326,6 +349,7 @@ function BasePlayer:new()
 		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
 	end
 
+	-- TODO: 6.21.2012 Need a GUI for Injuries.
 	function player:addInjury(injuryVO)
 		local injuries = self.injuries
 		if table.indexOf(injuries, injuryVO) == nil then
