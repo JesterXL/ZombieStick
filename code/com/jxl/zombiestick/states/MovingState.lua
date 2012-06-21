@@ -7,7 +7,7 @@ function MovingState:new(stateName)
 	
 	
 	function state:onEnterState(event)
-		--print("MovingState::onEnterState, showProps: ", showProps(event))
+		print("MovingState::onEnterState")
 		
 		local player = self.entity
 		
@@ -24,16 +24,10 @@ function MovingState:new(stateName)
 	end
 	
 	function state:onExitState(event)
-		--print("MovingState::onExitState")
+		print("MovingState::onExitState")
 		
 		local player = self.entity
-		local force
-		if player.direction == "right" then
-			force = player.speed
-		else
-			force = -player.speed
-		end
-		player:applyLinearImpulse(force / 3, 0, 40, 32)
+		player:stopMoving()
 		
 		Runtime:removeEventListener("onMoveLeftEnded", self)
 		Runtime:removeEventListener("onMoveRightEnded", self)
@@ -56,6 +50,7 @@ function MovingState:new(stateName)
 	function state:handleMove(time)
 		local player = self.entity
 		local speed = player.speed
+		if speed <= 0 then return true end
 		local targetX
 		local targetY = player.y
 		if player.direction == "right" then

@@ -105,6 +105,7 @@ function PlayerFreeman:new(params)
 		player.spriteHolder:insert(spriteAnime)
 		spriteAnime.x = 0
 		spriteAnime.y = 0
+		self:updateSpriteToSpeed()
 	end
 	
 	function player:setSelectedWeapon(weapon)

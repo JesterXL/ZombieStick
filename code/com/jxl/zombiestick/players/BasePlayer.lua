@@ -30,12 +30,15 @@ function BasePlayer:new()
 	player.MOVE_STAMINA_TIME = 1000
 	player.speed = 3
 	player.maxSpeed = 3
+	player.grappledSpeed = 0.001
 	player.tiredSpeed = 1
+
 	player.moveStamina = 1
 	player.stamina = 10
 	player.maxStamina = 10
 	player.health = 40
 	player.maxHealth = 40
+	player.grappled = false
 
 	player.staminaTextPool = {}
 	player.healthTextPool = {}
@@ -85,33 +88,6 @@ function BasePlayer:new()
 		return true
 	end
 	
-	function player:handleMove(time)
-		local speed = self.speed
-		local targetX
-		local targetY = self.y
-		if self.direction == "right" then
-			targetX = self.x + speed
-		elseif self.direction == "left" then
-			targetX = self.x - speed
-		else
-			targetX = 0
-		end
-
-		local deltaX = self.x - targetX
-		local deltaY = self.y - targetY
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-		local moveX = speed * (deltaX / dist) * time
-		local moveY = speed * (deltaY / dist) * time
-
-		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-			self.x = targetX
-			self.y = targetY
-		else
-			self.x = self.x - moveX
-			self.y = self.y - moveY
-		end
-	end
-	
 	function player:setDirection(dir)
 		self.direction = dir
 		assert(self.direction ~= nil, "You cannot set direction to a nil value.")
@@ -147,6 +123,8 @@ function BasePlayer:new()
 	
 	function player:stopMoving()
 		self.moving = false
+		if self.speed <= 0 then return true end
+
 		local force
 		if self.direction == "right" then
 			force = self.speed
@@ -199,16 +177,24 @@ function BasePlayer:new()
 	function player:setStamina(value)
 		local oldValue = self.stamina
 		self.stamina = value
-		if self.stamina <= 1 then
-			self:setSpeed(self.tiredSpeed)
-		else
-			self:setSpeed(self.maxSpeed)
-		end
-
+		self:resolveSpeed()
 		local difference = value - oldValue
 		self:showStaminaText(25, 0, difference)
 
 		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, maxStamina = self.maxStamina, oldValue=oldValue, value=value})
+	end
+
+	function player:onGrapple(grapple)
+		-- if you're grappled, you're slowed down
+		self.grappled = grapple
+		self:resolveSpeed()
+	end
+
+	function player:resolveSpeed()
+		local targetSpeed = self.maxSpeed
+		if self.grappled == true then targetSpeed = self.grappledSpeed end
+		if self.stamina <= 1 then targetSpeed = self.tiredSpeed end
+		self:setSpeed(targetSpeed)
 	end
 
 	function player:reduceHealth(amount)
@@ -243,6 +229,21 @@ function BasePlayer:new()
 	function player:setSpeed(value)
 		assert(value ~= nil, "You cannot set speed to a nil value.")
 		self.speed = value
+		self:updateSpriteToSpeed()
+	end
+
+	function player:updateSpriteToSpeed()
+		local speed = self.speed
+		local sprite = self.sprite
+		if sprite then
+			if speed == player.maxSpeed then
+				sprite.timeScale = 1
+			elseif speed == player.tiredSpeed then
+				sprite.timeScale = 0.3
+			elseif speed == player.grappledSpeed then
+				sprite.timeScale = 0.5
+			end
+		end
 	end
 
 	function player:showStaminaText(targetX, targetY, amount)

@@ -59,6 +59,7 @@ function PlayerJXL:new(params)
 	end
 	
 	function player:showSprite(name)
+		print("PlayerJXL::showSprite, name: ", name)
 		local spriteAnime
 		if name == "move" then
 			spriteAnime = sprite.newSprite(PlayerJXL.moveSet)
@@ -100,6 +101,7 @@ function PlayerJXL:new(params)
 		player.spriteHolder:insert(spriteAnime)
 		spriteAnime.x = 0
 		spriteAnime.y = 0
+		self:updateSpriteToSpeed()
 	end
 	
 	player:showSprite("stand")

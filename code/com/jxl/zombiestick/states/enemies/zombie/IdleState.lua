@@ -8,7 +8,7 @@ function IdleState:new()
 	state.startTime = nil
 
 	function state:onEnterState(event)
-		print("IdleState::onEnterState")
+		print("IdleState::onEnterState, zombie")
 		local zombie = self.entity
 		zombie:addEventListener("onZombieHit", self)
 		zombie:startMoving()
@@ -18,7 +18,7 @@ function IdleState:new()
 	end
 	
 	function state:onExitState(event)
-		print("IdleState::onExitState")
+		print("IdleState::onExitState, zombie")
 		local zombie = self.entity
 		zombie:removeEventListener("onZombieHit", self)
 	end
