@@ -2,6 +2,8 @@ require "com.jxl.core.statemachine.StateMachine"
 require "com.jxl.zombiestick.states.enemies.zombie.IdleState"
 require "com.jxl.zombiestick.states.enemies.zombie.EatPlayerState"
 require "com.jxl.zombiestick.states.enemies.zombie.TemporarilyInjuredState"
+require "com.jxl.zombiestick.states.enemies.zombie.GrabPlayerState"
+require "com.jxl.zombiestick.states.enemies.zombie.KnockedProneState"
 
 Zombie = {}
 
@@ -180,7 +182,24 @@ function Zombie:new()
 		self:applyDamage(damage)
 		self:dispatchEvent({name="onZombieHit", target=self, damage=damage})
 	end
+
+	-- [jwarden 6.23.2012] TODO: add type of defeat, like throw down or push back
+	function zombie:onGrappleDefeated()
+		self:dispatchEvent({name="onZombieGrabDefeated", target=self})
+	end
 	
+	function zombie:fallDown()
+		self.isFixedRotation = false
+		self:applyAngularImpulse(-200)
+	end
+
+	function zombie:standUp()
+		local oldY = self.y
+		self.rotation = 0
+		self.isFixedRotation = true
+		self.y = oldY - self.height
+	end
+
 	function zombie:destroy()
 		self.dead = true
 		self:stopMoving()
@@ -253,6 +272,8 @@ function Zombie:new()
 	zombie.fsm:addState2(IdleState:new())
 	zombie.fsm:addState2(EatPlayerState:new())
 	zombie.fsm:addState2(TemporarilyInjuredState:new())
+	zombie.fsm:addState2(GrabPlayerState:new())
+	zombie.fsm:addState2(KnockedProneState:new())
 	zombie.fsm:setInitialState("idle", zombie)
 	
 	return zombie

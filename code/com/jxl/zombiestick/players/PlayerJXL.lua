@@ -12,6 +12,7 @@ require "com.jxl.zombiestick.states.IdleState"
 require "com.jxl.zombiestick.states.JXLAttackState"
 require "com.jxl.zombiestick.states.FirehoseState"
 require "com.jxl.zombiestick.states.SelfHealState"
+require "com.jxl.zombiestick.states.GrappleDefenseState"
 
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
@@ -135,6 +136,7 @@ function PlayerJXL:new(params)
 	player.fsm:addState2(IdleState:new())
 	player.fsm:addState2(FirehoseState:new())
 	player.fsm:addState2(SelfHealState:new())
+	player.fsm:addState2(GrappleDefenseState:new())
 	player.fsm:setInitialState("idle", player)
 	
 	return player

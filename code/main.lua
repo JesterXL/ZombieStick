@@ -1044,6 +1044,16 @@ function testLevelCover()
 	transition.to(rect, {time=5 * 1000, alpha=0.8})
 end
 
+function testHasEventSource()
+	function onCow(event)
+		print("onCow fired")
+	end
+	Runtime:addEventListener("cow", onCow)
+	Runtime:dispatchEvent({name="cow", target=Runtime})
+	local result, e = Runtime:hasEventSource("cow")
+	print("result: ", result, ", e: ", e)
+end
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -1090,6 +1100,7 @@ end
 --testArray()
 --testTaps()
 --testTapButton()
+--testHasEventSource()
 
 
 testLevelViewBuildFromJSON()

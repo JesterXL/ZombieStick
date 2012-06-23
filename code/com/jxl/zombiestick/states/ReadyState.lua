@@ -31,6 +31,7 @@ function ReadyState:new()
 	
 	function state:onExitState(event)
 		--print("ReadyState::onExitState")
+		local player = self.entity
 		
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)

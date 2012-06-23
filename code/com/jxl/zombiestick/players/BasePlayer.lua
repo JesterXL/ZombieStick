@@ -184,33 +184,6 @@ function BasePlayer:new()
 		Runtime:dispatchEvent({name="onPlayerStaminaChanged", target=self, maxStamina = self.maxStamina, oldValue=oldValue, value=value})
 	end
 
-	-- TODO/BUG: 6.21.2012, if 2 Zombies grapple the character, this will make him think he isn't
-	-- grappled. We'll have to use an array, similiar to how injuries work. This'll allow us to
-	-- compound the grappling. 3 or more and you won't be able to move! Perfect opportunity
-	-- for some Tai Kwon Do to do special break moves vs. just simple attacking. For JXL, this
-	-- should be the only option since he can't use his machetes in close quarters.
-
-	-- TODO: ok, fixed bug... but the martial arts option is more fun.
-	function player:addGrappler(dudeGrabbingMeUpInThisMug)
-		-- if you're grappled, you're slowed down
-		local grapplers = self.grapplers
-		if table.indexOf(grapplers, dudeGrabbingMeUpInThisMug) == nil then
-			table.insert(grapplers, dudeGrabbingMeUpInThisMug)
-			self:resolveSpeed()
-			return true
-		else
-			error("grappler already added to array")
-		end
-	end
-
-	function player:removeGrappler(grappler)
-		local grapplers = self.grapplers
-		if grapplers == nil then return false end
-		if #grapplers < 1 then return false end
-		table.remove(grapplers, table.indexOf(grappler))
-		self:resolveSpeed()
-	end
-
 	function player:resolveSpeed()
 		local targetSpeed = self.maxSpeed
 		local grapplers = self.grapplers
@@ -382,6 +355,55 @@ function BasePlayer:new()
 
 		table.remove(injuries, #injuries)
 		Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
+	end
+
+	-- TODO/BUG: 6.21.2012, if 2 Zombies grapple the character, this will make him think he isn't
+	-- grappled. We'll have to use an array, similiar to how injuries work. This'll allow us to
+	-- compound the grappling. 3 or more and you won't be able to move! Perfect opportunity
+	-- for some Tai Kwon Do to do special break moves vs. just simple attacking. For JXL, this
+	-- should be the only option since he can't use his machetes in close quarters.
+
+	-- TODO: ok, fixed bug... but the martial arts option is more fun.
+	function player:addGrappler(dudeGrabbingMeUpInThisMug)
+		-- TODO: need to ensure you can actually be grappled, need to check state. psuedo code below
+		local currentState = self.fsm.state
+		if currentState == "firehose" and currentState == "grapple" and currentState == "jump" and current == "jumpLeft" and currentState == "jumpRight" then
+			error("Illlegal to grapple player when they're in state: ", currentState)
+		end
+
+		-- if you're grappled, you're slowed down
+		local grapplers = self.grapplers
+		if table.indexOf(grapplers, dudeGrabbingMeUpInThisMug) == nil then
+			table.insert(grapplers, dudeGrabbingMeUpInThisMug)
+			self:resolveSpeed()
+			self.fsm:changeStateToAtNextTick("grappleDefense")
+			return true
+		else
+			error("grappler already added to array")
+		end
+	end
+
+	function player:removeGrappler(grappler)
+		local grapplers = self.grapplers
+		if grapplers == nil then return false end
+		if #grapplers < 1 then return false end
+		local index = table.indexOf(grapplers, grappler)
+		if index ~= nil then
+			table.remove(grapplers, index)
+			self:resolveSpeed()
+			return true
+		else
+			error("grappler not found in grapplers array.")
+		end
+	end
+
+	function player:removeLatestGrapple()
+		local grapplers = self.grapplers
+		if grapplers == nil then return false end
+		if #grapplers < 1 then return false end
+		local grappler = grapplers[#grapplers]
+		self:removeGrappler(grappler)
+		return grappler
 	end
 	
 	return player

@@ -41,7 +41,8 @@ function IdleState:new()
 		if targets ~= nil and #targets > 0 then
 			local first = targets[1]
 			zombie.targetPlayer = first
-			self.stateMachine:changeStateToAtNextTick("eatPlayer")
+			--self.stateMachine:changeStateToAtNextTick("eatPlayer")
+			self.stateMachine:changeStateToAtNextTick("grabPlayer")
 		end
 	end
 
