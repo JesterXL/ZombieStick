@@ -615,18 +615,80 @@ function LevelView:new(x, y, width, height)
 	end
 
 	function level:getTargetsAroundMe(item, distance)
+		assert(item ~= nil, "You cannot pass a nil item.")
+		assert(distance ~= nil, "You cannot pass a nil distance")
 		local players = self.players
 		if players == nil or #players < 1 then return nil end
 		local targets = {}
 		local i = 1
 		local deltaX, deltaY, player, playerDistance
 		while players[i] do
-			player = players[i]
+			local player = players[i]
 			deltaX = item.x - target.x
 			deltaY = item.y - target.y
 			playerDistance = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 			if playerDistance <= distance then
 				table.insert(targets, player)
+			end
+			i = i + 1
+		end
+		return targets
+	end
+
+	function level:getEnemiesAroundMe(player, distance)
+		assert(player ~= nil, "You cannot pass a nil player.")
+		assert(distance ~= nil, "You cannot pass a nil distance")
+		local enemies = self.enemies
+		if enemies == nil or #enemies < 1 then return nil end
+		local targets = {}
+		local i = 1
+		local deltaX, deltaY, player, playerDistance
+		local enemy = nil
+		if distance > 0 then
+			while enemies[i] do
+				enemy = enemies[i]
+				deltaX = enemy.x - target.x
+				deltaY = enemy.y - target.y
+				enemyDistance = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+				if enemyDistance <= distance then
+					table.insert(targets, enemy)
+				end
+				i = i + 1
+			end
+		else
+			while enemies[i] do
+				enemy = enemies[i]
+				deltaX = enemy.x - target.x
+				deltaY = enemy.y - target.y
+				enemyDistance = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+				table.insert(targets, {enemy = enemy, distance = enemyDistance, classType="Lua table"})
+				i = i + 1
+			end
+		end
+		return targets
+	end
+
+	function level:getEnemiesInFrontOfMe(player, distance)
+		assert(player ~= nil, "You cannot pass a nil player.")
+		assert(distance ~= nil, "You cannot pass a nil distance")
+		local enemies = self.enemies
+		if enemies == nil or #enemies < 1 then return nil end
+		local targets = {}
+		local i = 1
+		local deltaX, deltaY, playerDistance
+		local enemy = nil
+		local direction = player.direction
+		print("direction: ", direction)
+		while enemies[i] do
+			enemy = enemies[i]
+			print("e.x: ", enemy.x, ", p.x: ", player.x)
+			if (direction == "left" and enemy.x  <= player.x) or (direction == "right" and enemy.x >= player.x) then
+				deltaX = enemy.x - target.x
+				deltaY = enemy.y - target.y
+				enemyDistance = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+				if enemyDistance <= distance then
+					table.insert(targets, enemy)
+				end
 			end
 			i = i + 1
 		end

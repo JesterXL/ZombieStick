@@ -253,7 +253,7 @@ function Zombie:new()
 	
 	local shape = {22,4, 42,4, 42,55, 22,55}
 	assert(physics.addBody( zombie, "dynamic", 
-		{ density=.7, friction=.2, bounce=.2, isBullet=true, shape=shape,
+		{ density=.8, friction=.8, bounce=.2, isBullet=true, shape=shape,
 			filter = { categoryBits = constants.COLLISION_FILTER_ENEMY_CATEGORY, 
 			maskBits = constants.COLLISION_FILTER_ENEMY_MASK,
 			}} ), 

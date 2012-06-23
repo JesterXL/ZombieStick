@@ -5,74 +5,40 @@ JXLAttackState = {}
 function JXLAttackState:new()
 	
 	local state = BaseState:new("attack")
-	
-	function state:onAttackAnimationCompleted(event)
-		print("*** onAttackAnimationCompleted ***")
-		self.stateMachine:changeStateToAtNextTick("ready")
-	end
+	state.startTime = nil
 	
 	function state:onEnterState(event)
+		print("JXLAttackState::onEnterState")
+		self.startTime = system.getTimer()
 		local player = self.entity
-		
-		player:addEventListener("onAttackAnimationCompleted", state)
-		player.attacking = true
+		player:addEventListener("onAttackAnimationCompleted", self)
 		player:showSprite("attack")
-		--player.lastAttack = system.getTimer()
-		player:performedAction("attack")
-		
-		player.swordPolygon = SwordPolygon:new(-99, -99, 20, 2)
-		LevelView.instance:insertChild(player.swordPolygon)
-		local sword = player.swordPolygon
-		sword.y = player.y + (player.height / 2)
-		
-		local targetX
-		local playerBounds = player:getBounds()
-		if player.direction == "left" then
-			sword.x = player.x + playerBounds[1]
-			targetX = sword.x - (sword.width + 5)
-		else
-			sword.x = player.x + playerBounds[1]
-			targetX = player.x + playerBounds[3] + 10
-		end
-		
-		if sword.tween ~= nil then
-			transition.cancel(sword.tween)
-		end
-		if sword.onComplete == nil then
-			function sword:onComplete(event)
-				sword.x = -999
-				sword.y = -999
-				sword.tween = nil
-				--state:onAttackComplete()
+
+		local frontTargets = LevelView.instance:getEnemiesInFrontOfMe(player, 42)
+		if #frontTargets > 0 then
+			local first = frontTargets[1]
+			local direction = self.entity.direction
+			local xForce = nil
+			if direction == "left" then
+				xForce = -2
+			else
+				xForce = 2
 			end
-			function sword:collision(event)
-				if event.phase == "began" then
-					if event.other.classType == "Zombie" then
-						event.other:onHit(2)
-					end
-				end
-			end
-			sword:addEventListener("collision", sword)
+			first:applyLinearImpulse(xForce, 0, first.x, first.y)
+			first:onHit(2)
 		end
-		-- TODO: put in tick, too tired right now
-		sword.tween = transition.to(sword, {time=100, x=targetX, onComplete=sword})
 	end
-	
+
 	function state:onExitState(event)
+		print("JXLAttackState::onExitState, time: ", (system.getTimer() - self.startTime))
 		local player = self.entity
-		
-		player:removeEventListener("onAttackAnimationCompleted", state)
-		
-		if player.swordPolygon then
-			if player.swordPolygon.tween ~= nil then
-				transition.cancel(player.swordPolygon.tween)
-			end
-			player.swordPolygon:removeSelf()
-			player.swordPolyon = nil
-		end
-		
-		player.attacking = false
+		player:removeEventListener("onAttackAnimationCompleted", self)
 		player:showSprite("stand")
+	end
+
+	function state:onAttackAnimationCompleted(event)
+		self.entity:showSprite("stand")
+		self.stateMachine:changeStateToAtNextTick("ready")
 	end
 	
 	function state:tick(time)
