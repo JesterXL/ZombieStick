@@ -5,15 +5,13 @@ require "com.jxl.zombiestick.gamegui.DialogueView"
 require "com.jxl.zombiestick.gamegui.LevelView"
 require "com.jxl.zombiestick.gamegui.MoviePlayerView"
 
-require "com.jxl.zombiestick.enemies.Zombie"
-
 require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
 
 -- TODO: elevators need a switch board so if you fall off, you can call it again.
 
-physics.setDrawMode("normal")
+physics.setDrawMode("hybrid")
 physics.start()
 physics.setGravity(0, 9.8)
 physics.setPositionIterations( 10 )
@@ -127,6 +125,7 @@ end
 
 
 local function testZombie()
+	require "com.jxl.zombiestick.enemies.Zombie"
 	local zombie = Zombie:new()
 	zombie.x = 100
 	zombie.y = 100
@@ -1054,6 +1053,22 @@ function testHasEventSource()
 	print("result: ", result, ", e: ", e)
 end
 
+function testZombieContentBounds()
+	require "com.jxl.zombiestick.enemies.Zombie"
+	physics.pause()
+	local zombie = Zombie:new()
+	local t = {}
+	function t:timer(e)
+		zombie.rotation = zombie.rotation + 1
+		print("zombie.width: ", zombie.width, ", contentWidth: ", zombie.contentWidth)
+	end
+	timer.performWithDelay(100, t, 0)
+	zombie.x = 200
+	zombie.y = 200
+	zombie.rotation = -90
+end
+
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -1101,6 +1116,7 @@ end
 --testTaps()
 --testTapButton()
 --testHasEventSource()
+--testZombieContentBounds()
 
 
 testLevelViewBuildFromJSON()

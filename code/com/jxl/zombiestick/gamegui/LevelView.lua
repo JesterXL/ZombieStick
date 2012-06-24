@@ -24,7 +24,6 @@ require "com.jxl.zombiestick.players.weapons.SwordPolygon"
 require "com.jxl.zombiestick.enemies.Zombie"
 
 require "com.jxl.zombiestick.core.GameLoop"
-require "com.jxl.zombiestick.states.level.PlayerFreemanState"
 require "com.jxl.zombiestick.gamegui.CharacterSelectView"
 require "com.jxl.zombiestick.gamegui.hud.HudControls"
 
@@ -431,13 +430,6 @@ function LevelView:new(x, y, width, height)
 	function level:setPlayer(target)
 		assert(target ~= nil, "You cannot set player to a nil target.")
 		self.player = target
-		--[[
-		if self.player.classType == "PlayerJXL" then
-			level.fsm:changeState(PlayerJXLState:new(level))
-		elseif self.player.classType == "PlayerFreeman" then
-			level.fsm:changeState(PlayerFreemanState:new(level))
-		end
-		]]--
 	end
 	
 	function level:getPlayerType(classType)
@@ -678,14 +670,17 @@ function LevelView:new(x, y, width, height)
 		local deltaX, deltaY, playerDistance
 		local enemy = nil
 		local direction = player.direction
-		print("direction: ", direction)
 		while enemies[i] do
 			enemy = enemies[i]
-			print("e.x: ", enemy.x, ", p.x: ", player.x)
-			if (direction == "left" and enemy.x  <= player.x) or (direction == "right" and enemy.x >= player.x) then
-				deltaX = enemy.x - target.x
-				deltaY = enemy.y - target.y
+			--print("e.x: ", enemy.x, ", p.x: ", player.x, ", diff: ", math.abs(player.x - enemy.x))
+			--print("direction: ", direction)
+			--print(enemy.x <= player.x)
+			if (direction == "left" and enemy.x <= player.x) or (direction == "right" and enemy.x >= player.x) then
+				--print("enemy.x: ", enemy.x, ", w: ", enemy.width, ", e.cw: ", enemy.contentWidth)
+				deltaX = enemy.x - player.x
+				deltaY = enemy.y - player.y
 				enemyDistance = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+				--print("\tenemyDistance: ", enemyDistance)
 				if enemyDistance <= distance then
 					table.insert(targets, enemy)
 				end

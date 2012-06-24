@@ -13,6 +13,7 @@ require "com.jxl.zombiestick.states.JXLAttackState"
 require "com.jxl.zombiestick.states.FirehoseState"
 require "com.jxl.zombiestick.states.SelfHealState"
 require "com.jxl.zombiestick.states.GrappleDefenseState"
+require "com.jxl.zombiestick.states.CoupDeGraceState"
 
 require "com.jxl.zombiestick.players.BasePlayer"
 PlayerJXL = {}
@@ -60,7 +61,6 @@ function PlayerJXL:new(params)
 	end
 	
 	function player:showSprite(name)
-		print("PlayerJXL::showSprite, name: ", name)
 		local spriteAnime
 		if name == "move" then
 			spriteAnime = sprite.newSprite(PlayerJXL.moveSet)
@@ -137,6 +137,7 @@ function PlayerJXL:new(params)
 	player.fsm:addState2(FirehoseState:new())
 	player.fsm:addState2(SelfHealState:new())
 	player.fsm:addState2(GrappleDefenseState:new())
+	player.fsm:addState2(CoupDeGraceState:new())
 	player.fsm:setInitialState("idle", player)
 	
 	return player
