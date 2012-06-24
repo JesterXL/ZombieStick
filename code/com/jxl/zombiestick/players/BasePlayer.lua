@@ -39,8 +39,6 @@ function BasePlayer:new()
 	player.health = 40
 	player.maxHealth = 40
 
-	player.staminaTextPool = {}
-	player.healthTextPool = {}
 	player.injuries = {}
 	player.grapplers = {}
 	
@@ -243,83 +241,11 @@ function BasePlayer:new()
 	end
 
 	function player:showStaminaText(targetX, targetY, amount)
-		local field
-		if table.maxn(self.staminaTextPool) > 0 then
-			field = self.staminaTextPool[1]
-			assert(field ~= nil, "Failed to get item from pool")
-			table.remove(self.staminaTextPool, table.indexOf(self.staminaTextPool, field))
-			assert(field ~= nil, "After cleanup, field got nil.")
-		else
-			field = display.newText("", 0, 0, 60, 60, native.systemFont, constants.FLOATING_TEXT_FONT_SIZE)
-			function field:onComplete(obj)
-				if self.tween then
-					transition.cancel(field.tween)
-					field.tween = nil
-				end
-				if self.alphaTween then
-					transition.cancel(field.alphaTween)
-					field.alphaTween = nil
-				end
-				table.insert(player.staminaTextPool, field)
-			end
-		end
-		assert(field ~= nil, "After if statement, field is nil.")
-		field:setReferencePoint(display.TopLeftReferencePoint)
-		self:insert(field)
-		field.x = targetX
-		field.y = targetY
-		field.alpha = 1
-		local amountText = tostring(amount)
-		if amount > 0 then
-			amountText = "+" .. amountText
-			field:setTextColor(unpack(constants.STAMINA_FIELD_POSITIVE_COLOR))
-		else
-			field:setTextColor(unpack(constants.STAMINA_FIELD_NEGATIVE_COLOR))
-		end
-		field.text = amountText
-		local newTargetY = targetY - 40
-		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
-		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
+		Runtime:dispatchEvent({name="onShowFloatingText", target=self, x=targetX, y=targetY, textTarget=self, textType=constants.TEXT_TYPE_STAMINA, amount=amount})
 	end
 
 	function player:showHealthText(targetX, targetY, amount)
-		local field
-		if table.maxn(self.healthTextPool) > 0 then
-			field = self.healthTextPool[1]
-			assert(field ~= nil, "Failed to get item from pool")
-			table.remove(self.healthTextPool, table.indexOf(self.healthTextPool, field))
-			assert(field ~= nil, "After cleanup, field got nil.")
-		else
-			field = display.newText("", 0, 0, 60, 60, native.systemFont, constants.FLOATING_TEXT_FONT_SIZE)
-			function field:onComplete(obj)
-				if self.tween then
-					transition.cancel(field.tween)
-					field.tween = nil
-				end
-				if self.alphaTween then
-					transition.cancel(field.alphaTween)
-					field.alphaTween = nil
-				end
-				table.insert(player.healthTextPool, field)
-			end
-		end
-		assert(field ~= nil, "After if statement, field is nil.")
-		field:setReferencePoint(display.TopLeftReferencePoint)
-		self:insert(field)
-		field.x = targetX
-		field.y = targetY
-		field.alpha = 1
-		local amountText = tostring(amount)
-		if amount > 0 then
-			amountText = "+" .. amountText
-			field:setTextColor(unpack(constants.HEALTH_FIELD_POSITIVE_COLOR))
-		else
-			field:setTextColor(unpack(constants.HEALTH_FIELD_NEGATIVE_COLOR))
-		end
-		field.text = amountText
-		local newTargetY = targetY - 40
-		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
-		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
+		Runtime:dispatchEvent({name="onShowFloatingText", target=self, x=targetX, y=targetY, textTarget=self, textType=constants.TEXT_TYPE_HELATH, amount=amount})
 	end
 
 	-- TODO: 6.21.2012 Need a GUI for Injuries.

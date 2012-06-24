@@ -26,6 +26,7 @@ require "com.jxl.zombiestick.enemies.Zombie"
 require "com.jxl.zombiestick.core.GameLoop"
 require "com.jxl.zombiestick.gamegui.CharacterSelectView"
 require "com.jxl.zombiestick.gamegui.hud.HudControls"
+require "com.jxl.zombiestick.gamegui.FloatingText"
 
 LevelView = {}
 
@@ -57,6 +58,10 @@ function LevelView:new(x, y, width, height)
 	local buttonChildren = display.newGroup()
 	level:insert(buttonChildren)
 	level.buttonChildren = buttonChildren
+
+	local floatingText = FloatingText:new()
+	level:insert(floatingText)
+	level.floatingText = floatingText
 	
 	level.players = nil
 	level.enemies = nil
@@ -165,6 +170,7 @@ function LevelView:new(x, y, width, height)
 		assert(levelVO, "You cannot pass in a nil levelVO.")
 		
 		self:removeLevelChildren()
+		self.floatingText:init()
 		self.players = {}
 		Runtime:dispatchEvent({name="onLevelViewPlayersChanged", target=self, players=self.players})
 		self.enemies = {}

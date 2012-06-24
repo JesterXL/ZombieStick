@@ -1068,6 +1068,25 @@ function testZombieContentBounds()
 	zombie.rotation = -90
 end
 
+function testFloatingText()
+	require "com.jxl.zombiestick.gamegui.FloatingText"
+	require "com.jxl.zombiestick.constants"
+	local float = FloatingText:new()
+	float:init()
+	function onTouch(event)
+		--if event.phase == "began" then
+			float:showText(event.x, event.y, 1, constants.TEXT_TYPE_STAMINA)
+		--end
+	end
+	Runtime:addEventListener("touch", onTouch)
+end
+
+function testForLoop()
+	for i=1,10 do
+		print(i)
+	end
+end
+
 
 --testScreenSize()
 --testFreemanBullet()
@@ -1117,6 +1136,8 @@ end
 --testTapButton()
 --testHasEventSource()
 --testZombieContentBounds()
+--testFloatingText()
+--testForLoop()
 
 
 testLevelViewBuildFromJSON()

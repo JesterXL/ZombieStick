@@ -33,6 +33,9 @@ constants.COLLISION_FILTER_ELEVATOR_MASK			= 31
 
 constants.FLOATING_TEXT_FONT_SIZE 					= 14
 
+constants.TEXT_TYPE_STAMINA							= "textTypeStamina"
+constants.TEXT_TYPE_HEALTH 							= "textTypeHealth"
+
 constants.STAMINA_FIELD_POSITIVE_COLOR 				= {0, 0, 255}
 constants.STAMINA_FIELD_NEGATIVE_COLOR 				= {190, 0, 255}
 
