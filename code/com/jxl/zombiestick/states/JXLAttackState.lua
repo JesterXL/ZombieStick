@@ -13,6 +13,7 @@ function JXLAttackState:new()
 		local player = self.entity
 		player:addEventListener("onAttackAnimationCompleted", self)
 		player:showSprite("attack")
+		player:performedAction("attack")
 
 
 		local first, direction, xForce

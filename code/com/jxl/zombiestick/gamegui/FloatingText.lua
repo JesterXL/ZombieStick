@@ -65,6 +65,7 @@ function FloatingText:new()
 		self:showText(targetX, targetY, event.amount, event.textType)
 	end
 
+
 	function floating:init()
 		self:destroy()
 		self.textPool = {}

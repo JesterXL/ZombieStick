@@ -27,7 +27,7 @@ function BasePlayer:new()
 	
 	-- moving --
 	player.startMoveTime = nil
-	player.MOVE_STAMINA_TIME = 1000
+	player.MOVE_STAMINA_TIME = 500
 	player.speed = 3
 	player.maxSpeed = 3
 	player.grappledSpeed = 0.001
