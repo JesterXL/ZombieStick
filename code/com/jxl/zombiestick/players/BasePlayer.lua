@@ -5,7 +5,7 @@ BasePlayer = {}
 
 function BasePlayer:new()
 	local player = display.newGroup()
-	
+	player.gameObjectVO = nil
 	--player.classType = "BasePlayer"
 
 	player.spriteHolder = display.newGroup()

@@ -21,6 +21,7 @@ function Zombie:new()
 	local zombie = display.newGroup()
 	zombie.name = "Zombie"
 	zombie.classType = "Zombie"
+	zombie.gameObjectVO = nil
 	zombie.targets = nil
 	zombie.moving = false
 	zombie.speed = .01
@@ -204,6 +205,7 @@ function Zombie:new()
 		self:stopMoving()
 		local t = {zombie = self}
 		function t:timer(event)
+			self:dispatchEvent({name="onZombieDestroyed", target=self})
 			self.zombie:removeSelf()
 		end
 		timer.performWithDelay(300, t)

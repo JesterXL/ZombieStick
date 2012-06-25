@@ -28,6 +28,9 @@ require "com.jxl.zombiestick.gamegui.CharacterSelectView"
 require "com.jxl.zombiestick.gamegui.hud.HudControls"
 require "com.jxl.zombiestick.gamegui.FloatingText"
 
+require "com.jxl.zombiestick.mementos.LevelViewMemento"
+require "com.jxl.zombiestick.services.SaveGameService"
+
 LevelView = {}
 
 function LevelView:new(x, y, width, height)
@@ -43,6 +46,10 @@ function LevelView:new(x, y, width, height)
 	level.player = nil
 	level.backgroundImage = nil
 	level.hudControls = nil
+	level.levelVO = nil
+	level.players = nil
+	level.enemies = nil
+	level.movies = nil
 	
 	level.gameLoop = GameLoop:new()
 	
@@ -63,9 +70,7 @@ function LevelView:new(x, y, width, height)
 	level:insert(floatingText)
 	level.floatingText = floatingText
 	
-	level.players = nil
-	level.enemies = nil
-	level.movies = nil
+	
 	
 	function level:insertChild(child)
 		assert(child ~= nil, "Child cannot be nil.")
@@ -170,6 +175,9 @@ function LevelView:new(x, y, width, height)
 		assert(levelVO, "You cannot pass in a nil levelVO.")
 		
 		self:removeLevelChildren()
+
+		self.levelVO = levelVO
+
 		self.floatingText:init()
 		self.players = {}
 		Runtime:dispatchEvent({name="onLevelViewPlayersChanged", target=self, players=self.players})
@@ -212,10 +220,6 @@ function LevelView:new(x, y, width, height)
 		Runtime:removeEventListener("onGenericSensorCollision", self)
 		Runtime:addEventListener("onGenericSensorCollision", self)
 		
-		--self.background:toBack()
-		--self.levelChildren:toFront()
-		--self.buttonChildren:toFront()
-		
 		if self.characterSelectView == nil then
 			local characterSelectView = CharacterSelectView:new(0, 0)
 			self:insert(characterSelectView)
@@ -223,8 +227,24 @@ function LevelView:new(x, y, width, height)
 			self.characterSelectView = characterSelectView
 		end
 		self.characterSelectView:redraw(self.players)
-		
-		
+
+		if self.saveGameButton == nil then
+			local saveGameButton = display.newRect(0, 0, 60, 60)
+			saveGameButton:setFillColor(255, 0, 0)
+			function saveGameButton:touch(event)
+				if event.phase == "began" then
+					local service = SaveGameService:new()
+					service:save(level)
+					native.showAlert("Save Game", "Game saved.", { "OK"})
+					--Runtime:dispatchEvent({name="onSaveGame", target=self})
+
+				end
+			end
+			saveGameButton:addEventListener("touch", saveGameButton)
+			self:insert(saveGameButton)
+			self.saveGameButton = saveGameButton
+		end
+
 		self:updateEnemyTargets()
 		self.gameLoop:reset()
 		self.gameLoop:start()
@@ -385,7 +405,7 @@ function LevelView:new(x, y, width, height)
 		elseif terrainType == "Firehose" then
 			terrain = Firehose:new(params)
 			function terrain:collision(event)
-				if event.other.name == "JXL" then
+				if event.other.classType == "PlayerJXL" then
 					event.other.lastFirehoseTarget = self
 					event.other.fsm:changeStateToAtNextTick("firehose")
 					return true
@@ -406,6 +426,7 @@ function LevelView:new(x, y, width, height)
 			Runtime:addEventListener("onElevatorSwitchCollision", self)
 			terrain = ElevatorSwitch:new(params)
 		end
+		terrain.gameObjectVO = event
 		self:insertChild(terrain)
 	end
 	
@@ -423,6 +444,7 @@ function LevelView:new(x, y, width, height)
 			player = PlayerFreeman:new(params)
 		end
 		assert(player ~= nil, "Player cannot be nil.")
+		player.gameObjectVO = event
 		table.insert(self.players, player)
 		Runtime:dispatchEvent({name="onLevelViewPlayersChanged", target=self, players=self.players})
 		
@@ -474,11 +496,18 @@ function LevelView:new(x, y, width, height)
 	
 	function level:createEnemy(event)
 		local zombie = Zombie:new()
+		zombie.gameObjectVO = event
+		zombie:addEventListener("onZombieDestroyed", self)
 		zombie.x = event.x
 		zombie.y = event.y
 		self:insertChild(zombie)
 		table.insert(self.enemies, zombie)
 		self.gameLoop:addLoop(zombie)
+	end
+
+	function level:onZombieDestroyed(event)
+		event.target:removeEventListener("onZombieDestroyed", self)
+		self.gameLoop:removeLoop(event.target)
 	end
 	
 	function level:updateEnemyTargets()
@@ -694,6 +723,38 @@ function LevelView:new(x, y, width, height)
 			i = i + 1
 		end
 		return targets
+	end
+
+	function level:getMemento()
+		local memento = LevelViewMemento:new()
+
+		local screenShot = display.captureScreen(false)
+		local baseDirectory = system.DocumentsDirectory
+		local date = os.date()
+		local fileName = "LevelView_" .. tostring(date) .. ".jpg"
+		display.save(self, fileName, baseDirectory)
+
+		memento.iconImage 			= fileName
+		memento.saveDate 			= date
+		local gameObjectMementos 	= {}
+
+		local levelChildren = self.levelChildren
+		local len = levelChildren.numChildren
+		for i=1,len do
+			local child = levelChildren[i]
+			--assert(child.gameObjectVO ~= nil, "Found a level child that doesn't have a GameObjectVO associated with it.")
+			if child.gameObjectVO ~= nil then
+				-- for now, just save x and y, in order found
+				local childMemento = {x = child.x, y = child.y}
+				table.insert(gameObjectMementos, childMemento)
+			else
+				print("no vo: ", child, ", classType: ", child.classType)
+			end
+		end
+		memento.levelMemento = gameObjectMementos
+		screenShot:removeSelf()
+
+		return memento
 	end
 	
 	LevelView.instance = level

@@ -9,7 +9,6 @@ require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
 
--- TODO: elevators need a switch board so if you fall off, you can call it again.
 
 physics.setDrawMode("hybrid")
 physics.start()
@@ -39,7 +38,7 @@ local function testDialogueView()
 end
 
 local function testLoadLevelService()
-	local level = LoadLevelService:new("sample.json")
+	local level = LoadLevelService:new():loadLevelFile("sample.json")
 	print("level: ", level)
 	print("backgroundImageShort: ", level.backgroundImageShort)
 	print("events: ", level.events, ", length: ", #(level.events))
@@ -89,7 +88,7 @@ local function testMoviePlayerView()
 end
 
 local function testMoviePlayerViewForLevel()
-	local level = LoadLevelService:new("sample.json")
+	local level = LoadLevelService:new():loadLevelFile("sample.json")
 	local moviePlayer = MoviePlayerView:new()
 	moviePlayer:startMovie(level.movies[1])
 	--moviePlayer:startMovie(level.movies[2])
@@ -107,7 +106,7 @@ local function testLevelViewBuildFromJSON()
 	local levelView = LevelView:new(0, 0, stage.contentWidth, stage.contentHeight)
 	--local level = LoadLevelService:new("sample.json")
 	--local level = LoadLevelService:new("level-test.json")
-	local level = LoadLevelService:new("Level1.json")
+	local level = LoadLevelService:new():loadLevelFile("Level1.json")
 	--local level = LoadLevelService:new("Level1-freeman.json")
 	levelView:drawLevel(level)
 	levelView:startScrolling()
@@ -117,7 +116,7 @@ end
 local function testLevelViewBuildFromJSONBuildTwice()
 	local stage = display.getCurrentStage()
 	local levelView = LevelView:new(0, 0, stage.width, stage.height)
-	local level = LoadLevelService:new("sample.json")
+	local level = LoadLevelService:new():loadLevelFile("sample.json")
 	levelView:drawLevel(level)
 	levelView:drawLevel(level)
 	levelView:startScrolling()
@@ -1087,6 +1086,75 @@ function testForLoop()
 	end
 end
 
+function testReadAndSaveFileServices()
+	require "com.jxl.core.services.ReadFileContentsService"
+	require "com.jxl.core.services.SaveFileService"
+
+	local saveFile = SaveFileService:new()
+	local data = "moo"
+	assert(saveFile:saveFile("test.txt", system.DocumentsDirectory, data), "Failed to save test.txt")
+
+	local readFile = ReadFileContentsService:new()
+	local contents = readFile:readFileContents("test.txt", system.DocumentsDirectory)
+	print("contents: ", contents)
+end
+
+function testBasicFiles()
+	local test = io.open(system.pathForFile("basic.txt", system.DocumentsDirectory), "r")
+	print("test: ", test)
+end
+
+function testTOCService()
+	require "com.jxl.zombiestick.services.SavedGameTOCService"
+
+	local service = SavedGameTOCService:new()
+	service:deleteTOC()
+	
+	--[[
+	local list = service:readTOC()
+	assert(list, "TOC is nil.")
+	assert(table.maxn(list) == 0, "TOC length is not 0.")
+
+	service:saveTOC("testTOCService.txt")
+	local updatedList = service:readTOC()
+	assert(updatedList, "2 TOC is nil.")
+	assert(table.maxn(updatedList) == 1, "Incorrect file count, actual is: " .. table.maxn(updatedList))
+
+	-- test if 2 can work
+	service:saveTOC("yetAnotherTestTOCService.txt")
+	local newList = service:readTOC()
+	assert(newList, "3 TOC is nil.")
+	assert(table.maxn(newList) == 2, "3 Incorrect file count, actual is: " .. table.maxn(newList))
+	]]--
+end
+
+function testSavingGames()
+	require "com.jxl.zombiestick.services.SaveGameService"
+	require "com.jxl.zombiestick.services.LoadSavedGamesService"
+	local service = SavedGameTOCService:new()
+	service:deleteTOC()
+
+	local loadService = LoadSavedGamesService:new()
+	local anyFiles = loadService:load()
+	assert(#anyFiles == 0, "anyFiles is not == 0")
+
+	local levelViewMock = {getMemento = function() return {iconImage = "button-gun.png"} end}
+	local saveGameService = SaveGameService:new()
+	saveGameService:save(levelViewMock)
+
+	local savedFiles = loadService:load()
+	assert(#savedFiles == 1, "savedFiles is not == to 1")
+end
+
+function testShowSaveGameScreen()
+	require "com.jxl.zombiestick.screens.SavedGameScreen"
+	require "com.jxl.zombiestick.services.LoadSavedGamesService"
+	local screen = SavedGameScreen:new()
+	screen.x = 100
+	screen.y = 100
+	local savedGames = LoadSavedGamesService:new():load()
+	screen:init(savedGames)
+end
 
 --testScreenSize()
 --testFreemanBullet()
@@ -1138,7 +1206,12 @@ end
 --testZombieContentBounds()
 --testFloatingText()
 --testForLoop()
+--testReadAndSaveFileServices()
+--testBasicFiles()
+--testTOCService()
+--testSavingGames()
+testShowSaveGameScreen()
 
 
-testLevelViewBuildFromJSON()
+--testLevelViewBuildFromJSON()
 --testLevelCover()
