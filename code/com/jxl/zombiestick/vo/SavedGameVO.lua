@@ -6,6 +6,7 @@ function SavedGameVO:new()
 	game.iconImage 		= nil
 	game.levelMemento 	= nil
 	game.saveDate 		= nil
+	game.levelVO 		= nil
 
 	return game
 end

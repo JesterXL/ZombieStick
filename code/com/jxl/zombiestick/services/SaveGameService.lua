@@ -16,6 +16,7 @@ function SaveGameService:new()
 		savedGameVO.saveDate = tostring(os.date())
 		savedGameVO.levelMemento = levelMemento
 		savedGameVO.iconImage = levelMemento.iconImage
+		savedGameVO.levelVO = levelView.levelVO
 		savedGameVO.name = "SavedGame_" .. tostring(savedGameVO.saveDate)
 		local jsonString = json.encode(savedGameVO)
 		local tocService = SavedGameTOCService:new()

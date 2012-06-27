@@ -16,14 +16,18 @@ function SavedGameItem:new()
 		self.background = background
 
 		--local image = display.newImage(savedGameVO.iconImage, system.DocumentsDirectory)
-		local image = display.newImage(savedGameVO.iconImage)
-		self.image = image
-		image:setReferencePoint(display.TopLeftReferencePoint)
-		self:insert(image)
-		image.x = 2
-		image.y = 2
-		image.width = 60
-		image.height = 60
+		if savedGameVO.iconImage ~= nil then
+			local image = display.newImage(savedGameVO.iconImage)
+			if image ~= nil then
+				self.image = image
+				image:setReferencePoint(display.TopLeftReferencePoint)
+				self:insert(image)
+				image.x = 2
+				image.y = 2
+				image.width = 60
+				image.height = 60
+			end
+		end
 
 		local titleField = display.newText("", 0, 0, 200, 60, native.systemFont, 16)
 		titleField:setReferencePoint(display.TopLeftReferencePoint)

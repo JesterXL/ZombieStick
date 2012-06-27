@@ -1153,6 +1153,7 @@ function testShowSaveGameScreen()
 	screen.x = 100
 	screen.y = 100
 	local savedGames = LoadSavedGamesService:new():load()
+	print("#savedGames: ", #savedGames)
 	screen:init(savedGames)
 end
 
@@ -1210,8 +1211,10 @@ end
 --testBasicFiles()
 --testTOCService()
 --testSavingGames()
-testShowSaveGameScreen()
+--testShowSaveGameScreen()
 
 
 --testLevelViewBuildFromJSON()
 --testLevelCover()
+
+require "testsmain"

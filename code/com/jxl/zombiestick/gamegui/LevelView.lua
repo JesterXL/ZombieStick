@@ -234,8 +234,8 @@ function LevelView:new(x, y, width, height)
 			function saveGameButton:touch(event)
 				if event.phase == "began" then
 					local service = SaveGameService:new()
-					service:save(level)
-					native.showAlert("Save Game", "Game saved.", { "OK"})
+					local result = service:save(level)
+					native.showAlert("Save Game", "Game saved: " .. tostring(result), { "OK"})
 					--Runtime:dispatchEvent({name="onSaveGame", target=self})
 
 				end
@@ -732,7 +732,8 @@ function LevelView:new(x, y, width, height)
 		local baseDirectory = system.DocumentsDirectory
 		local date = os.date()
 		local fileName = "LevelView_" .. tostring(date) .. ".jpg"
-		display.save(self, fileName, baseDirectory)
+		local result, err = display.save(self, fileName, baseDirectory)
+		print("result: ", result, ", err: ", err)
 
 		memento.iconImage 			= fileName
 		memento.saveDate 			= date
@@ -755,6 +756,10 @@ function LevelView:new(x, y, width, height)
 		screenShot:removeSelf()
 
 		return memento
+	end
+
+	function level:setMemento(levelMemento)
+
 	end
 	
 	LevelView.instance = level

@@ -205,8 +205,8 @@ function Zombie:new()
 		self:stopMoving()
 		local t = {zombie = self}
 		function t:timer(event)
-			self:dispatchEvent({name="onZombieDestroyed", target=self})
-			self.zombie:removeSelf()
+			zombie:dispatchEvent({name="onZombieDestroyed", target=zombie})
+			zombie:removeSelf()
 		end
 		timer.performWithDelay(300, t)
 	end
