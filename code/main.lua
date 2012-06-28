@@ -37,46 +37,7 @@ local function testDialogueView()
 	--view:setCharacter(constants.CHARACTER_FREEMAN)
 end
 
-local function testLoadLevelService()
-	local level = LoadLevelService:new():loadLevelFile("sample.json")
-	print("level: ", level)
-	print("backgroundImageShort: ", level.backgroundImageShort)
-	print("events: ", level.events, ", length: ", #(level.events))
-	print("movies: ", level.movies, ", length: ", #(level.movies))
-	local i = 1
-	while level.events[i] do
-		local event = level.events[i]
-		print("\t-------------")
-		print("\ttype: ", event.type)
-		print("\tsubType: ", event.subType)
-		print("\tx: ", event.x, ", y: ", event.y, ", width: ", event.width, ", height: ", event.height)
-		print("\tdensity: ", event.density, ", friction: ", event.friction, ", bounce: ", event.bounce)
-		print("\tphysics type: ", event.physicsType)
-		print("\trotation: ", event.rotation)
-		print("\twhen: ", event.when)
-		print("\tpause: ", event.pause)
-		i = i + 1
-	end
-	
-	i = 1
-	while level.movies[i] do
-		local movie = level.movies[i]
-		print("\t>>>>>>>>>>>>>>>>>")
-		print("\tdialogues: ", movie.dialogues, ", length: ", #(movie.dialogues))
-		local d = 1
-		while movie.dialogues[d] do
-			local dialogue = movie.dialogues[d]
-			print("\t\t=================")
-			print("\t\tcharacterName: ", dialogue.characterName)
-			print("\t\temotion: ", dialogue.emotion)
-			print("\t\taudioName: ", dialogue.audioName)
-			print("\t\taudioFile: ", dialogue.audioFile)
-			print("\t\tmessage: ", dialogue.message)
-			d = d + 1
-		end
-		i = i + 1
-	end
-end
+
 
 local function testMoviePlayerView()
 	local moviePlayer = MoviePlayerView:new()

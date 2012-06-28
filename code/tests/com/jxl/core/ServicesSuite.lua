@@ -1,17 +1,5 @@
 module(..., package.seeall)
 
-function suite_setup()
-   print "\n\n-- running ServicesSuite setup hook"
-end
-
-function suite_teardown()
-   print "\n\n-- running ServicesSuite teardown hook"
-end
-
-function test_ok()
-   assert_true(true)
-end
-
 function test_saveFile()
 	require "com.jxl.core.services.ReadFileContentsService"
 

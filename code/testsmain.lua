@@ -12,6 +12,9 @@ require "lunatest"
 
 
 lunatest.suite("tests.com.jxl.core.ServicesSuite")
-lunatest.suite("basictests")
+lunatest.suite("tests.com.jxl.core.services.ReadFileContentsServiceSuite")
+--lunatest.suite("basictests")
+lunatest.suite("tests.com.jxl.zombiestick.services.LoadLevelServiceTest")
 
+print("-------------------------------")
 lunatest.run()

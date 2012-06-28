@@ -8,7 +8,7 @@ function ReadFileContentsService:new()
 		local file = io.open(path, "r")
 		if file then
 			contents = file:read("*a")
-			print("contents: ", contents)
+			--print("contents: ", contents)
 			io.close(file)
 			return contents
 		else
