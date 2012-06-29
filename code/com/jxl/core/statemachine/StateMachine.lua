@@ -3,8 +3,8 @@ StateMachine = {}
 
 function StateMachine:new(entity)
 	
-	if entity == nil then error("entity cannot be nil.") end
-	if entity.classType == nil then error("entity.classType cannot be nil.") end
+	--if entity == nil then error("entity cannot be nil.") end
+	--if entity.classType == nil then error("entity.classType cannot be nil.") end
 	
 	--print("StateMachine::new, entity.classType: ", entity.classType)
 	
@@ -23,9 +23,11 @@ function StateMachine:new(entity)
 	stateMachine.changeStateAtTick = false
 	stateMachine.entity = entity
 	
+	-- NOTE: if the user supplies a parent state and does not include in the from name/table,
+	-- that's ok, the State class checks to ensure.
 	function stateMachine:addState(stateName, stateData)
 		if self.states[stateName] ~= nil then
-			print("WARNING: StateMachne::addedState, overriding existing state: " .. stateName)
+			print("WARNING: StateMachine::addedState, overriding existing state: " .. stateName)
 		end
 		
 		if stateData == nil then stateData = {} end
@@ -34,6 +36,7 @@ function StateMachine:new(entity)
 		if stateData.parent then
 			newStatesParent = self.states[stateData.parent]
 		end
+
 		local state = State:new({name = stateName,
 									from = stateData.from,
 									enter = stateData.enter,
@@ -58,6 +61,7 @@ function StateMachine:new(entity)
 	
 	function stateMachine:setInitialState(stateName)
 		local initial = self.states[stateName]
+		if initial == nil then error("State: '" .. tostring(stateName) .. "' cannot be found.") end
 		--print("StateMachine::setInitialState, stateName: ", stateName)
 		--print("state: ", self.state, ", initial: ", initial)
 		if self.state == nil and initial ~= nil then
@@ -103,6 +107,7 @@ function StateMachine:new(entity)
 	
 	function stateMachine:canChangeStateTo(stateName)
 		--print("StateMachine::canChageStateTo for " .. self.entity.classType .. " stateName: ", stateName)
+		--print("StateMachine::canChangeStateTo: ", stateName, ", currentState: ", self.state)
 		local theState = self.states[stateName]
 		local score = 0
 		local win = 2
@@ -115,6 +120,13 @@ function StateMachine:new(entity)
 		if theState:inFrom(self.state) == true then
 			--print("score 2")
 			score = score + 1
+		else
+			local childState = self.states[self.state]
+			if childState and childState.parent then
+				if childState.parent.name == stateName then
+					score = score + 1
+				end
+			end
 		end
 		
 		if theState.from == "*" then
@@ -122,6 +134,7 @@ function StateMachine:new(entity)
 			score = score + 1
 		end
 		
+		--print("score: ", score, ", vs win: ", win)
 		if score >= win then
 			return true
 		else
@@ -143,7 +156,10 @@ function StateMachine:new(entity)
 		local fromState = states[stateFrom]
 		local c = 0
 		local d = 0
+		local stackOverflowCounter = 0
 		while fromState do
+			stackOverflowCounter = stackOverflowCounter + 1
+			if stackOverflowCounter > 255 then error("Stack Overflow in findPath.") end
 			d = 0
 			local toState = states[stateTo]
 			--print("\ttoState: ", toState, ", name: ", toState.name)
@@ -185,6 +201,7 @@ function StateMachine:new(entity)
 	function stateMachine:changeState(stateTo)
 		--print("StateMachine::changeState, stateTo: ", stateTo)
 		assert(type(stateTo) == "string", "stateTo is supposed to be a String, not: ", stateTo)
+		--print("after assert")
 		local state = self.state
 		local states = self.states
 		local toState = states[stateTo]
@@ -192,7 +209,8 @@ function StateMachine:new(entity)
 			print("ERROR: StateMachine::changeState, Cannot make transition: State " .. stateTo .. " is not defined.")
 			return false
 		end
-		
+		--print("before canChange")
+		--print("btw, can we change?: ", self:canChangeStateTo(stateTo))
 		if self:canChangeStateTo(stateTo) == false then
 			print("ERROR: StateMachine::changestate, Transition to " .. stateTo .. " denied.")
 			local outEvent = {name = "onTransitionDenied",
@@ -203,8 +221,9 @@ function StateMachine:new(entity)
 			Runtime:dispatchEvent(outEvent)
 			return false
 		end
-		
+		--print("before find path")
 		local path = self:findPath(state, stateTo)
+		--print("after path")
 		--print("path, 1: ", path[1], ", 2: ", path[2])
 		if path[1] > 0 then
 			local exitCallback = {name = "onExitState",
@@ -276,6 +295,7 @@ function StateMachine:new(entity)
 							fromState = oldState,
 							toState = stateTo}
 		Runtime:dispatchEvent(outEvent)
+		return true
 	end
 	
 	function stateMachine:tick(time)

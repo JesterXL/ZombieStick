@@ -66,6 +66,7 @@ local _importing_env = getenv()
 -- -v / --verbose, default to verbose_hooks.
 -- -s or --suite, only run the named suite(s).
 -- -t or --test, only run tests matching the pattern.
+-- [jwarden 6.26.2012] TODO: test close support
 -- -c or --close, close if any suites or tests fail; true by default
 local lt_arg = arg
 
@@ -584,40 +585,11 @@ end
 -- @param modname The module to load as a suite. The file is
 -- interpreted in the same manner as require "modname".
 -- Which functions are tests is determined by is_test_key(name). 
-function showProps(o)
-  print("-- showProps --")
-  print("o: ", o)
-  for key,value in pairs(o) do
-    print("key: ", key, ", value: ", value);
-  end
-  print("-- end showProps --")
-end
-
 function suite(modname)
    local ok, err = pcall(
       function()
-        local mod, r_err = require(modname)
-        --suites[modname] = get_tests(mod)
-        
-        if type(mod) == "table" then
-          suites[modname] = get_tests(mod)
-        elseif type(mod) == "boolean" then
-          -- [jwarden 6.26.2012] user is forgeoing module, and doing their own thing.
-          -- for now, I'll check to see if the module has a constructor function, in this case new.
-          local global = getenv(0)
-          showProps(global)
-          print("global package loaded: ", global.package.loaded[modname])
-          local globalModule = global["ServicesSuite"]
-          print("globalModule: ", globalModule)
-          if globalModule ~= nil and globalModule['new'] ~= nil then
-            suites[modname] = get_tests(globalModule:new())
-          else
-            error("Cannot find an acceptable constructor function for the module.")
-          end
-        else
-          error("Do not know how to create the module.")
-        end
-        
+         local mod, r_err = require(modname)
+         suites[modname] = get_tests(mod)
       end)
    if not ok then
       print(fmt(" * Error loading test suite %q:\n%s",
@@ -730,16 +702,18 @@ local function run_suite(hooks, opts, results, suite_filter, sname, tests)
    end
 end
 
+-- [jwarden 6.25.2012] NOTE: getEnv was erroring out in Corona. This ensures
+-- the nil value can get returned and the tests can keep on mooooooovin'.
+local function safeGetEnv(value)
+  return pcall(getEnv, value)
+end
+
 ---Run all known test suites, with given configuration hooks.
 -- @param hooks Override the default hooks.
 -- @param suite_filter If set, only run suite(s) with names
 --    matching this pattern.
 -- @usage If no hooks are provided and arg[1] == "-v", the
 -- verbose_hooks will be used.
-local function safeGetEnv(value)
-  return pcall(getEnv, value)
-end
-
 function run(hooks, suite_filter)
    -- also check the namespace it's run in
    local opts = cmd_line_switches(lt_arg)
@@ -776,7 +750,11 @@ function run(hooks, suite_filter)
    if hooks.done then hooks.done(results) end
 
    if failures_or_errors(results) or #failed_suites > 0 then
-      --os.exit(1)
+    -- [jwarden 6.27.2012] WARNING: verify this actually works; not sure
+    -- how the commandlines arguments come in; as booleans or strings.
+    if opts.close == true or opts.c == true then
+      os.exit(1)
+    end
    end
 end
 

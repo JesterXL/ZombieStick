@@ -13,8 +13,11 @@ require "lunatest"
 
 lunatest.suite("tests.com.jxl.core.ServicesSuite")
 lunatest.suite("tests.com.jxl.core.services.ReadFileContentsServiceSuite")
+-- TODO: put this in the proper repo
+lunatest.suite("tests.com.jxl.core.statemachine.StateMachineSuite")
 --lunatest.suite("basictests")
 lunatest.suite("tests.com.jxl.zombiestick.services.LoadLevelServiceTest")
+
 
 print("-------------------------------")
 lunatest.run()
