@@ -10,10 +10,13 @@ function setup()
 	machine = StateMachine:new()
 end
 
+function teardown()
+	machine = nil
+end
+
 function test_classWorks()
 	assert_not_nil(machine)
 end
-
 
 function test_verifyInitialStateIsNil()
 	assert_nil(machine.state)

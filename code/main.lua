@@ -10,7 +10,7 @@ require "com.jxl.zombiestick.services.LoadLevelService"
 require("physics")
 
 
-physics.setDrawMode("hybrid")
+physics.setDrawMode("normal")
 physics.start()
 physics.setGravity(0, 9.8)
 physics.setPositionIterations( 10 )
@@ -354,9 +354,11 @@ function testFallingDrawBridge()
 	local t = {}
 	function t:timer()
 		
-		pulley:removeSelf()
-		pulley = nil
+		--pulley:removeSelf()
+		--pulley = nil
 		
+		box.setDensity(0.2)
+		box.resetMassData()
 
 		--bridge.rotation = 0
 		--bridge.y = bridge.y - 100

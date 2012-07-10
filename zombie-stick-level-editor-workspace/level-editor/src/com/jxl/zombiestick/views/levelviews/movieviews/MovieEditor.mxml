@@ -6,6 +6,7 @@
 		  title="Movie Editor" xmlns:levelviews="com.jxl.zombiestick.views.levelviews.*">
 	<fx:Script>
 		<![CDATA[
+			import com.jxl.zombiestick.events.DialogueItemRendererEvent;
 			import com.jxl.zombiestick.vo.DialogueVO;
 			import com.jxl.zombiestick.vo.MovieVO;
 			
@@ -25,6 +26,11 @@
 					movie.dialogues.addItem(dialogue);
 				}
 			}
+			
+			private function onDeleteDialogue(event:DialogueItemRendererEvent):void
+			{
+				movie.dialogues.removeItemAt(movie.dialogues.getItemIndex(event.dialogue));
+			}
 		]]>
 	</fx:Script>
 	
@@ -34,6 +40,6 @@
 	
 	<s:Button label="New Dialogue" click="onNewDialogue()" />
 	<s:Scroller width="100%" height="100%">
-		<levelviews:DialogueDataGroup dataProvider="{movie.dialogues}" />
+		<levelviews:DialogueDataGroup dataProvider="{movie.dialogues}" deleteDialogue="onDeleteDialogue(event)" />
 	</s:Scroller>
 </s:Window>

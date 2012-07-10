@@ -143,13 +143,13 @@ package com.jxl.zombiestick.controls
             if(gameObject.image == null)
             {
 				g.beginFill(0x666666, .5);
-                g.drawRect(0, 0, width, height);
+                g.drawRect(0, 0, Math.max(1, width), Math.max(1, height));
             }
             g.endFill();
 
             drawSelected();
 
-            imageView.setActualSize(width,  height);
+            imageView.setActualSize(Math.max(1, width), Math.max(1, height));
 			
 			if(_gameObject && _gameObject.subType == TerrainTypes.ELEVATOR)
 			{
@@ -167,10 +167,10 @@ package com.jxl.zombiestick.controls
 				g.moveTo(0, 20);
 				g.drawRect(0, 20, 100, 80);
 				
-				g.moveTo(0, height - 100);
-				g.drawRect(0, height - 100, 100, 80);
-				g.moveTo(0, height - 20);
-				g.drawRect(0, height - 20, 100, 20);
+				g.moveTo(0, Math.max(1, height - 100));
+				g.drawRect(0, Math.max(1, height - 100), 100, 80);
+				g.moveTo(0, Math.max(1, height - 20));
+				g.drawRect(0, Math.max(1, height - 20), 100, 20);
 				
 				g.endFill();
 			}
@@ -203,7 +203,7 @@ package com.jxl.zombiestick.controls
 				g.lineStyle(0, 0xFFFF00, .1, true);
 			}
 			
-			g.drawRect(MARGIN, MARGIN, width - MARGIN2, height - MARGIN2);
+			g.drawRect(MARGIN, MARGIN, Math.max(1, width - MARGIN2), Math.max(1, height - MARGIN2));
             g.endFill();
         }
 

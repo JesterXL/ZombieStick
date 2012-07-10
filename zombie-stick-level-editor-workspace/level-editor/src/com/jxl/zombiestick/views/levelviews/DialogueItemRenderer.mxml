@@ -6,10 +6,16 @@
 				currentState="hidden"
 				creationComplete="init()">
 	
+	
+	<fx:Metadata>
+		[Event(name="deleteDialogue", type="com.jxl.zombiestick.events.DialogueItemRendererEvent")]
+	</fx:Metadata>
+	
 	<fx:Script>
 		<![CDATA[
-			import com.jxl.zombiestick.constants.subtypes.CharacterTypes;
 			import com.jxl.zombiestick.constants.EmotionTypes;
+			import com.jxl.zombiestick.constants.subtypes.CharacterTypes;
+			import com.jxl.zombiestick.events.DialogueItemRendererEvent;
 			import com.jxl.zombiestick.vo.DialogueVO;
 			
 			import mx.collections.ArrayCollection;
@@ -61,6 +67,13 @@
 				dialogue.characterName = characterComboBox.selectedItem;
 			}
 			
+			private function onDelete():void
+			{
+				var evt:DialogueItemRendererEvent = new DialogueItemRendererEvent(DialogueItemRendererEvent.DELETE_DIALOGUE);
+				evt.dialogue = dialogue;
+				dispatchEvent(evt);
+			}
+			
 			
 		]]>
 	</fx:Script>
@@ -78,6 +91,8 @@
 			<s:SolidColorStroke color="#333333" />
 		</s:stroke>
 	</s:Rect>
+	
+	<s:Button label="X" click="onDelete()" right="0" top="0" width="40" />
 	
 	<s:Form>
 		<s:layout>
