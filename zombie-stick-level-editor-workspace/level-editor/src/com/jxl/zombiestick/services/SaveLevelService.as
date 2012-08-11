@@ -1,8 +1,10 @@
 package com.jxl.zombiestick.services
 {
 	import com.jxl.zombiestick.events.SaveLevelServiceEvent;
+	import com.jxl.zombiestick.vo.DialogueVO;
 	import com.jxl.zombiestick.vo.GameObjectVO;
 	import com.jxl.zombiestick.vo.LevelVO;
+	import com.jxl.zombiestick.vo.MovieVO;
 	
 	import flash.errors.IOError;
 	import flash.events.Event;
@@ -54,6 +56,7 @@ package com.jxl.zombiestick.services
 		private function onFileSelect(event:Event):void
 		{
 			copyImages();
+			copyAudioFiles();
 			
 			var obj:Object;
 			try
@@ -84,6 +87,44 @@ package com.jxl.zombiestick.services
 			stream.writeUTFBytes(str);
 			stream.close();
 			dispatchEvent(new SaveLevelServiceEvent(SaveLevelServiceEvent.SUCCESS));
+		}
+		
+		private function copyAudioFiles():void
+		{
+			if(level == null)
+				return;
+			
+			if(level.movies == null || level.movies.length < 1)
+				return;
+			
+			if(file == null)
+				return;
+			
+			var folder:File = file.parent;
+			
+			var len:int = level.movies.length;
+			while(len--)
+			{
+				var movie:MovieVO = level.movies[len];
+				if(movie.dialogues && movie.dialogues.length > 0)
+				{
+					var dLen:int = movie.dialogues.length;
+					while(dLen--)
+					{
+						var dialogue:DialogueVO = movie.dialogues[dLen];
+						if(dialogue.audioFile && dialogue.audioFile != "")
+						{
+							var audioNameArray:Array = dialogue.audioFile.split("/");
+							dialogue.audioName = audioNameArray[audioNameArray.length - 1];
+							var audioFile:File = new File(dialogue.audioFile);
+							if(audioFile.exists && audioFile.parent.url != folder.url)
+							{
+								audioFile.copyTo(folder, true);
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		private function copyImages():void

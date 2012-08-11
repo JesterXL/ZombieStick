@@ -29,6 +29,10 @@
 			[Bindable]
 			public var emotions:ArrayCollection;
 			
+			private var audioFileReference:File;
+			private var sound:Sound;
+			private var soundChannel:SoundChannel;
+			
 			private function init():void
 			{
 				characters = new ArrayCollection();
@@ -75,6 +79,72 @@
 			}
 			
 			
+			private function onBrowseForAudioFile():void
+			{
+				if(dialogue == null)
+					return;
+				
+				if(audioFileReference == null)
+				{
+					audioFileReference = new File();
+					audioFileReference.addEventListener(Event.SELECT, onFileSelected);
+				}
+				
+				audioFileReference.browseForOpen("Audio File", [new FileFilter("mp3", "*.mp3")]); 
+			}
+			
+			private function onFileSelected(event:Event):void
+			{
+				dialogue.audioFile = audioFileReference.url;
+			}
+			
+			private function onPlayAudioFile():void
+			{
+				if(dialogue.audioFile && dialogue.audioFile != "")
+				{
+					playSound(dialogue.audioFile);
+				}
+			}
+			
+			private function playSound(url:String):void
+			{
+				stopSound();
+				if(sound)
+				{
+					try
+					{
+						sound.close();
+					} 
+					catch(error:Error) 
+					{
+						
+					}
+				}
+				
+				sound = new Sound();
+				sound.load(new URLRequest(url));
+				soundChannel = sound.play();
+			}
+			
+			
+			private function stopSound():void
+			{
+				if(soundChannel)
+					soundChannel.stop();
+			}
+			
+			private function onStopAudioFile():void
+			{
+				stopSound();
+			}
+			
+			private function onDeleteAudioFile():void
+			{
+				if(dialogue)
+					dialogue.audioFile = null;
+			}
+			
+			
 		]]>
 	</fx:Script>
 	
@@ -107,6 +177,13 @@
 		</s:FormItem>
 		<s:FormItem label="Message:">
 			<mx:TextArea id="messageTextArea" text="{dialogue.message}" change="dialogue.message = messageTextArea.text" />
+		</s:FormItem>
+		<s:FormItem label="Audio:">
+			<mx:TextInput id="audioFilePathTextInput" width="60" toolTip="{dialogue.audioFile}" text="{dialogue.audioFile}" editable="false" />
+			<s:Button label="Browse" click="onBrowseForAudioFile()" />
+			<s:Button label="Play" click="onPlayAudioFile()" />
+			<s:Button label="Stop" click="onStopAudioFile()" />
+			<s:Button label="X" width="40" click="onDeleteAudioFile()" />
 		</s:FormItem>
 	</s:Form>
 	

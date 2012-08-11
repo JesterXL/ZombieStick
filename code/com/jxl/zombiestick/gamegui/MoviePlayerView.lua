@@ -87,6 +87,12 @@ function MoviePlayerView:new()
 				self.dialogueView1 = self:getDialogueView(false)
 				self.dialogueView2 = self:getDialogueView(true)
 			end
+
+			if dialogue.audioName ~= nil and dialogue.audioName ~= "" then
+				local audioFileName = dialogue.audioName
+				local stream = audio.loadStream(dialogue.audioName)
+				audio.play(stream, {channel=1})
+			end
 			
 			local lastCharacter = self.lastCharacter
 			--print("lastCharacter: ", lastCharacter, ", dialogue.characterName: ", dialogue.characterName)

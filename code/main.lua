@@ -1120,6 +1120,55 @@ function testShowSaveGameScreen()
 	screen:init(savedGames)
 end
 
+function testCurtain()
+	
+	function getBox()
+		local rect = display.newRect(0, 0, 6, 6)
+		rect:setFillColor(0, 0, 180, 200)
+		return rect
+	end
+
+	local mainLink = getBox()
+	physics.addBody(mainLink, "static")
+
+	local links = {}
+	local joints = {}
+	local holder = display.newGroup()
+	holder.x = 40
+	holder.y = 40
+	local j = 1
+	local MAX_LINKS = 10
+	local startX = 0
+	local startY = 0
+	for j = 1,MAX_LINKS do
+		local link = getBox()
+		links[j] = link
+		link.x = startX
+		link.y = startY
+		holder:insert(link)
+
+		physics.addBody(link, { density=0.1, friction=.3, bounce=0 } )
+		link.angularDamping = 10
+		link.linearDamping = 10
+
+		
+		if (j > 1) then
+			prevLink = links[j-1]
+		else
+			prevLink = mainLink
+		end
+		
+		local jointIndex = #joints + 1
+		joints[jointIndex] = physics.newJoint("pivot", prevLink, link, startX, startY)
+		
+		startY = startY + link.height
+		
+		lastLink = link
+	end
+
+end
+
+
 --testScreenSize()
 --testFreemanBullet()
 --testSwordPolygon()
@@ -1175,9 +1224,9 @@ end
 --testTOCService()
 --testSavingGames()
 --testShowSaveGameScreen()
+--testCurtain()
 
-
---testLevelViewBuildFromJSON()
+testLevelViewBuildFromJSON()
 --testLevelCover()
 
-require "testsmain"
+--require "testsmain"
