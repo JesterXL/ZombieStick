@@ -11,7 +11,8 @@ require("physics")
 
 
 
-physics.setDrawMode("normal")
+--physics.setDrawMode("normal")
+physics.setDrawMode("hybrid")
 physics.start()
 physics.setGravity(0, 9.8)
 physics.setPositionIterations( 10 )
@@ -1166,7 +1167,40 @@ function testCurtain()
 		
 		lastLink = link
 	end
+end
 
+local function testLevel1()
+	mainGroup = display.newGroup()
+	local level1PhysicsData = (require "levels.level1.level1").physicsData(1.0)
+	local function getFloor(name)
+		if x == nil then x = 0 end
+		if y == nil then y = 0 end
+		local floor = display.newImage("levels/level1/" .. name .. ".png", true)
+		mainGroup:insert(floor)
+		floor:setReferencePoint(display.TopLeftReferencePoint)
+		physics.addBody(floor, "static", level1PhysicsData:get(name) )
+		floor.y = stage.height / 2 - floor.height / 2
+		return floor
+	end
+	local floorA = getFloor("level1-a")
+
+	local floorB = getFloor("level1-b")
+	floorB.x = floorA.x + floorA.width
+	floorB.y = 617
+
+	local floorC = getFloor("level1-c")
+	floorC.x = floorB.x + floorB.width
+	floorC.y = 715
+
+	local floorD = getFloor("level1-d")
+	floorD.x = floorC.x + floorC.width
+	floorD.y = 936
+
+	local floorE = getFloor("level1-e")
+	floorE.x = floorD.x + floorD.width
+	floorE.y = 695
+
+	mainGroup.x = -2900
 end
 
 
@@ -1227,7 +1261,10 @@ end
 --testShowSaveGameScreen()
 --testCurtain()
 
-testLevelViewBuildFromJSON()
+--testLevelViewBuildFromJSON()
 --testLevelCover()
+
+testLevel1()
+
 
 --require "testsmain"
