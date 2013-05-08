@@ -9,7 +9,6 @@ require "com.jxl.zombiestick.services.LoadLevelService"
 
 require("physics")
 
-
 physics.setDrawMode("normal")
 physics.start()
 physics.setGravity(0, 9.8)
