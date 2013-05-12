@@ -22,8 +22,6 @@ function JumpState:new(stateName)
 		player.lastJump = system.getTimer()
 		
 		player:applyLinearImpulse(0,-10,player.x, player.y)
-
-		self:checkForLedgeHit()
 	end
 	
 	function state:onExitState(event)
@@ -83,6 +81,7 @@ function JumpState:new(stateName)
 	end
 
 	function state:checkForLedgeHit()
+		if self.canCheckForCollisions == false then return false end
 		local player = self.entity
 		if player.lastLedge ~= nil then
 			self.stateMachine:changeStateToAtNextTick("climbLedge")

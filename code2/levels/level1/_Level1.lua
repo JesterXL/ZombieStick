@@ -70,15 +70,15 @@ function _Level1:new()
 		ladder2.x = 1740
 		ladder2.y = 570
 
-		local ledge1 = Ledge:new(2152, 692, "left")
+		local ledge1 = Ledge:new(2152, 704, "left")
 		self.ledge1 = ledge1
 		ledge1.name = "ledge1"
 
-		local ledge2 = Ledge:new(1982, 550, "left")
+		local ledge2 = Ledge:new(1982, 564, "left")
 		self.ledge2 = ledge2
 		ledge2.name = "ledge2"
 
-		local ledge3 = Ledge:new(1835, 450, "left")
+		local ledge3 = Ledge:new(1835, 464, "left")
 		self.ledge3 = ledge3
 		ledge3.name = "ledge3"
 	end
