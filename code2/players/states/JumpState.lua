@@ -6,15 +6,12 @@ function JumpState:new(stateName)
 		stateName = "jump"
 	end
 	local state = BaseState:new(stateName)
-	state.hitLedge = nil
-	state.ledge = nil
 	state.readyToLand = nil
 	state.hitALandableTarget = nil
 	state.canCheckForCollisions = nil
 	
 	function state:onEnterState(event)
 		print("JumpState::onEnterState")
-		self.hitLedge = false
 		self.readyToLand = false
 		self.hitALandableTarget = false
 		self.canCheckForCollisions = false
@@ -25,13 +22,14 @@ function JumpState:new(stateName)
 		player.lastJump = system.getTimer()
 		
 		player:applyLinearImpulse(0,-10,player.x, player.y)
+
+		self:checkForLedgeHit()
 	end
 	
 	function state:onExitState(event)
 		print("JumpState::onExitState")
 		local player = self.entity
 		player:removeEventListener("collision", self)
-		self.ledge = nil
 	end
 	
 	function state:tick(time)
@@ -42,44 +40,34 @@ function JumpState:new(stateName)
 			end
 		end
 
-		if self.hitLedge == false then
-			if self.readyToLand == false and system.getTimer() - player.lastJump >= player.JUMP_INTERVAL then
-				self.readyToLand = true
-				self:resolveEndJump()
-			end
-		else
-			local ledge = self.ledge
-			print("ledge.exitDirection: ", ledge.exitDirection)
-			if ledge.exitDirection == "right" then
-				player.x = ledge.x + ledge.width
-			else
-				player.x = ledge.x - player.width
-			end
-			player.y = self.ledge.y - player.height
-			player.angularVelocity = 0
-			player:setLinearVelocity(0, 0)
-			self.stateMachine:changeStateToAtNextTick("ready")
+		if self:checkForLedgeHit() then
+			return true
+		end
+
+		if self.readyToLand == false and system.getTimer() - player.lastJump >= player.JUMP_INTERVAL then
+			self.readyToLand = true
+			self:resolveEndJump()
 		end
 	end
 	
 	function state:collision(event)
-		print("JumpState::collision")
-		if self.canCheckForCollisions == false then return true end
-		
+		--print("JumpState::collision")
 		local player = self.entity
 		local target = event.other.classType
+		-- print(target)
+		if self:checkForLedgeHit() then
+			return true
+		end
+
+		if self.canCheckForCollisions == false then return true end
+
+		
 		--showProps(event.other)
 		-- print("target:", target)
+		
 		if target == "Floor" or target == "Crate" or target == "Table" or target == "Chair" or target == "Elevator" then
-			print("hit a floor")
-			player:removeEventListener("collision", self)
-			self.hitALandableTarget = true
-			self:resolveEndJump()
-			return true
-		elseif event.other.name == "Ledge" then
-			self.hitLedge = true
-			self.ledge = event.other
-			player:removeEventListener("collision", self)
+			-- print("hit a floor")
+			--player:removeEventListener("collision", self)
 			self.hitALandableTarget = true
 			self:resolveEndJump()
 			return true
@@ -92,6 +80,15 @@ function JumpState:new(stateName)
 			player:showSprite("stand")
 			self.stateMachine:changeStateToAtNextTick("ready")
 		end
+	end
+
+	function state:checkForLedgeHit()
+		local player = self.entity
+		if player.lastLedge ~= nil then
+			self.stateMachine:changeStateToAtNextTick("climbLedge")
+			return true
+		end
+		return false
 	end
 	
 	return state

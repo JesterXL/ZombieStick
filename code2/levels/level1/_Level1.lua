@@ -1,6 +1,7 @@
 require "physics"
 local parallax = require( "utils.parallax" )
 require "sprites.Ladder"
+require "sprites.Ledge"
 
 _Level1 = {}
 
@@ -48,15 +49,29 @@ function _Level1:new()
 
 		local ladder1 = Ladder:new()
 		self.ladder1 = ladder1
+		ladder1.name = "ladder1"
 		ladder1:toBack()
 		ladder1.x = 1042
 		ladder1.y = 570
 
 		local ladder2 = Ladder:new()
 		self.ladder2 = ladder2
+		ladder2.name = "ladder2"
 		ladder2:toBack()
 		ladder2.x = 1740
 		ladder2.y = 570
+
+		local ledge1 = Ledge:new(2152, 692, "left")
+		self.ledge1 = ledge1
+		ledge1.name = "ledge1"
+
+		local ledge2 = Ledge:new(1982, 550, "left")
+		self.ledge2 = ledge2
+		ledge2.name = "ledge2"
+
+		local ledge3 = Ledge:new(1835, 450, "left")
+		self.ledge3 = ledge3
+		ledge3.name = "ledge3"
 	end
 
 	function level:destroy()

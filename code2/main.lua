@@ -37,10 +37,10 @@ local function main()
 	end
 
 	function setupPlayerDebug(player)
-		local rect = display.newRect(0, 0, 120, 60)
+		local rect = display.newRect(0, 0, 140, 120)
 		rect:setFillColor(0, 0, 0, 240)
 
-		local field = display.newText("x: ---\ny: ---", 0, 0, 120, 120, native.systemFont, 21)
+		local field = display.newText("x: ---\ny: ---\nledge: ---", 0, 0, 160, 160, native.systemFont, 21)
 		field:setTextColor(255, 255, 255)
 		field.player = player
 
@@ -48,6 +48,11 @@ local function main()
 			if self.player then
 				local str = "x: " .. round(self.player.x, 2)
 				str = str .. "\ny: " .. round(self.player.y, 2)
+				if self.player.lastLedge then
+					str = str .. "\nledge: " .. self.player.lastLedge.name
+				else
+					str = str .. "\nledge: nil"
+				end
 				self.text = str
 			else
 				self.text = "---"
@@ -83,8 +88,8 @@ local function main()
 
 		require "players.PlayerJXL"
 		local jxl = PlayerJXL:new()
-		jxl.x = 3598
-		jxl.y = 420
+		jxl.x = 1893
+		jxl.y = 527
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"

@@ -7,6 +7,7 @@ require "players.states.JumpState"
 require "players.states.JumpLeftState"
 require "players.states.JumpRightState"
 require "players.states.ClimbLadderState"
+require "players.states.ClimbLedgeState"
 
 PlayerJXL = {}
 
@@ -19,12 +20,13 @@ function PlayerJXL:new()
 	player.sprite = nil
 	player.speed = 10
 	player.maxSpeed = 10
-	player.climbSpeed = 0.5
+	player.climbSpeed = 0.2
 	player.fsm = nil
 	player.lastJump = nil
 	player.JUMP_INTERVAL = 1000
 	player.climbDirection = nil -- up or down, set by ReadyState
 	player.lastLadder = nil
+	player.lastLedge = nil
 
 	function player:init()
 		self.spriteHolder = display.newGroup()
@@ -88,10 +90,13 @@ function PlayerJXL:new()
 		fsm:addState2(JumpLeftState:new())
 		fsm:addState2(JumpRightState:new())
 		fsm:addState2(ClimbLadderState:new())
+		fsm:addState2(ClimbLedgeState:new())
 		fsm:setInitialState("ready")
 
 		Runtime:addEventListener("onPlayerLadderCollisionBegan", self)
 		Runtime:addEventListener("onPlayerLadderCollisionEnded", self)
+		Runtime:addEventListener("onLedgeCollideBegan", self)
+		Runtime:addEventListener("onLedgeCollideEnded", self)
 
 		--gameLoop:addLoop(self)
 	end
@@ -170,6 +175,14 @@ function PlayerJXL:new()
 	function player:onPlayerLadderCollisionEnded(event)
 		print("PlayerJXL::onPlayerLadderCollisionEnded")
 		--self.lastLadder = nil
+	end
+
+	function player:onLedgeCollideBegan(event)
+		self.lastLedge = event.target
+	end
+
+	function player:onLedgeCollideEnded(event)
+		self.lastLedge = nil
 	end
 
 	player:init()
