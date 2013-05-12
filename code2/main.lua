@@ -10,6 +10,7 @@ local function main()
 		_G.mainGroup = display.newGroup()
 		mainGroup.classType = "mainGroup"
 		_G.stage = display.getCurrentStage()
+		_G.constants = require "constants"
 	end
 
 	local function setupPhysics()

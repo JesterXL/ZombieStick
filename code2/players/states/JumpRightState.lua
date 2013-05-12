@@ -18,7 +18,7 @@ function JumpRightState:new()
 		player:showSprite("jump")
 		player.lastJump = system.getTimer()
 		
-		player:applyLinearImpulse(5,-8,player.x, player.y)
+		player:applyLinearImpulse(constants.PLAYER_JUMP_XFORCE, constants.PLAYER_JUMP_YFORCE, player.x, player.y)
 	end
 	
 	
