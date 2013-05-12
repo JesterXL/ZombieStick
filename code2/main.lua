@@ -19,7 +19,15 @@ local function main()
 		physics.start()
 		physics.setGravity(0, 9.8)
 		physics.setPositionIterations( 10 )
+	end
 
+	function showProps(o)
+		print("-- showProps --")
+		print("o: ", o)
+		for key,value in pairs(o) do
+			print("key: ", key, ", value: ", value);
+		end
+		print("-- end showProps --")
 	end
 
 	local function testLevel1()
@@ -50,12 +58,28 @@ local function main()
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"
+		require "components.ButtonJump"
+		require "components.ButtonJumpLeft"
+		require "components.ButtonJumpRight"
 		local buttonLeft = ButtonLeft:new()
 		local buttonRight = ButtonRight:new()
+		local buttonJump = ButtonJump:new()
+		local buttonJumpLeft = ButtonJumpLeft:new()
+		local buttonJumpRight = ButtonJumpRight:new()
 		buttonLeft.x = 0
 		buttonLeft.y = stage.height - buttonLeft.height
-		buttonRight.x = buttonLeft.x + buttonLeft.width + 8
-		buttonRight.y = buttonLeft.y
+
+		buttonJumpLeft.x = buttonLeft.x + buttonLeft.width + 8
+		buttonJumpLeft.y = buttonLeft.y
+
+		buttonJump.x = buttonJumpLeft.x + buttonJumpLeft.width + 8
+		buttonJump.y = buttonJumpLeft.y
+
+		buttonJumpRight.x = buttonJump.x + buttonJump.width + 8
+		buttonJumpRight.y = buttonJump.y
+		
+		buttonRight.x = buttonJumpRight.x + buttonJumpRight.width + 8
+		buttonRight.y = buttonJumpRight.y
 
 	end
 

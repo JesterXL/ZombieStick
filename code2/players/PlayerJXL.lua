@@ -3,6 +3,9 @@ require "players.states.IdleState"
 require "players.states.ReadyState"
 require "players.states.MovingLeftState"
 require "players.states.MovingRightState"
+require "players.states.JumpState"
+require "players.states.JumpLeftState"
+require "players.states.JumpRightState"
 
 PlayerJXL = {}
 
@@ -16,6 +19,8 @@ function PlayerJXL:new()
 	player.speed = 3
 	player.maxSpeed = 3
 	player.fsm = nil
+	player.lastJump = nil
+	player.JUMP_INTERVAL = 1000
 
 	function player:init()
 		self.spriteHolder = display.newGroup()
@@ -42,12 +47,14 @@ function PlayerJXL:new()
 				start=17,
 				count=6,
 				time=600,
+				loopCount=1,
 			},
 			{
 				name="attack",
 				start=25,
 				count=6,
-				time=300
+				time=300,
+				loopCount=1,
 			}
 		}
 
@@ -73,6 +80,9 @@ function PlayerJXL:new()
 		fsm:addState2(ReadyState:new())
 		fsm:addState2(MovingLeftState:new())
 		fsm:addState2(MovingRightState:new())
+		fsm:addState2(JumpState:new())
+		fsm:addState2(JumpLeftState:new())
+		fsm:addState2(JumpRightState:new())
 		fsm:setInitialState("ready")
 
 		--gameLoop:addLoop(self)

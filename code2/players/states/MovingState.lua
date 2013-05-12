@@ -7,6 +7,7 @@ function MovingState:new(stateName)
 	
 	
 	function state:onEnterState(event)
+		print("MovingState::onEnterState")
 		local player = self.entity
 		
 		-- player.startMoveTime = system.getTimer()

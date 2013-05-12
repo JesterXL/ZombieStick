@@ -19,6 +19,7 @@ function _Level1:new()
 			if x == nil then x = 0 end
 			if y == nil then y = 0 end
 			local floor = display.newImage("levels/level1/" .. name .. ".png", true)
+			floor.classType = "Floor"
 			mainGroup:insert(floor)
 			floor:setReferencePoint(display.TopLeftReferencePoint)
 			physics.addBody(floor, "static", level1PhysicsData:get(name) )
