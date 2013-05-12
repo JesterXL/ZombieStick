@@ -27,7 +27,7 @@ function PlayerJXL:new()
 	player.climbDirection = nil -- up or down, set by ReadyState
 	player.lastLadder = nil
 	player.lastLedge = nil
-	player.ledgeClimbSpeed = 0.1
+	player.ledgeClimbSpeed = 0.2
 
 	function player:init()
 		self.spriteHolder = display.newGroup()
