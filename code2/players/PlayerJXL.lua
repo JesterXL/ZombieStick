@@ -20,13 +20,14 @@ function PlayerJXL:new()
 	player.sprite = nil
 	player.speed = 10
 	player.maxSpeed = 10
-	player.climbSpeed = 0.2
+	player.climbSpeed = 1.4
 	player.fsm = nil
 	player.lastJump = nil
 	player.JUMP_INTERVAL = 1000
 	player.climbDirection = nil -- up or down, set by ReadyState
 	player.lastLadder = nil
 	player.lastLedge = nil
+	player.ledgeClimbSpeed = 0.1
 
 	function player:init()
 		self.spriteHolder = display.newGroup()

@@ -23,11 +23,13 @@ function ClimbLedgeState:new()
 		player.bodyType = "dynamic"
 		player.lastLedge = nil
 		self.currentLedge = nil
+		player.angularVelocity = 0
+		player:setLinearVelocity(0, 0)
 	end
 
 	function state:tick(time)
 		local player = self.entity
-		local speed = player.climbSpeed
+		local speed = player.ledgeClimbSpeed
 		if speed <= 0 then
 			error("Speed cannot be less than or equal to 0")
 		end
@@ -46,6 +48,8 @@ function ClimbLedgeState:new()
 		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 		local moveX = speed * (deltaX / dist) * time
 		local moveY = speed * (deltaY / dist) * time
+
+		print("moveY:", moveY)
 
 		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 			player.x = targetX

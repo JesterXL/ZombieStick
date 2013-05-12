@@ -39,6 +39,15 @@ function _Level1:new()
 		floorC.x = floorB.x + floorB.width
 		floorC.y = 555
 
+		-- function floorC:preCollision(event)
+		-- 	if event.other.classType == "PlayerJXL" then
+		-- 		if event.other.climbing == true then
+		-- 			event.contact.isEnabled = false
+		-- 		end
+		-- 	end
+		-- end
+		-- floorC:addEventListener("preCollision", floorC)
+
 		local floorD = getFloor("level1-d")
 		floorD.x = floorC.x + floorC.width
 		floorD.y = 777

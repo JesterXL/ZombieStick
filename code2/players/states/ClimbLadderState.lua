@@ -13,8 +13,8 @@ function ClimbLadderState:new()
 		Runtime:addEventListener("onMoveLeftStarted", self)
 		Runtime:addEventListener("onMoveRightStarted", self)
 		
-		Runtime:addEventListener("onJumpRight", self)
-		Runtime:addEventListener("onJumpLeft", self)
+		Runtime:addEventListener("onJumpRightStarted", self)
+		Runtime:addEventListener("onJumpLeftStarted", self)
 
 		Runtime:addEventListener("onClimbUpStarted", self)
 		Runtime:addEventListener("onClimbDownStarted", self)
@@ -32,8 +32,8 @@ function ClimbLadderState:new()
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)
 		
-		Runtime:removeEventListener("onJumpRight", self)
-		Runtime:removeEventListener("onJumpLeft", self)
+		Runtime:removeEventListener("onJumpRightStarted", self)
+		Runtime:removeEventListener("onJumpLeftStarted", self)
 
 		Runtime:removeEventListener("onClimbUpStarted", self)
 		Runtime:removeEventListener("onClimbDownStarted", self)
@@ -62,7 +62,7 @@ function ClimbLadderState:new()
 
 		local ladderTop = (lastLadder.y - lastLadder.height / 2) - (player.height / 2)
 		local ladderBottom = lastLadder.y + lastLadder.height / 2
-		local targetX = player.x
+		local targetX = lastLadder.x
 		local targetY
 		if player.climbDirection == "down" then
 			targetY = player.y + speed
@@ -79,6 +79,7 @@ function ClimbLadderState:new()
 
 		print("targetY:", targetY, ", ladderBottom:", ladderBottom, ", player.y:", player.y, ", ladder.y:", lastLadder.y)
 		if targetY + player.height > ladderBottom then
+			print("player.height:", player.height)
 			player.y = ladderBottom - player.height
 			return true
 		end
@@ -91,12 +92,19 @@ function ClimbLadderState:new()
 		if dist == 0 then return true end
 		local moveX = speed * (deltaX / dist) * time
 		local moveY = speed * (deltaY / dist) * time
+		print("moveY:", moveY)
 
-		--if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-		--	player.y = targetY
-		--else
+		if math.abs(moveX) > dist then
+			player.x = targetX
+		else
+			player.x = player.x - moveX
+		end
+
+		if math.abs(moveY) > dist then
+			player.y = targetY
+		else
 			player.y = player.y - moveY
-		--end
+		end
 	end
 	
 	function state:onClimbUpStarted(event)
@@ -124,11 +132,11 @@ function ClimbLadderState:new()
 		self.stateMachine:changeStateToAtNextTick("movingRight")
 	end
 	
-	function state:onJumpLeft(event)
+	function state:onJumpLeftStarted(event)
 		self.stateMachine:changeStateToAtNextTick("jumpLeft")
 	end
 	
-	function state:onJumpRight(event)
+	function state:onJumpRightStarted(event)
 		self.stateMachine:changeStateToAtNextTick("jumpRight")
 	end
 
