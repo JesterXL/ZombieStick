@@ -7,20 +7,31 @@ require "com.jxl.zombiestick.gamegui.MoviePlayerView"
 
 require "com.jxl.zombiestick.services.LoadLevelService"
 
-require("physics")
 
 
 
---physics.setDrawMode("normal")
-physics.setDrawMode("hybrid")
-physics.start()
-physics.setGravity(0, 9.8)
-physics.setPositionIterations( 10 )
 
 display.setStatusBar( display.HiddenStatusBar )
 
+local function setupGlobals()
+	require "utils.GameLoop"
+	_G.gameLoop = GameLoop:new()
+	gameLoop:start()
 
-local stage = display.getCurrentStage()
+	_G.mainGroup = display.newGroup()
+	mainGroup.classType = "mainGroup"
+	_G.stage = display.getCurrentStage()
+end
+
+local function setupPhysics()
+	require("physics")
+	physics.setDrawMode("hybrid")
+	--physics.setDrawMode("normal")
+	physics.start()
+	physics.setGravity(0, 9.8)
+	physics.setPositionIterations( 10 )
+
+end
 
 function showProps(o)
 	print("-- showProps --")
@@ -1170,38 +1181,96 @@ function testCurtain()
 end
 
 local function testLevel1()
-	mainGroup = display.newGroup()
-	local level1PhysicsData = (require "levels.level1.level1").physicsData(1.0)
-	local function getFloor(name)
-		if x == nil then x = 0 end
-		if y == nil then y = 0 end
-		local floor = display.newImage("levels/level1/" .. name .. ".png", true)
-		mainGroup:insert(floor)
-		floor:setReferencePoint(display.TopLeftReferencePoint)
-		physics.addBody(floor, "static", level1PhysicsData:get(name) )
-		floor.y = stage.height / 2 - floor.height / 2
-		return floor
-	end
-	local floorA = getFloor("level1-a")
 
-	local floorB = getFloor("level1-b")
-	floorB.x = floorA.x + floorA.width
-	floorB.y = 617
+	-- local level1PhysicsData = (require "levels.level1.level1").physicsData(1.0)
+	-- local function getFloor(name)
+	-- 	if x == nil then x = 0 end
+	-- 	if y == nil then y = 0 end
+	-- 	local floor = display.newImage("levels/level1/" .. name .. ".png", true)
+	-- 	mainGroup:insert(floor)
+	-- 	floor:setReferencePoint(display.TopLeftReferencePoint)
+	-- 	physics.addBody(floor, "static", level1PhysicsData:get(name) )
+	-- 	floor.y = stage.height / 2 - floor.height / 2
+	-- 	return floor
+	-- end
+	-- local floorA = getFloor("level1-a")
 
-	local floorC = getFloor("level1-c")
-	floorC.x = floorB.x + floorB.width
-	floorC.y = 715
+	-- local floorB = getFloor("level1-b")
+	-- floorB.x = floorA.x + floorA.width
+	-- floorB.y = 617
 
-	local floorD = getFloor("level1-d")
-	floorD.x = floorC.x + floorC.width
-	floorD.y = 936
+	-- local floorC = getFloor("level1-c")
+	-- floorC.x = floorB.x + floorB.width
+	-- floorC.y = 715
 
-	local floorE = getFloor("level1-e")
-	floorE.x = floorD.x + floorD.width
-	floorE.y = 695
+	-- local floorD = getFloor("level1-d")
+	-- floorD.x = floorC.x + floorC.width
+	-- floorD.y = 936
+
+	-- local floorE = getFloor("level1-e")
+	-- floorE.x = floorD.x + floorD.width
+	-- floorE.y = 695
+
+	-- --mainGroup.x = -2900
+
+	--  Runtime:addEventListener("enterFrame", function(e) mainGroup.x = mainGroup.x + 4 end)
+
+	-- local spriteHolder = display.newGroup()
+	-- mainGroup:insert(spriteHolder)
+	-- local sheet = graphics.newImageSheet("player_jesterxl_sheet.png", {width=64, height=64, numFrames=31})
+	-- local sequenceData = 
+	-- {
+	-- 	{
+	-- 		name="stand",
+	-- 		start=1,
+	-- 		count=6,
+	-- 		time=1000,
+	-- 		loopDirection="bounce"
+	-- 	},
+	-- 	{
+	-- 		name="move",
+	-- 		start=9,
+	-- 		count=2,
+	-- 		time=500,
+	-- 	},
+	-- 	{
+	-- 		name="jump",
+	-- 		start=17,
+	-- 		count=6,
+	-- 		time=600,
+	-- 	},
+	-- 	{
+	-- 		name="attack",
+	-- 		start=25,
+	-- 		count=6,
+	-- 		time=300
+	-- 	}
+	-- }
+
+	-- local sprite = display.newSprite(sheet, sequenceData)
+	-- sprite:setSequence("stand")
+	-- sprite:play()
+	-- spriteHolder:insert(sprite)
+	-- sprite.x = 11
+	-- sprite.y = 8
+
+	-- -- regular physics
+	-- physics.addBody(spriteHolder, "dynamic", {density=0.3, friction=0.8, bounce=0.2, 
+	-- 									shape={0,0, 20,0, 20,40, 0,40}})
+	-- spriteHolder.isFixedRotation = true
+
+	require "levels.level1._Level1"
+	local level1 = _Level1:new()
+	level1:build()
+	
 
 	mainGroup.x = -2900
+	-- spriteHolder.x = 3200
+	-- spriteHolder.y = 860
 end
+
+setupGlobals()
+setupPhysics()
 
 
 --testScreenSize()
