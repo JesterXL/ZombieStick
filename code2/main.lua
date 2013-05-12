@@ -21,6 +21,11 @@ local function main()
 		physics.setPositionIterations( 10 )
 	end
 
+	function round(num, idp)
+		local mult = 10^(idp or 0)
+		return math.floor(num * mult + 0.5) / mult
+	end
+
 	function showProps(o)
 		print("-- showProps --")
 		print("o: ", o)
@@ -29,6 +34,30 @@ local function main()
 		end
 		print("-- end showProps --")
 	end
+
+	function setupPlayerDebug(player)
+		local rect = display.newRect(0, 0, 120, 60)
+		rect:setFillColor(0, 0, 0, 240)
+
+		local field = display.newText("x: ---\ny: ---", 0, 0, 120, 120, native.systemFont, 21)
+		field:setTextColor(255, 255, 255)
+		field.player = player
+
+		function field:enterFrame(e)
+			if self.player then
+				local str = "x: " .. round(self.player.x, 2)
+				str = str .. "\ny: " .. round(self.player.y, 2)
+				self.text = str
+			else
+				self.text = "---"
+			end
+		end
+		Runtime:addEventListener("enterFrame", field)
+
+		rect.x = stage.width - rect.width
+		field.x = rect.x + 2
+	end
+
 
 	local function testLevel1()
 		require "levels.level1._Level1"
@@ -53,8 +82,8 @@ local function main()
 
 		require "players.PlayerJXL"
 		local jxl = PlayerJXL:new()
-		jxl.x = 200
-		jxl.y = 650
+		jxl.x = 3598
+		jxl.y = 420
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"
@@ -81,6 +110,25 @@ local function main()
 		buttonRight.x = buttonJumpRight.x + buttonJumpRight.width + 8
 		buttonRight.y = buttonJumpRight.y
 
+		local scroller = {}
+		function scroller:enterFrame(e)
+			local w = stage.width
+			local w2 = w / 2
+			local player = jxl
+			local lastX = mainGroup.x
+			local finalScrollX = math.min(0, w2 - player.x)
+			finalScrollX = math.max(finalScrollX, -(mainGroup.width - stage.width - 20))
+			mainGroup.x = finalScrollX
+		end
+		Runtime:addEventListener("enterFrame", scroller)
+
+		setupPlayerDebug(jxl)
+
+		require "components.ButtonClimbUp"
+		require "components.ButtonClimbDown"
+		local buttonClimbUp = ButtonClimbUp:new()
+		local buttonClimbDown = ButtonClimbDown:new()
+		buttonClimbDown.y = buttonClimbUp.y + buttonClimbUp.height + 8
 	end
 
 	setupGlobals()

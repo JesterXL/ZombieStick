@@ -14,6 +14,8 @@ function ReadyState:new()
 		Runtime:addEventListener("onJumpStarted", self)
 		Runtime:addEventListener("onJumpRightStarted", self)
 		Runtime:addEventListener("onJumpLeftStarted", self)
+		Runtime:addEventListener("onClimbUpStarted", self)
+		Runtime:addEventListener("onClimbDownStarted", self)
 	end
 	
 	function state:onExitState(event)
@@ -23,6 +25,8 @@ function ReadyState:new()
 		Runtime:removeEventListener("onJumpStarted", self)
 		Runtime:removeEventListener("onJumpRightStarted", self)
 		Runtime:removeEventListener("onJumpLeftStarted", self)
+		Runtime:removeEventListener("onClimbUpStarted", self)
+		Runtime:removeEventListener("onClimbDownStarted", self)
 	end
 
 	function state:onMoveLeftStarted(event)
@@ -45,6 +49,15 @@ function ReadyState:new()
 		self.stateMachine:changeStateToAtNextTick("jumpLeft")
 	end
 
+	function state:onClimbUpStarted(event)
+		self.entity.climbDirection = "up"
+		self.stateMachine:changeStateToAtNextTick("climbLadder")
+	end
+
+	function state:onPlayerClimbDownStarted(event)
+		self.entity.climbDirection = "down"
+		self.stateMachine:changeStateToAtNextTick("climbLadder")
+	end
 	return state
 end
 

@@ -6,6 +6,7 @@ require "players.states.MovingRightState"
 require "players.states.JumpState"
 require "players.states.JumpLeftState"
 require "players.states.JumpRightState"
+require "players.states.ClimbLadderState"
 
 PlayerJXL = {}
 
@@ -16,11 +17,14 @@ function PlayerJXL:new()
 	player.spriteHolder = nil
 	player.sheet = nil
 	player.sprite = nil
-	player.speed = 3
-	player.maxSpeed = 3
+	player.speed = 10
+	player.maxSpeed = 10
+	player.climbSpeed = 0.5
 	player.fsm = nil
 	player.lastJump = nil
 	player.JUMP_INTERVAL = 1000
+	player.climbDirection = nil -- up or down, set by ReadyState
+	player.lastLadder = nil
 
 	function player:init()
 		self.spriteHolder = display.newGroup()
@@ -83,7 +87,11 @@ function PlayerJXL:new()
 		fsm:addState2(JumpState:new())
 		fsm:addState2(JumpLeftState:new())
 		fsm:addState2(JumpRightState:new())
+		fsm:addState2(ClimbLadderState:new())
 		fsm:setInitialState("ready")
+
+		Runtime:addEventListener("onPlayerLadderCollisionBegan", self)
+		Runtime:addEventListener("onPlayerLadderCollisionEnded", self)
 
 		--gameLoop:addLoop(self)
 	end
@@ -115,7 +123,11 @@ function PlayerJXL:new()
 		elseif name == "hang" then
 			-- spriteAnime = sprite.newSprite(PlayerJXL.hangSet)
 			-- spriteAnime:prepare("PlayerJXLHang")
+		else
+			print("ERROR: Unknown sprite sequence:", name)
+			return false
 		end
+
 		sprite:setReferencePoint(display.TopLeftReferencePoint)
 		sprite:play()
 		sprite.x = 0
@@ -148,6 +160,16 @@ function PlayerJXL:new()
 			spriteHolder.xScale = -1
 			spriteHolder.x = spriteHolder.width
 		end
+	end
+
+	function player:onPlayerLadderCollisionBegan(event)
+		print("PlayerJXL::onPlayerLadderCollisionBegan")
+		self.lastLadder = event.target
+	end
+
+	function player:onPlayerLadderCollisionEnded(event)
+		print("PlayerJXL::onPlayerLadderCollisionEnded")
+		--self.lastLadder = nil
 	end
 
 	player:init()

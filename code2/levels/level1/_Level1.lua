@@ -1,5 +1,6 @@
 require "physics"
 local parallax = require( "utils.parallax" )
+require "sprites.Ladder"
 
 _Level1 = {}
 
@@ -31,19 +32,31 @@ function _Level1:new()
 
 		local floorB = getFloor("level1-b")
 		floorB.x = floorA.x + floorA.width
-		floorB.y = 617
+		floorB.y = 459
 
 		local floorC = getFloor("level1-c")
 		floorC.x = floorB.x + floorB.width
-		floorC.y = 715
+		floorC.y = 555
 
 		local floorD = getFloor("level1-d")
 		floorD.x = floorC.x + floorC.width
-		floorD.y = 936
+		floorD.y = 777
 
 		local floorE = getFloor("level1-e")
 		floorE.x = floorD.x + floorD.width
-		floorE.y = 695
+		floorE.y = 536
+
+		local ladder1 = Ladder:new()
+		self.ladder1 = ladder1
+		ladder1:toBack()
+		ladder1.x = 1042
+		ladder1.y = 570
+
+		local ladder2 = Ladder:new()
+		self.ladder2 = ladder2
+		ladder2:toBack()
+		ladder2.x = 1740
+		ladder2.y = 570
 	end
 
 	function level:destroy()

@@ -69,7 +69,7 @@ function JumpState:new(stateName)
 		local player = self.entity
 		local target = event.other.classType
 		--showProps(event.other)
-		print("target:", target)
+		-- print("target:", target)
 		if target == "Floor" or target == "Crate" or target == "Table" or target == "Chair" or target == "Elevator" then
 			print("hit a floor")
 			player:removeEventListener("collision", self)
