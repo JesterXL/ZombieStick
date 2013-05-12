@@ -31,10 +31,39 @@ local function main()
 		mainGroup.x = -2900
 	end
 
+	local function testLevel1AndPlayer()
+		local bg = display.newRect(0, 0, stage.width, stage.height)
+		bg:setFillColor(255, 0, 0)
+		bg:toBack()
+
+		require "levels.level1._Level1"
+		local level1 = _Level1:new()
+		level1:build()
+
+		mainGroup.x = 0
+		mainGroup.y = -300
+
+		require "players.PlayerJXL"
+		local jxl = PlayerJXL:new()
+		jxl.x = 200
+		jxl.y = 650
+
+		require "components.ButtonLeft"
+		require "components.ButtonRight"
+		local buttonLeft = ButtonLeft:new()
+		local buttonRight = ButtonRight:new()
+		buttonLeft.x = 0
+		buttonLeft.y = stage.height - buttonLeft.height
+		buttonRight.x = buttonLeft.x + buttonLeft.width + 8
+		buttonRight.y = buttonLeft.y
+
+	end
+
 	setupGlobals()
 	setupPhysics()
 
 	testLevel1()
+	testLevel1AndPlayer()
 
 end
 
