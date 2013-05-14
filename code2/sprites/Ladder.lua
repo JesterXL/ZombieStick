@@ -4,6 +4,9 @@ function Ladder:new()
 
 	local ladder = display.newImage("assets/sprites/ladder.png")
 	ladder.classType = "Ladder"
+	ladder.startY = nil
+	ladder.targetY = nil
+	ladder.reachedTarget = nil
 
 	function ladder:init()
 		self:addEventListener("collision", self)
@@ -19,6 +22,41 @@ function Ladder:new()
 				Runtime:dispatchEvent({name="onPlayerLadderCollisionEnded", target=self})
 			end
 			return true
+		end
+	end
+
+	function ladder:moveDown()
+		if self.reachedTarget == nil then
+			self.startY = self.y
+			self.targetY = self.y + self.height
+			self.reachedTarget = false
+			gameLoop:addLoop(self)
+		end
+	end
+
+	function ladder:stopMoving()
+		gameLoop:removeLoop(self)
+	end
+
+	function ladder:tick(time)
+		if self.reachedTarget then return true end
+
+		local targetY = self.targetY
+		local targetX = self.x
+
+		local deltaX = self.x - targetX
+		local deltaY = self.y - targetY
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+		local moveX = speed * (deltaX / dist) * time
+		local moveY = speed * (deltaY / dist) * time
+
+		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
+			self.x = targetX
+			self.y = targetY
+			self.reachedTarget = true
+		else
+			self.x = self.x - moveX
+			self.y = self.y - moveY
 		end
 	end
 

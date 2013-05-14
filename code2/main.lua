@@ -11,12 +11,14 @@ local function main()
 		mainGroup.classType = "mainGroup"
 		_G.stage = display.getCurrentStage()
 		_G.constants = require "constants"
+		require "components.FloatingText"
+		_G.floatingText = FloatingText:new()
 	end
 
 	local function setupPhysics()
 		require("physics")
-		physics.setDrawMode("hybrid")
-		--physics.setDrawMode("normal")
+		-- physics.setDrawMode("hybrid")
+		physics.setDrawMode("normal")
 		physics.start()
 		physics.setGravity(0, 9.8)
 		physics.setPositionIterations( 10 )
@@ -38,9 +40,11 @@ local function main()
 
 	function setupPlayerDebug(player)
 		local rect = display.newRect(0, 0, 140, 120)
+		rect:setReferencePoint(display.TopLeftReferencePoint)
 		rect:setFillColor(0, 0, 0, 240)
 
 		local field = display.newText("x: ---\ny: ---\nledge: ---", 0, 0, 160, 160, native.systemFont, 21)
+		field:setReferencePoint(display.TopLeftReferencePoint)
 		field:setTextColor(255, 255, 255)
 		field.player = player
 
@@ -61,7 +65,7 @@ local function main()
 		Runtime:addEventListener("enterFrame", field)
 
 		rect.x = stage.width - rect.width
-		field.x = rect.x + 2
+		field.x = rect.x
 	end
 
 
@@ -76,7 +80,7 @@ local function main()
 
 	local function testLevel1AndPlayer()
 		local bg = display.newRect(0, 0, stage.width, stage.height)
-		bg:setFillColor(255, 0, 0)
+		bg:setFillColor(255, 255, 255)
 		bg:toBack()
 
 		require "levels.level1._Level1"
@@ -90,6 +94,9 @@ local function main()
 		local jxl = PlayerJXL:new()
 		jxl.x = 1893
 		jxl.y = 527
+
+		require "vo.LacerationVO"
+		jxl:addInjury(LacerationVO:new())
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"
@@ -137,11 +144,20 @@ local function main()
 		buttonClimbDown.y = buttonClimbUp.y + buttonClimbUp.height + 8
 	end
 
+	local function testFloatingText()
+		require "components.FloatingText"
+		local float = FloatingText:new()
+		float:showFloatingText({x=100, y=100, amount=55, textTarget=stage, textType=constants.TEXT_TYPE_HEALTH})
+	end
+
+
+
 	setupGlobals()
 	setupPhysics()
 
-	testLevel1()
+	-- testLevel1()
 	testLevel1AndPlayer()
+	--testFloatingText()
 
 end
 

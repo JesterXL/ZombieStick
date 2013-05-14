@@ -2,6 +2,7 @@ require "physics"
 local parallax = require( "utils.parallax" )
 require "sprites.Ladder"
 require "sprites.Ledge"
+require "sprites.GenericSensor"
 
 _Level1 = {}
 
@@ -81,9 +82,33 @@ function _Level1:new()
 		local ledge3 = Ledge:new(1835, 464, "left")
 		self.ledge3 = ledge3
 		ledge3.name = "ledge3"
+
+		local ladderCrank = GenericSensor:new({width=32, height=32})
+		ladderCrank.x = 1115
+		ladderCrank.y = 427
+
+		Runtime:addEventListener("onGenericSensorCollision", self)
+	end
+
+	function level:onGenericSensorCollision(event)
+		if event.phase == "began" then
+			self:showCrankButton()
+		elseif event.phase == "ended" then
+			self:hideCrankButton()
+		end
+	end
+
+	function level:showCrankButton()
+		
+	end
+
+	function level:hideCrankButton()
+
 	end
 
 	function level:destroy()
+		Runtime:removeEventListener("onGenericSensorCollision", self)
+
 		if self.floorA then
 			-- TODO: safe remove
 			physics.removeBody(self.floorA)
