@@ -173,6 +173,39 @@ local function main()
 		view:setInjuries(injuries)
 	end
 
+	local function testFirstAidViews()
+		-- require "views.injuryviews.FirstAidItemRenderer"
+		-- local item = FirstAidItemRenderer:new(300, 70)
+		-- item.x = 30
+		-- item.y = 30
+
+		require "vo.FirstAidVO"
+		-- local vo = FirstAidVO:new("Bandage", "Protects a cut, slows bleeding, and helps prevent infection while protecting the cut.")
+		-- item:setFirstAid(vo)
+
+		-- require "views.injuryviews.FirstAidList"
+		-- local list = FirstAidList:new(300, 300)
+		-- list.x = 30
+		-- list.y = 30
+
+		-- local i
+		-- local firstAids = {}
+		-- for i=1,10 do
+		-- 	local vo = FirstAidVO:new("Bandage", "Protects a cut, slows bleeding, and helps prevent infection while protecting the cut.")
+		-- 	table.insert(firstAids, vo)
+		-- end
+		-- list:setFirstAids(firstAids)
+		
+		require "MainContext"
+		local context = MainContext:new()
+		
+		require "views.injuryviews.InjuryTreatmentView"
+		local view = InjuryTreatmentView:new(400, 400)
+		
+
+
+
+	end
 
 
 	setupGlobals()
@@ -181,7 +214,8 @@ local function main()
 	-- testLevel1()
 	-- testLevel1AndPlayer()
 	--testFloatingText()
-	testInjuryView()
+	-- testInjuryView()
+	testFirstAidViews()
 
 end
 

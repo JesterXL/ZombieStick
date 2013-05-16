@@ -25,6 +25,8 @@ function AutoSizeText:new(parentGroup)
 			return true
 		end
 
+		if str == nil then str = "nil" end
+		
 		self._text = str
 		if self.field then
 			self.field:removeSelf()
@@ -39,7 +41,7 @@ function AutoSizeText:new(parentGroup)
 			fontName = native.systemFontBold
 		end
 		
-		if self._autoSize == false then
+		if self._autoSize == true then
 			field = display.newText(str, 0, 0, fontName, self._fontSize)
 		else
 			field = display.newText(str, 0, 0, self._width, self._height, fontName, self._fontSize)

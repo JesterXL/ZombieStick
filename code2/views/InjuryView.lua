@@ -1,5 +1,5 @@
 local widget = require "widget"
-require "views.InjuryItemRenderer"
+require "views.injuryviews.InjuryItemRenderer"
 InjuryView = {}
 
 function InjuryView:new(startX, startY, layoutWidth, layoutHeight)

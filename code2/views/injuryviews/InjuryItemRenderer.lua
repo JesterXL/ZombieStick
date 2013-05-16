@@ -73,6 +73,10 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		return true
 	end
 
+	function view:showTreatButton(show)
+		self.treatButton.isVisible = show
+	end
+
 	view:init()
 
 
