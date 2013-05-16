@@ -150,14 +150,38 @@ local function main()
 		float:showFloatingText({x=100, y=100, amount=55, textTarget=stage, textType=constants.TEXT_TYPE_HEALTH})
 	end
 
+	local function testInjuryView()
+		-- require "views.InjuryItemRenderer"
+		-- local item = InjuryItemRenderer:new(200, 70)
+		-- item.x = 30
+		-- item.y = 30
+
+		require "views.InjuryView"
+		require "vo.BiteVO"
+		require "vo.LacerationVO"
+
+		local view = InjuryView:new(30, 30, 300, 300)
+
+		local injuries = {}
+		table.insert(injuries, BiteVO:new())
+		table.insert(injuries, LacerationVO:new())
+		table.insert(injuries, BiteVO:new())
+		table.insert(injuries, LacerationVO:new())
+		table.insert(injuries, BiteVO:new())
+		table.insert(injuries, LacerationVO:new())
+
+		view:setInjuries(injuries)
+	end
+
 
 
 	setupGlobals()
 	setupPhysics()
 
 	-- testLevel1()
-	testLevel1AndPlayer()
+	-- testLevel1AndPlayer()
 	--testFloatingText()
+	testInjuryView()
 
 end
 

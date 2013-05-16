@@ -1,6 +1,6 @@
 InjuryVO = {}
 
-function InjuryVO:new(applyInterval, injuryType, amount, lifetime)
+function InjuryVO:new(name, applyInterval, injuryType, amount, lifetime)
 	assert(applyInterval ~= nil, "applyInterval cannot be nil")
 	assert(injuryType ~= nil, "injuryType cannot be nil")
 	assert(amount ~= nil, "amount cannot be nil")
@@ -12,6 +12,7 @@ function InjuryVO:new(applyInterval, injuryType, amount, lifetime)
 	assert(applyInterval > -1, "applyInterval must be equal to or greater than 0")
 
 	local injury 				= {}
+	injury.name 				= name
 	injury.applyInterval 		= applyInterval
 	injury.injuryType			= injuryType
 	injury.amount 				= amount
@@ -19,17 +20,15 @@ function InjuryVO:new(applyInterval, injuryType, amount, lifetime)
 		lifetime = -1 -- default to live forever
 	end
 	injury.lifetime 			= lifetime
-	if lifetime == -1 then
-		injury.livesForever 	= true
-	else
-		injury.livesForever		= false
-	end
+	
 	-- [jwarden 6.16.2012] NOTE/TODO: I wanted to keep track of when it was created,
 	-- so that whoever handles applying the injuries knew that time had in fact passed since the actual
 	-- injury was created, therefore to make up for lost time. However... screw it.
 	--injury.creationTime 		= system.getTimer()
 	injury.currentTime 			= 0
 	injury.totalTimeAlive 		= 0
+
+	injury.icon 				= nil
 
 
 

@@ -58,7 +58,7 @@ function BasePlayer:new()
 				vo.currentTime = vo.currentTime + time
 				vo.totalTimeAlive = vo.totalTimeAlive + time
 				if vo.currentTime >= vo.applyInterval then
-					if vo.livesForever == false and vo.totalTimeAlive >= vo.lifetime then
+					if vo.totalTimeAlive >= vo.lifetime then
 						destroyIt = true
 					end
 
