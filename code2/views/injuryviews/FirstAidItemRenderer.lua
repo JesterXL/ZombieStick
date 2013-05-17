@@ -63,7 +63,7 @@ function FirstAidItemRenderer:new(layoutWidth, layoutHeight)
 		    height = 60,
 		    id = "useButton",
 		    label = "Use",
-		    onEvent = function(e) self:onUseButtonTouched(event) end,
+		    onEvent = function(e) self:onUseButtonTouched(e) end,
 		}
 		useButton:setReferencePoint(display.TopLeftReferencePoint)
 		self:insert(useButton)

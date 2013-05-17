@@ -22,7 +22,7 @@ function PlayerJXLMediator:new()
 	end
 
 	function mediator:InjuryModel_applyInjury(e)
-		local vo = e.injury
+		local vo = e.injuryVO
 		local view = self.viewInstance
 		local injuryType = vo.injuryType
 		if injuryType == constants.INJURY_BITE then

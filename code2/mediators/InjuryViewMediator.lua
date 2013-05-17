@@ -19,7 +19,7 @@ function InjuryViewMediator:new()
 	end
 
 	function mediator:InjuryModel_onChange(e)
-		self.viewInstance:removeInjury(e.injury)
+		self.viewInstance:removeInjury(e.injuryVO)
 	end
 	
 	return mediator

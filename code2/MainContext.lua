@@ -18,8 +18,8 @@ function MainContext:new()
 		self:mapMediator("views.InjuryView", 
 							"mediators.InjuryViewMediator")
 
-		-- self:mapMediator("views.injuryviews.InjuryTreatmentView", 
-		-- 					"mediators.InjuryTreatmentView")
+		self:mapMediator("views.injuryviews.InjuryTreatmentView", 
+							"mediators.InjuryTreatmentViewMediator")
 
 		self:mapMediator("views.injuryviews.FirstAidList",
 							"mediators.FirstAidListMediator")

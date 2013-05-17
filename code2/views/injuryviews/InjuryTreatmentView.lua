@@ -71,15 +71,25 @@ function InjuryTreatmentView:new(layoutWidth, layoutHeight)
 		firstAidList.y = firstAidButton.y + firstAidButton.height + MARGIN
 		self.firstAidList = firstAidList
 		
-		-- Runtime:dispatchEvent({name="onRobotlegsViewCreated", target=self})
+		Runtime:dispatchEvent({name="onRobotlegsViewCreated", target=self})
+	end
+
+	function view:setInjury(injuryVO)
+		self.injuryVO = injuryVO
+		self.injuryRenderer:setInjury(injuryVO)
 	end
 
 	function view:destroy()
+		if self.destroyed == true then return true end
+
 		Runtime:dispatchEvent({name="onRobotlegsViewDestroyed", target=self})
 
+		self.injuryVO = nil
+		
 		self.background:removeSelf()
 		self.background = nil
 
+		self.injuryRenderer:setInjury(nil)
 		self.injuryRenderer:removeSelf()
 		self.injuryRenderer = nil
 
@@ -95,7 +105,7 @@ function InjuryTreatmentView:new(layoutWidth, layoutHeight)
 		self.firstAidList:removeSelf()
 		self.firstAidList = nil
 
-
+		self.destroyed = true
 	end
 
 

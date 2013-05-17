@@ -172,7 +172,7 @@ local function main()
 		Runtime:addEventListener("onHeal", healListener)
 
 		require "views.injuryviews.InjuryTreatmentView"
-		local treatListener = function()
+		local treatListener = function(e)
 			if gInjuryView then
 				gInjuryView:destroy()
 				gInjuryView = nil
@@ -182,16 +182,25 @@ local function main()
 				gTreatInjuryView = InjuryTreatmentView:new(400, 400)
 				gTreatInjuryView.x = 30
 				gTreatInjuryView.y = 30
+				gTreatInjuryView:setInjury(e.injuryVO)
 			end
 
 		end
 		Runtime:addEventListener("onTreatInjury", treatListener)
 
 		local useFirstAidListener = function(e)
-			if e.firstAidVO.amount >= 1 then
-
+			local injury = gTreatInjuryView.injuryVO
+			local firstAid = e.firstAidVO
+			print("attempting to heal " .. injury.name .. " with " .. firstAid.name)
+			if firstAid.amount >= 1 then
+				if injury.name == "Laceration" and firstAid.name == "Bandage" then
+					print("that'll do, removing...")
+					firstAid.amount = firstAid.amount - 1
+					gInjuryModel:healInjury(injury)
+				end
 			end
 		end
+		Runtime:addEventListener("onUseFirstAid", useFirstAidListener)
 
 	end
 

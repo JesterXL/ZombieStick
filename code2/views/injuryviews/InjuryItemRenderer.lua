@@ -64,6 +64,8 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 	function view:setInjury(injuryVO)
 		self.injuryVO = injuryVO
 
+		if injuryVO == nil then return true end
+		
 		self.icon:loadImage(injuryVO.icon)
 		self.titleField:setText(injuryVO.name)
 		self.progressBar:setProgress(injuryVO.currentTime, injuryVO.applyInterval)
@@ -78,7 +80,8 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 
 	function view:onTreatButtonTouched(event)
 		if event.phase == "ended" then
-			Runtime:dispatchEvent({name="onTreatInjury", injury=self.injury})
+			Runtime:dispatchEvent({name="onTreatInjury", 
+				injuryVO=self.injuryVO})
 		end
 		return true
 	end

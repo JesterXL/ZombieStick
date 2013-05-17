@@ -34,13 +34,25 @@ function InjuryModel:new()
 		end
 	end
 
-	function model:removeLatestInjury()
+	function model:healInjury(injuryVO)
 		local injuries = self.injuries
-		if injuries == nil then return false end
-		if #injuries < 1 then return false end
-
-		table.remove(injuries, #injuries)
-		-- Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
+		local i = 1
+		while injuries[i] do
+			local vo = injuries[i]
+			if vo == injuryVO then
+				table.remove(injuries, i)
+				Runtime:dispatchEvent({
+											name="InjuryModel_onChange", 
+											target=self, 
+											type="remove", 
+											index=i, 
+											injuryVO=vo
+										})
+				return true
+			end
+			i = i + 1
+		end
+		return false
 	end
 
 	function model:tick(time)
@@ -59,7 +71,7 @@ function InjuryModel:new()
 											name="InjuryModel_applyInjury",
 											target=self,
 											index=i,
-											injury=vo
+											injuryVO=vo
 										})
 				end
 				
@@ -70,7 +82,7 @@ function InjuryModel:new()
 											target=self, 
 											type="remove", 
 											index=i, 
-											injury=vo
+											injuryVO=vo
 										})
 				end
 				
