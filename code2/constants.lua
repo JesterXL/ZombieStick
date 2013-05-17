@@ -14,4 +14,9 @@ constants.HEALTH_FIELD_NEGATIVE_COLOR  = {255, 0, 0}
 constants.INJURY_BITE                  = "biteInjury"
 constants.INJURY_LACERATION            = "lacerationInjury"
 
+constants.FIRST_AID_BANDAGE				= "firstAidBandage"
+constants.FIRST_AID_OINTMENT			= "firstAidOintment"
+constants.FIRST_AID_ANTIBACTERIAL_SOAP	= "firstAidAntibackterialSoap"
+constants.FIRST_AID_SUTURE				= "firstAidSuture"
+
 return constants

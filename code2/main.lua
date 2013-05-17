@@ -99,8 +99,11 @@ local function main()
 		jxl.y = 527
 
 		require "vo.LacerationVO"
+		require "vo.BiteVO"
 		-- jxl:addInjury(LacerationVO:new())
 		gInjuryModel:addInjury(LacerationVO:new())
+		gInjuryModel:addInjury(LacerationVO:new())
+		gInjuryModel:addInjury(BiteVO:new())
 
 
 		require "components.ButtonLeft"
@@ -191,12 +194,19 @@ local function main()
 		local useFirstAidListener = function(e)
 			local injury = gTreatInjuryView.injuryVO
 			local firstAid = e.firstAidVO
-			print("attempting to heal " .. injury.name .. " with " .. firstAid.name)
+			print("attempting to heal " .. injury.name .. " with " .. firstAid.name .. ", amount:" .. firstAid.amount)
 			if firstAid.amount >= 1 then
-				if injury.name == "Laceration" and firstAid.name == "Bandage" then
-					print("that'll do, removing...")
-					firstAid.amount = firstAid.amount - 1
-					gInjuryModel:healInjury(injury)
+				print("injury.injuryType:", injury.injuryType, ", firstAid.firstAidType: ", firstAid.firstAidType)
+				print("constants.INJURY_LACERATION:", constants.INJURY_LACERATION, ", constants.FIRST_AID_BANDAGE: ", constants.FIRST_AID_BANDAGE)
+				if injury.injuryType == constants.INJURY_LACERATION and firstAid.firstAidType == constants.FIRST_AID_BANDAGE then
+					print("injury.usedBandage:", injury.usedBandage)
+					if injury.usedBandage == false then
+						print("treated!")
+						firstAid.amount = firstAid.amount - 1
+						injury:setUsedBandage(true)
+					else
+						print("already used a bandage")
+					end
 				end
 			end
 		end

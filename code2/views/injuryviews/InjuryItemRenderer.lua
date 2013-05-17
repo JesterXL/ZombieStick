@@ -37,6 +37,16 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		titleField.y = icon.y
 		titleField:setText("---")
 
+		local descriptionField = AutoSizeText:new(self)
+		self.descriptionField = descriptionField
+		descriptionField:setTextColor(200, 0, 0)
+		descriptionField.x = titleField.x
+		descriptionField.y = titleField.y + titleField.height
+		descriptionField:setText("---")
+		descriptionField:setFontSize(9)
+
+		
+
 		local progressBar = ProgressBar:new(self, icon.width, 6, {50, 50, 50}, {0, 255, 0})
 		self.progressBar = progressBar
 		progressBar.x = icon.x
@@ -58,6 +68,8 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		treatButton.x = layoutWidth - (treatButton.width + MARGIN)
 		treatButton.y = MARGIN
 
+		descriptionField:setSize(layoutWidth - descriptionField.x - treatButton.width - MARGIN, layoutHeight, descriptionField.y)
+
 		gameLoop:addLoop(self)
 	end
 
@@ -68,14 +80,32 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		
 		self.icon:loadImage(injuryVO.icon)
 		self.titleField:setText(injuryVO.name)
-		self.progressBar:setProgress(injuryVO.currentTime, injuryVO.applyInterval)
+	end
+
+	function view:updateDescription()
+		local injuryVO = self.injuryVO
+		-- print("injuryVO:", injuryVO)
+		local descriptionField = self.descriptionField
+		if injuryVO == nil then
+			descriptionField:setText(" ")
+			return true
+		end
+		-- print("weeeee")
+		-- print(injuryVO:getStatus())
+		descriptionField:setText(injuryVO:getStatus())
 	end
 
 	function view:tick(time)
+		self:updateDescription()
 		if self.injuryVO == nil then return true end
 		local injuryVO = self.injuryVO
 
-		self.progressBar:setProgress(injuryVO.totalTimeAlive, injuryVO.lifetime)
+		if injuryVO.lifetime >= 0 then
+			self.progressBar:setProgress(injuryVO.totalTimeAlive, injuryVO.lifetime)
+			self.progressBar.isVisible = true
+		else
+			self.progressBar.isVisible = false
+		end
 	end
 
 	function view:onTreatButtonTouched(event)
@@ -94,6 +124,7 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		self.background:removeSelf()
 		self.icon:removeSelf()
 		self.titleField:removeSelf()
+		self.descriptionField:removeSelf()
 		self.progressBar:removeSelf()
 		self.treatButton:removeSelf()
 

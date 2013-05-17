@@ -6,6 +6,7 @@ BandageVO = {}
 function BandageVO:new(name, description, icon, amount)
 	local aid   = FirstAidVO:new("Bandage", 
 				"Protects a cut, slows bleeding, and helps prevent infection while protecting the cut.",
+				constants.FIRST_AID_BANDAGE,
 				"assets/icons/icon-bandage.png",
 				6)
 	

@@ -46,11 +46,13 @@ function AutoSizeText:new(parentGroup)
 		else
 			field = display.newText(str, 0, 0, self._width, self._height, fontName, self._fontSize)
 		end
+		
 
 		field:setReferencePoint(display.TopLeftReferencePoint)
 		field:setTextColor(unpack(self._rgba))
 		self.field = field
 		self:insert(field)
+		-- field.size = self._fontSize
 	end
 
 	function view:setTextColor(r, g, b, alpha)

@@ -63,7 +63,9 @@ function InjuryModel:new()
 				local vo = injuries[i]
 				local destroyIt = false
 				vo.currentTime = vo.currentTime + time
-				vo.totalTimeAlive = vo.totalTimeAlive + time
+				if vo.lifetime ~= -1 then
+					vo.totalTimeAlive = vo.totalTimeAlive + time
+				end
 				if vo.currentTime >= vo.applyInterval then
 					-- time's up, time to apply the injury
 					vo.currentTime = 0
@@ -75,7 +77,7 @@ function InjuryModel:new()
 										})
 				end
 				
-				if vo.totalTimeAlive >= vo.lifetime then
+				if vo.lifetime ~= -1 and vo.totalTimeAlive >= vo.lifetime then
 					table.remove(injuries, table.indexOf(vo))
 					Runtime:dispatchEvent({
 											name="InjuryModel_onChange", 

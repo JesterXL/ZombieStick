@@ -30,6 +30,7 @@ function InjuryVO:new(name, applyInterval, injuryType, amount, lifetime)
 
 	injury.icon 				= nil
 
+	
 
 
 	return injury

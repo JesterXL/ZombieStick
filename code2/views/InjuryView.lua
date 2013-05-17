@@ -71,9 +71,23 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 				child:destroy()
 				child:removeSelf()
 				table.remove(scrollView.children, i)
+				self:refresh()
 				return true
 			end
 			i = i - 1
+		end
+	end
+
+	function view:refresh()
+		local scrollView = self.scrollView
+		local itemHeight = 70
+	    local startY = 0
+		local i
+		local children = scrollView.children
+		for i = 1, #children do
+			local item = children[i]
+			item.y = startY
+			startY = startY + item.height
 		end
 	end
 
