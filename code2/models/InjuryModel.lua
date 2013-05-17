@@ -1,0 +1,88 @@
+InjuryModel = {}
+
+function InjuryModel:new()
+	
+	local model = {}
+	model.injuries = {}
+
+	function model:init()
+		gameLoop:addLoop(self)
+	end
+
+	function model:addInjury(injuryVO)
+		local injuries = self.injuries
+		if table.indexOf(injuries, injuryVO) == nil then
+			table.insert(injuries, injuryVO)
+			-- Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
+			return true
+		else
+			error("injuryVO already added to array")
+		end
+	end
+
+	function model:hasInjury(injuryType)
+		assert(injuryType ~= nil, "You cannot pass a nil injuryType.")
+		local injuries = self.injuries
+		if injuries == nil then return false end
+		if #injuries < 1 then return false end
+
+		local i = 1
+		while injuries[i] do
+			local vo = injuries[i]
+			if vo.type == injuryType then return true end
+			i = i + 1
+		end
+	end
+
+	function model:removeLatestInjury()
+		local injuries = self.injuries
+		if injuries == nil then return false end
+		if #injuries < 1 then return false end
+
+		table.remove(injuries, #injuries)
+		-- Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
+	end
+
+	function model:tick(time)
+		local injuries = self.injuries
+		if injuries and #injuries > 0 then
+			local i = 1
+			while injuries[i] do
+				local vo = injuries[i]
+				local destroyIt = false
+				vo.currentTime = vo.currentTime + time
+				vo.totalTimeAlive = vo.totalTimeAlive + time
+				if vo.currentTime >= vo.applyInterval then
+					-- time's up, time to apply the injury
+					vo.currentTime = 0
+					Runtime:dispatchEvent({
+											name="InjuryModel_applyInjury",
+											target=self,
+											index=i,
+											injury=vo
+										})
+				end
+				
+				if vo.totalTimeAlive >= vo.lifetime then
+					table.remove(injuries, table.indexOf(vo))
+					Runtime:dispatchEvent({
+											name="InjuryModel_onChange", 
+											target=self, 
+											type="remove", 
+											index=i, 
+											injury=vo
+										})
+				end
+				
+				i = i + 1
+			end
+		end
+	end
+
+	model:init()
+
+
+	return model
+end
+
+return InjuryModel

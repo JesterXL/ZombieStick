@@ -5,6 +5,7 @@ InjuryView = {}
 function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 
 	local view = display.newGroup()
+	view.classType = "InjuryView"
 	view.background = nil
 	view.x = startX
 	view.y = startY
@@ -34,8 +35,7 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 		    height = scrollViewHeight,
 		    scrollWidth = scrollViewWidth,
 		    scrollHeight = scrollViewHeight,
-		    maskFile = "assets/images/mask-injury-view.png",
-		    listener = function(e) end,
+		    maskFile = "assets/images/mask-injury-view.png"
 		}
 		self:insert(scrollView)
 		self.scrollView = scrollView
@@ -49,15 +49,53 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 		local itemHeight = 70
 	    local startY = 0
 		local i
+		scrollView.children = {}
 		for i = 1, #injuries do
 			local injury = injuries[i]
 			local item = InjuryItemRenderer:new(itemWidth, itemHeight)
 			scrollView:insert(item)
+			table.insert(scrollView.children, item)
 			item:setInjury(injury)
 
 			item.y = startY
 			startY = startY + item.height
 		end
+	end
+
+	function view:removeInjury(vo)
+		local scrollView = self.scrollView
+		local i = table.maxn(scrollView.children)
+		while i > 0 do
+			local child = scrollView.children[i]
+			if child.injuryVO == vo then
+				child:destroy()
+				child:removeSelf()
+				table.remove(scrollView.children, i)
+				return true
+			end
+			i = i - 1
+		end
+	end
+
+	function view:destroy()
+		Runtime:dispatchEvent({name="onRobotlegsViewDestroyed", target=self})
+
+		self.background:removeSelf()
+		self.background = nil
+
+		local scrollView = self.scrollView
+		local i = table.maxn(scrollView.children)
+		while i > 0 do
+			local child = scrollView.children[i]
+			child:destroy()
+			child:removeSelf()
+			i = i - 1
+		end
+
+		self.scrollView:removeSelf()
+		self.scrollView = nil
+
+		self.injuries = nil
 	end
 
 	view:init()

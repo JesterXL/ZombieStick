@@ -12,6 +12,12 @@ function MainContext:new()
 						"commands.StartupCommand")
 		
 
+		self:mapMediator("players.PlayerJXL",
+							"mediators.PlayerJXLMediator")
+
+		self:mapMediator("views.InjuryView", 
+							"mediators.InjuryViewMediator")
+
 		-- self:mapMediator("views.injuryviews.InjuryTreatmentView", 
 		-- 					"mediators.InjuryTreatmentView")
 

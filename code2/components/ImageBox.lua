@@ -31,10 +31,9 @@ function ImageBox:new(parentGroup, layoutWidth, layoutHeight, imageURL)
 		local image = display.newImage(self, url, 0, 0)
 		self.image = image
 		image:setReferencePoint(display.TopLeftReferencePoint)
-		image.x = 2
-		image.y = 2
-		image.width = layoutWidth - 4
-		image.height = layoutHeight - 4
+		-- image.width = layoutWidth - 4
+		-- image.height = layoutHeight - 4
+		self:insert(image)
 	end
 
 	box:init()

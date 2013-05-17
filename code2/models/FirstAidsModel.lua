@@ -1,3 +1,4 @@
+require "vo.BandageVO"
 FirstAidsModel = {}
 
 function FirstAidsModel:new()
@@ -6,8 +7,8 @@ function FirstAidsModel:new()
 
 	function model:init()
 		local firstAids = {}
-		for i=1,10 do
-			local vo = FirstAidVO:new("Bandage", "Protects a cut, slows bleeding, and helps prevent infection while protecting the cut.")
+		for i=1,1 do
+			local vo = BandageVO:new()
 			table.insert(firstAids, vo)
 		end
 		self.firstAids = firstAids

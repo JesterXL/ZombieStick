@@ -84,7 +84,7 @@ function Context:new()
 		assert(viewInstance.classType, "viewInstance does not have a classType parameter.")
 		local className = assert(self:getClassName(viewInstance.classType), "Failed to get class name")
 		assert(_G[className], "Cannot find viewInstance class")
-		assert(self:hasCreatedMediator(viewInstance) == false, "viewInstance already has an instantiated Mediator.")
+		assert(self:hasCreatedMediator(viewInstance) == false, "viewInstance already has an instantiated Mediator. Perhaps you meant to dispatch onRobotlegsViewDestroyed instead?")
 		local mediatorClassName = self.mediators[viewInstance.classType]
 		assert(mediatorClassName, "There is no Mediator registered for this View class: " .. className)
 		if(mediatorClassName ~= nil) then
@@ -111,6 +111,7 @@ function Context:new()
 				table.remove(self.mediatorInstances, mediatorIndex)
 				return true
 			end
+			i = i + 1
 		end
 		return false
 	end

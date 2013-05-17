@@ -30,7 +30,7 @@ function PlayerJXL:new()
 	player.ledgeClimbSpeed = 0.2
 	player.health = 1000
 	player.maxHealth = 1000
-	player.injuries = {}
+	player.injuries = nil
 
 	function player:init()
 		self.spriteHolder = display.newGroup()
@@ -100,46 +100,17 @@ function PlayerJXL:new()
 		Runtime:addEventListener("onLedgeCollideBegan", self)
 		Runtime:addEventListener("onLedgeCollideEnded", self)
 
-		gameLoop:addLoop(self)
+		-- gameLoop:addLoop(self)
+
+		Runtime:dispatchEvent({name="onRobotlegsViewCreated", target=self})
 	end
 
-	function player:tick(time)
-		local injuries = self.injuries
-		if injuries and #injuries > 0 then
-			local i = 1
-			while injuries[i] do
-				local vo = injuries[i]
-				local destroyIt = false
-				vo.currentTime = vo.currentTime + time
-				vo.totalTimeAlive = vo.totalTimeAlive + time
-				if vo.currentTime >= vo.applyInterval then
-					if vo.livesForever == false and vo.totalTimeAlive >= vo.lifetime then
-						destroyIt = true
-					end
-
-					-- time's up, time to apply the injury
-					vo.currentTime = 0
-					-- for now we use a switch statement
-					local injuryType = vo.injuryType
-					if injuryType == constants.INJURY_BITE then
-						self:setHealth(self.health + vo.amount)
-					elseif injuryType == constants.INJURY_LACERATION then
-						self:setHealth(self.health + vo.amount)
-					end
-				end
-				if destroyIt == true then
-					table.remove(injuries, table.indexOf(vo))
-				else
-					i = i + 1
-				end
-			end
-		end
-
-		if self.fsm ~= nil then
-			self.fsm:tick(time)
-		end
-		return true
-	end
+	-- function player:tick(time)
+	-- 	-- if self.fsm ~= nil then
+	-- 	-- 	self.fsm:tick(time)
+	-- 	-- end
+	-- 	return true
+	-- end
 
 	function player:showSprite(name)
 		local sprite = self.sprite
@@ -218,44 +189,6 @@ function PlayerJXL:new()
 		floatingText:text({x=0, y=-32, amount=difference, textTarget=self, textType=constants.TEXT_TYPE_HEALTH})
 	end
 
-	-- TODO: 6.21.2012 Need a GUI for Injuries.
-	function player:addInjury(injuryVO)
-		local injuries = self.injuries
-		if table.indexOf(injuries, injuryVO) == nil then
-			table.insert(injuries, injuryVO)
-			-- Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
-			return true
-		else
-			error("injuryVO already added to array")
-		end
-	end
-
-	function player:hasInjury(injuryType)
-		assert(injuryType ~= nil, "You cannot pass a nil injuryType.")
-		local injuries = self.injuries
-		if injuries == nil then return false end
-		if #injuries < 1 then return false end
-
-		local i = 1
-		while injuries[i] do
-			local vo = injuries[i]
-			if vo.type == injuryType then return true end
-			i = i + 1
-		end
-	end
-
-	function player:removeLatestInjury()
-		local injuries = self.injuries
-		if injuries == nil then return false end
-		if #injuries < 1 then return false end
-
-		table.remove(injuries, #injuries)
-		-- Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
-	end
-
-
-
-	
 	function player:onPlayerLadderCollisionBegan(event)
 		print("PlayerJXL::onPlayerLadderCollisionBegan")
 		self.lastLadder = event.target

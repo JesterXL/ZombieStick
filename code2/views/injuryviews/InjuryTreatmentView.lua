@@ -23,6 +23,7 @@ function InjuryTreatmentView:new(layoutWidth, layoutHeight)
 		local injuryRenderer = InjuryItemRenderer:new(layoutWidth, 70)
 		self:insert(injuryRenderer)
 		injuryRenderer:showTreatButton(false)
+		self.injuryRenderer = injuryRenderer
 
 		local tabHolder = display.newRect(self, 0, 0, layoutWidth, 70)
 		self.tabHolder = tabHolder
@@ -62,13 +63,41 @@ function InjuryTreatmentView:new(layoutWidth, layoutHeight)
 		self:insert(medicineButton)
 		medicineButton.x = layoutWidth - (medicineButton.width + MARGIN)
 		medicineButton.y = firstAidButton.y
+		self.medicineButton = medicineButton
 
 		local startY = firstAidButton.y + firstAidButton.height + MARGIN
 		local firstAidList = FirstAidList:new(layoutWidth, layoutHeight - startY)
 		self:insert(firstAidList)
 		firstAidList.y = firstAidButton.y + firstAidButton.height + MARGIN
+		self.firstAidList = firstAidList
+		
 		-- Runtime:dispatchEvent({name="onRobotlegsViewCreated", target=self})
 	end
+
+	function view:destroy()
+		Runtime:dispatchEvent({name="onRobotlegsViewDestroyed", target=self})
+
+		self.background:removeSelf()
+		self.background = nil
+
+		self.injuryRenderer:removeSelf()
+		self.injuryRenderer = nil
+
+		self.tabHolder:removeSelf()
+		self.tabHolder = nil
+
+		self.firstAidButton:removeSelf()
+		self.firstAidButton = nil
+
+		self.medicineButton:removeSelf()
+		self.medicineButton = nil
+
+		self.firstAidList:removeSelf()
+		self.firstAidList = nil
+
+
+	end
+
 
 	view:init()
 

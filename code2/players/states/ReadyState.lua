@@ -58,6 +58,7 @@ function ReadyState:new()
 		self.entity.climbDirection = "down"
 		self.stateMachine:changeStateToAtNextTick("climbLadder")
 	end
+
 	return state
 end
 

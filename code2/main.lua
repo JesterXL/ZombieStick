@@ -83,6 +83,9 @@ local function main()
 		bg:setFillColor(255, 255, 255)
 		bg:toBack()
 
+		require "MainContext"
+		local context = MainContext:new()
+
 		require "levels.level1._Level1"
 		local level1 = _Level1:new()
 		level1:build()
@@ -96,18 +99,24 @@ local function main()
 		jxl.y = 527
 
 		require "vo.LacerationVO"
-		jxl:addInjury(LacerationVO:new())
+		-- jxl:addInjury(LacerationVO:new())
+		gInjuryModel:addInjury(LacerationVO:new())
+
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"
 		require "components.ButtonJump"
 		require "components.ButtonJumpLeft"
 		require "components.ButtonJumpRight"
+		require "components.ButtonHeal"
+
 		local buttonLeft = ButtonLeft:new()
 		local buttonRight = ButtonRight:new()
 		local buttonJump = ButtonJump:new()
 		local buttonJumpLeft = ButtonJumpLeft:new()
 		local buttonJumpRight = ButtonJumpRight:new()
+		local buttonHeal = ButtonHeal:new()
+
 		buttonLeft.x = 0
 		buttonLeft.y = stage.height - buttonLeft.height
 
@@ -122,6 +131,9 @@ local function main()
 		
 		buttonRight.x = buttonJumpRight.x + buttonJumpRight.width + 8
 		buttonRight.y = buttonJumpRight.y
+
+		buttonHeal.x = buttonRight.x + buttonHeal.width * 2
+		buttonHeal.y = buttonRight.y
 
 		local scroller = {}
 		function scroller:enterFrame(e)
@@ -142,6 +154,45 @@ local function main()
 		local buttonClimbUp = ButtonClimbUp:new()
 		local buttonClimbDown = ButtonClimbDown:new()
 		buttonClimbDown.y = buttonClimbUp.y + buttonClimbUp.height + 8
+
+		require "views.InjuryView"
+		local healListener = function()
+			if gTreatInjuryView then
+				gTreatInjuryView:destroy()
+				gTreatInjuryView = nil
+			end
+
+			if gInjuryView == nil then
+				gInjuryView = InjuryView:new(30, 30, 300, 300)
+			else
+				gInjuryView:destroy()
+				gInjuryView = nil
+			end
+		end
+		Runtime:addEventListener("onHeal", healListener)
+
+		require "views.injuryviews.InjuryTreatmentView"
+		local treatListener = function()
+			if gInjuryView then
+				gInjuryView:destroy()
+				gInjuryView = nil
+			end
+
+			if gTreatInjuryView == nil then
+				gTreatInjuryView = InjuryTreatmentView:new(400, 400)
+				gTreatInjuryView.x = 30
+				gTreatInjuryView.y = 30
+			end
+
+		end
+		Runtime:addEventListener("onTreatInjury", treatListener)
+
+		local useFirstAidListener = function(e)
+			if e.firstAidVO.amount >= 1 then
+
+			end
+		end
+
 	end
 
 	local function testFloatingText()
@@ -195,7 +246,7 @@ local function main()
 		-- 	table.insert(firstAids, vo)
 		-- end
 		-- list:setFirstAids(firstAids)
-		
+
 		require "MainContext"
 		local context = MainContext:new()
 		
@@ -212,10 +263,10 @@ local function main()
 	setupPhysics()
 
 	-- testLevel1()
-	-- testLevel1AndPlayer()
+	testLevel1AndPlayer()
 	--testFloatingText()
 	-- testInjuryView()
-	testFirstAidViews()
+	-- testFirstAidViews()
 
 end
 

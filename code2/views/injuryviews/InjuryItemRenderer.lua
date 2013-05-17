@@ -8,6 +8,7 @@ InjuryItemRenderer = {}
 function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 
 	local view = display.newGroup()
+	view.classType = "InjuryItemRenderer"
 	view.background = nil
 	view.icon = nil
 	view.titleField = nil
@@ -49,13 +50,15 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		    height = 60,
 		    id = "treatButton",
 		    label = "Treat",
-		    onEvent = function(e) self:onTreatButtonTouched(event) end,
+		    onEvent = function(e) self:onTreatButtonTouched(e) end,
 		}
 		treatButton:setReferencePoint(display.TopLeftReferencePoint)
 		self:insert(treatButton)
 		self.treatButton = treatButton
 		treatButton.x = layoutWidth - (treatButton.width + MARGIN)
 		treatButton.y = MARGIN
+
+		gameLoop:addLoop(self)
 	end
 
 	function view:setInjury(injuryVO)
@@ -64,6 +67,13 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		self.icon:loadImage(injuryVO.icon)
 		self.titleField:setText(injuryVO.name)
 		self.progressBar:setProgress(injuryVO.currentTime, injuryVO.applyInterval)
+	end
+
+	function view:tick(time)
+		if self.injuryVO == nil then return true end
+		local injuryVO = self.injuryVO
+
+		self.progressBar:setProgress(injuryVO.totalTimeAlive, injuryVO.lifetime)
 	end
 
 	function view:onTreatButtonTouched(event)
@@ -75,6 +85,17 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 
 	function view:showTreatButton(show)
 		self.treatButton.isVisible = show
+	end
+
+	function view:destroy()
+		self.background:removeSelf()
+		self.icon:removeSelf()
+		self.titleField:removeSelf()
+		self.progressBar:removeSelf()
+		self.treatButton:removeSelf()
+
+		gameLoop:removeLoop(self)
+		self.injuryVO = nil
 	end
 
 	view:init()
