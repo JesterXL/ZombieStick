@@ -271,10 +271,30 @@ local function main()
 		
 		require "views.injuryviews.InjuryTreatmentView"
 		local view = InjuryTreatmentView:new(400, 400)
-		
+	end
 
+	local function testEventDispatcher()
+		local objectA = {}
+		print("objectA:", objectA.addEventListener)
+		require "utils.EventDispatcher"
+		EventDispatcher:initialize(objectA)
+		print("objectA:", objectA.addEventListener)
+		objectA:addEventListener("onTest", function(e)
+			print "onTest callback"
+			print("e:", e)
+			print("self:", self)
+			print(showProps(e))
+		end)
 
+		local objectB = {}
+		function objectB:onTest(event)
+			print("objectB::onTest, event:", event)
+			showProps(event)
+			print(objectB == self)
+		end
+		objectA:addEventListener("onTest", objectB)
 
+		objectA:dispatchEvent({name="onTest", data="example"})
 	end
 
 
@@ -282,11 +302,12 @@ local function main()
 	setupPhysics()
 
 	-- testLevel1()
-	testLevel1AndPlayer()
+	-- testLevel1AndPlayer()
 	--testFloatingText()
 	-- testInjuryView()
 	-- testFirstAidViews()
 
+	testEventDispatcher()
 end
 
 local function onError(e)

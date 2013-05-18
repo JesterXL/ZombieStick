@@ -1,3 +1,4 @@
+
 InjuryModel = {}
 
 function InjuryModel:new()
