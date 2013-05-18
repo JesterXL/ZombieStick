@@ -16,21 +16,23 @@ function LacerationVO:new()
 		if value == true then
 			self.currentTime = 0
 			self.applyInterval = 30 * 1000
-			self.lifetime = 3 * 60 * 1000
+			self.lifetime = 10 * 1000
 		end
 	end
 
 	function cut:setUsedBandage(value)
+		print("Laceration::setUsedBandage, self.lifetime:", self.lifetime)
 		self.usedBandage = value
 		if value == true then
 			self.currentTime = 0
 			self.amount = -1
 			if self.usedSuture then
-				self.lifetime = 1 * 60 * 1000
+				self.lifetime = 5 * 1000
 			else
-				self.lifetime = 3 * 60 * 1000
+				self.lifetime = 15 * 1000
 			end
 		end
+		print("and set lifetime:", self.lifetime)
 	end
 
 	function cut:getStatus()
