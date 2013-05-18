@@ -61,7 +61,6 @@ function InjuryModel:new()
 			local i = 1
 			while injuries[i] do
 				local vo = injuries[i]
-				local destroyIt = false
 				vo.currentTime = vo.currentTime + time
 				if vo.lifetime ~= -1 then
 					vo.totalTimeAlive = vo.totalTimeAlive + time

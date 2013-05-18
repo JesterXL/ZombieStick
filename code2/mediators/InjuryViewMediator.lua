@@ -6,6 +6,7 @@ function InjuryViewMediator:new()
 	function mediator:onRegister()
 		print("InjuryViewMediator::onRegister")
 		local view = self.viewInstance
+		print("setting InjuryModel.injuries:", table.maxn(gInjuryModel.injuries))
 		view:setInjuries(gInjuryModel.injuries)
 
 		Runtime:addEventListener("InjuryModel_onChange", self)

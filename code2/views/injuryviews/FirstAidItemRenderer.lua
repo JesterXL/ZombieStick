@@ -88,6 +88,28 @@ function FirstAidItemRenderer:new(layoutWidth, layoutHeight)
 		return true
 	end
 
+	function view:destroy()
+		self.background:removeSelf()
+		self.background = nil
+
+		self.icon:removeSelf()
+		self.icon = nil
+
+		self.titleField:removeSelf()
+		self.titleField = nil
+
+		self.descriptionField:removeSelf()
+		self.descriptionField = nil
+
+		self.amountField:removeSelf()
+		self.amountField = nil
+
+		self.useButton:removeSelf()
+		self.useButton = nil
+
+		self.firstAidVO = nil
+	end
+
 	view:init()
 
 	return view

@@ -87,7 +87,7 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 		-- print("injuryVO:", injuryVO)
 		local descriptionField = self.descriptionField
 		if injuryVO == nil then
-			descriptionField:setText(" ")
+			descriptionField:setText("...")
 			return true
 		end
 		-- print("weeeee")
@@ -121,15 +121,32 @@ function InjuryItemRenderer:new(layoutWidth, layoutHeight)
 	end
 
 	function view:destroy()
-		self.background:removeSelf()
-		self.icon:removeSelf()
-		self.titleField:removeSelf()
-		self.descriptionField:removeSelf()
-		self.progressBar:removeSelf()
-		self.treatButton:removeSelf()
+		if self.destroyed == true then return true end
 
 		gameLoop:removeLoop(self)
+		
+		self.background:removeSelf()
+		self.background = nil
+
+		self.icon:removeSelf()
+		self.icon = nil
+
+		self.titleField:removeSelf()
+		self.titleField = nil
+		
+		self.descriptionField:removeSelf()
+		self.descriptionField = nil
+
+		self.progressBar:removeSelf()
+		self.progressBar = nil
+
+		self.treatButton:removeSelf()
+		self.treatButton = nil
+
+		
 		self.injuryVO = nil
+
+		self.destroyed = true
 	end
 
 	view:init()

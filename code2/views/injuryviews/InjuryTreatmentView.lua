@@ -89,7 +89,7 @@ function InjuryTreatmentView:new(layoutWidth, layoutHeight)
 		self.background:removeSelf()
 		self.background = nil
 
-		self.injuryRenderer:setInjury(nil)
+		self.injuryRenderer:destroy()
 		self.injuryRenderer:removeSelf()
 		self.injuryRenderer = nil
 
@@ -102,6 +102,7 @@ function InjuryTreatmentView:new(layoutWidth, layoutHeight)
 		self.medicineButton:removeSelf()
 		self.medicineButton = nil
 
+		self.firstAidList:destroy()
 		self.firstAidList:removeSelf()
 		self.firstAidList = nil
 

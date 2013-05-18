@@ -33,7 +33,7 @@ function AutoSizeText:new(parentGroup)
 			self.field = nil
 		end
 
-		local field
+		local newField
 		local fontName
 		if self._bold == false then
 			fontName = native.systemFont
@@ -42,16 +42,16 @@ function AutoSizeText:new(parentGroup)
 		end
 		
 		if self._autoSize == true then
-			field = display.newText(str, 0, 0, fontName, self._fontSize)
+			newField = display.newText(str, 0, 0, fontName, self._fontSize)
 		else
-			field = display.newText(str, 0, 0, self._width, self._height, fontName, self._fontSize)
+			newField = display.newText(str, 0, 0, self._width, self._height, fontName, self._fontSize)
 		end
 		
 
-		field:setReferencePoint(display.TopLeftReferencePoint)
-		field:setTextColor(unpack(self._rgba))
-		self.field = field
-		self:insert(field)
+		newField:setReferencePoint(display.TopLeftReferencePoint)
+		newField:setTextColor(unpack(self._rgba))
+		self.field = newField
+		self:insert(newField)
 		-- field.size = self._fontSize
 	end
 

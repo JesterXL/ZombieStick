@@ -290,7 +290,7 @@ local function main()
 end
 
 local function onError(e)
-	return true
+	-- return true
 end
 Runtime:addEventListener("unhandledError", onError)
 timer.performWithDelay(100, main)
