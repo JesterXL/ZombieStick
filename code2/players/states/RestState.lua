@@ -1,26 +1,16 @@
 require "utils.BaseState"
+RestState = {}
 
-ReadyState = {}
-
-function ReadyState:new()
-	local state = BaseState:new("ready")
-	state.recharge = nil
+function RestState:new()
+	local state = BaseState:new("resting")
 	
 	function state:onEnterState(event)
-		print("ReadyState::onEnterState")
+		--print("RestingState::onEnterState")
 		local player = self.entity
-
-		player.REST_TIME = 2000
-		player.INACTIVE_TIME = 10 * 1000
-		player.startRestTime = nil
-		player.elapsedRestTime = nil
-		
-		self.recharge = false
-
-		player:showSprite("stand")
-
+		player.oldRestTime = player.REST_TIME
+		player.REST_TIME = 200
 		self:reset()
-
+		
 		Runtime:addEventListener("onMoveLeftStarted", self)
 		Runtime:addEventListener("onMoveRightStarted", self)
 		Runtime:addEventListener("onJumpStarted", self)
@@ -31,7 +21,10 @@ function ReadyState:new()
 	end
 	
 	function state:onExitState(event)
+		--print("RestingState::onExitState")
 		local player = self.entity
+		player.REST_TIME = player.oldRestTime
+		
 		Runtime:removeEventListener("onMoveLeftStarted", self)
 		Runtime:removeEventListener("onMoveRightStarted", self)
 		Runtime:removeEventListener("onJumpStarted", self)
@@ -40,16 +33,14 @@ function ReadyState:new()
 		Runtime:removeEventListener("onClimbUpStarted", self)
 		Runtime:removeEventListener("onClimbDownStarted", self)
 	end
-
+	
 	function state:tick(time)
 		local player = self.entity
 		player.elapsedRestTime = player.elapsedRestTime + time
-		if player.elapsedRestTime >= player.INACTIVE_TIME then
-			self.stateMachine:changeStateToAtNextTick("resting")
-		elseif player.elapsedRestTime >= player.REST_TIME and self.recharge == false then
-			self.recharge = true
+		if player.elapsedRestTime >= player.REST_TIME then
 			player:rechargeStamina()
 			player:rechargeHealth()
+			self:reset()
 		end
 	end
 	
@@ -57,9 +48,8 @@ function ReadyState:new()
 		local player = self.entity
 		player.startRestTime = system.getTimer()
 		player.elapsedRestTime = 0
-		self.recharge = false
 	end
-
+	
 	function state:onMoveLeftStarted(event)
 		self.stateMachine:changeStateToAtNextTick("movingLeft")
 	end
@@ -89,8 +79,8 @@ function ReadyState:new()
 		self.entity.climbDirection = "down"
 		self.stateMachine:changeStateToAtNextTick("climbLadder")
 	end
-
+	
 	return state
 end
 
-return ReadyState
+return RestState

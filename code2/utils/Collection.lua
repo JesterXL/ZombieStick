@@ -47,6 +47,14 @@ function Collection:new()
 		self:dispatchEvent({name="onChange", target=self, kind="sort"})
 	end
 
+	function collection:getLength()
+		return table.maxn(self.items)
+	end
+
+	function collection:indexOf(item)
+		return table.indexOf(self.items, item)
+	end
+
 	return collection
 end
 

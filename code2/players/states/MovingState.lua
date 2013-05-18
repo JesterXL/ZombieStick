@@ -10,7 +10,7 @@ function MovingState:new(stateName)
 		print("MovingState::onEnterState")
 		local player = self.entity
 		
-		-- player.startMoveTime = system.getTimer()
+		player.startMoveTime = system.getTimer()
 		
 		Runtime:addEventListener("onMoveLeftEnded", self)
 		Runtime:addEventListener("onMoveRightEnded", self)
@@ -27,10 +27,10 @@ function MovingState:new(stateName)
 	function state:tick(time)
 		local player = self.entity
 		self:handleMove(time)
-		-- if system.getTimer() - player.startMoveTime >= player.MOVE_STAMINA_TIME then
-		-- 	player:reduceStamina(player.moveStamina)
-		-- 	player.startMoveTime = system.getTimer()
-		-- end
+		if system.getTimer() - player.startMoveTime >= player.MOVE_STAMINA_TIME then
+			player:setStamina(player.stamina - player.moveStamina)
+			player.startMoveTime = system.getTimer()
+		end
 	end
 	
 	function state:handleMove(time)

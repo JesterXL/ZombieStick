@@ -212,6 +212,10 @@ local function main()
 		end
 		Runtime:addEventListener("onUseFirstAid", useFirstAidListener)
 
+		require "views.CharacterView"
+		local characterView = CharacterView:new()
+		characterView:setPlayer(jxl)
+
 	end
 
 	local function testFloatingText()
@@ -302,12 +306,12 @@ local function main()
 	setupPhysics()
 
 	-- testLevel1()
-	-- testLevel1AndPlayer()
+	testLevel1AndPlayer()
 	--testFloatingText()
 	-- testInjuryView()
 	-- testFirstAidViews()
 
-	testEventDispatcher()
+	-- testEventDispatcher()
 end
 
 local function onError(e)

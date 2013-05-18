@@ -8,6 +8,7 @@ require "players.states.JumpLeftState"
 require "players.states.JumpRightState"
 require "players.states.ClimbLadderState"
 require "players.states.ClimbLedgeState"
+require "players.states.RestState"
 
 PlayerJXL = {}
 
@@ -19,7 +20,9 @@ function PlayerJXL:new()
 	player.sheet = nil
 	player.sprite = nil
 	player.speed = 3
-	player.maxSpeed = 10
+	player.maxSpeed = 3
+	player.grappledSpeed = 0.001
+	player.tiredSpeed = 1
 	player.climbSpeed = 1.4
 	player.fsm = nil
 	player.lastJump = nil
@@ -28,9 +31,19 @@ function PlayerJXL:new()
 	player.lastLadder = nil
 	player.lastLedge = nil
 	player.ledgeClimbSpeed = 0.2
-	player.health = 1000
-	player.maxHealth = 1000
+	player.health = 10
+	player.maxHealth = 10
+	player.stamina = 10
+	player.maxStamina = 10
 	player.injuries = nil
+	player.startMoveTime = nil
+	player.MOVE_STAMINA_TIME = 500
+	player.moveStamina = 1
+	player.REST_TIME = 2000
+	player.INACTIVE_TIME = 3000
+	player.startRestTime = nil
+	player.elapsedRestTime = nil
+	player.oldRestTime = nil
 
 	function player:init()
 		self.spriteHolder = display.newGroup()
@@ -84,7 +97,9 @@ function PlayerJXL:new()
 		self.isFixedRotation = true
 
 		local fsm = StateMachine:new(self)
+		self.fsm = fsm
 		fsm:addState2(IdleState:new())
+		fsm:addState2(RestState:new())
 		fsm:addState2(ReadyState:new())
 		fsm:addState2(MovingLeftState:new())
 		fsm:addState2(MovingRightState:new())
@@ -115,7 +130,7 @@ function PlayerJXL:new()
 	function player:showSprite(name)
 		local sprite = self.sprite
 		if name == "move" then
-			sprite:setSequence("stand")
+			sprite:setSequence("move")
 		elseif name == "jump" then
 			sprite:setSequence("jump")
 			-- spriteAnime:addEventListener("sprite", function(event) 
@@ -186,7 +201,66 @@ function PlayerJXL:new()
 		end
 
 		local difference = self.health - oldValue
-		floatingText:text({x=0, y=-32, amount=difference, textTarget=self, textType=constants.TEXT_TYPE_HEALTH})
+		if difference ~= 0 then
+			floatingText:text({x=0, y=-32, amount=difference, textTarget=self, textType=constants.TEXT_TYPE_HEALTH})
+		end
+	end
+
+	function player:rechargeHealth()
+		if self.health ~= self.maxHealth then
+			self:setHealth(self.health + 1)
+		end
+	end
+
+	function player:setStamina(value)
+		print("PlayerJXL::setStamina, value:", value)
+		assert(value ~= nil, "value cannot be nil.")
+		local oldValue = self.stamina
+		self.stamina = value
+		if self.stamina < 0 then
+			self.stamina = 0
+		end
+
+		local difference = self.stamina - oldValue
+		if difference ~= 0 then
+			floatingText:text({x=0, y=-32, amount=difference, textTarget=self, textType=constants.TEXT_TYPE_STAMINA})
+		end
+
+		self:resolveSpeed()
+	end
+
+	function player:rechargeStamina()
+		if self.stamina ~= self.maxStamina then
+			self:setStamina(self.stamina + 1)
+		end
+	end
+
+	function player:setSpeed(value)
+		assert(value ~= nil, "You cannot set speed to a nil value.")
+		self.speed = value
+		self:updateSpriteToSpeed()
+	end
+
+	function player:updateSpriteToSpeed()
+		local speed = self.speed
+		local sprite = self.sprite
+		if sprite then
+			if speed == player.maxSpeed then
+				sprite.timeScale = 1
+			elseif speed == player.tiredSpeed then
+				sprite.timeScale = 0.3
+			elseif speed == player.grappledSpeed then
+				sprite.timeScale = 0.5
+			end
+		end
+	end
+
+	function player:resolveSpeed()
+		local targetSpeed = self.maxSpeed
+		-- local grapplers = self.grapplers
+		-- if #grapplers > 0 then targetSpeed = self.grappledSpeed end
+		if self.stamina <= 1 then targetSpeed = self.tiredSpeed end
+		self:setSpeed(targetSpeed)
 	end
 
 	function player:onPlayerLadderCollisionBegan(event)
