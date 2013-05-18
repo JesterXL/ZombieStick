@@ -44,6 +44,8 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 	end
 
 	function view:setInjuries(injuries)
+		self:removeAllScrollViewChildren()
+
 		local scrollView = self.scrollView
 		local itemWidth = scrollView.width
 		local itemHeight = 70
@@ -58,7 +60,7 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 			item:setInjury(injury)
 
 			item.y = startY
-			startY = startY + item.height
+			startY = startY + 70
 		end
 	end
 
@@ -87,7 +89,21 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 		for i = 1, #children do
 			local item = children[i]
 			item.y = startY
-			startY = startY + item.height
+			startY = startY + 70
+		end
+	end
+
+	function view:removeAllScrollViewChildren()
+		local scrollView = self.scrollView
+		if scrollView == nil then return false end
+		if scrollView.children == nil then return false end
+
+		local i = table.maxn(scrollView.children)
+		while i > 0 do
+			local child = scrollView.children[i]
+			child:destroy()
+			child:removeSelf()
+			i = i - 1
 		end
 	end
 
@@ -97,15 +113,7 @@ function InjuryView:new(startX, startY, layoutWidth, layoutHeight)
 		self.background:removeSelf()
 		self.background = nil
 
-		local scrollView = self.scrollView
-		local i = table.maxn(scrollView.children)
-		while i > 0 do
-			local child = scrollView.children[i]
-			child:destroy()
-			child:removeSelf()
-			i = i - 1
-		end
-
+		self:removeAllScrollViewChildren()
 		self.scrollView:removeSelf()
 		self.scrollView = nil
 

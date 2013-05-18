@@ -14,7 +14,13 @@ function InjuryModel:new()
 		local injuries = self.injuries
 		if table.indexOf(injuries, injuryVO) == nil then
 			table.insert(injuries, injuryVO)
-			-- Runtime:dispatchEvent({name="onPlayerInjuriesChanged", target=self, injuries=injuries})
+			Runtime:dispatchEvent({
+											name="InjuryModel_onChange", 
+											target=self, 
+											type="add", 
+											index=table.indexOf(self.injuries, injuryVO), 
+											injuryVO=injuryVO
+										})
 			return true
 		else
 			error("injuryVO already added to array")

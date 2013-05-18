@@ -14,6 +14,7 @@ function FirstAidItemRenderer:new(layoutWidth, layoutHeight)
 	view.descriptionField = nil
 	view.amountField = nil
 	view.useButton = nil
+	view.startTime = nil
 
 	function view:init()
 		local MARGIN = 4
@@ -70,6 +71,9 @@ function FirstAidItemRenderer:new(layoutWidth, layoutHeight)
 		self.useButton = useButton
 		useButton.x = layoutWidth - (useButton.width + MARGIN)
 		useButton.y = MARGIN
+
+		self.startTime = system.getTimer()
+		gameLoop:addLoop(self)
 	end
 
 	function view:setFirstAid(firstAidVO)
@@ -81,6 +85,14 @@ function FirstAidItemRenderer:new(layoutWidth, layoutHeight)
 		self.amountField:setText(firstAidVO.amount)
 	end
 
+	function view:tick(time)
+		if self.firstAidVO == nil then return true end
+
+		if system.getTimer() - self.startTime > 500 then
+			self.amountField:setText(self.firstAidVO.amount)
+		end
+	end
+
 	function view:onUseButtonTouched(event)
 		if event.phase == "ended" then
 			Runtime:dispatchEvent({name="onUseFirstAid", firstAidVO=self.firstAidVO})
@@ -89,6 +101,8 @@ function FirstAidItemRenderer:new(layoutWidth, layoutHeight)
 	end
 
 	function view:destroy()
+		gameLoop:removeLoop(self)
+
 		self.background:removeSelf()
 		self.background = nil
 

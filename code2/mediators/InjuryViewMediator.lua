@@ -20,8 +20,11 @@ function InjuryViewMediator:new()
 	end
 
 	function mediator:InjuryModel_onChange(e)
+		local view = self.viewInstance
 		if e.type == "remove" then
-			self.viewInstance:removeInjury(e.injuryVO)
+			view:removeInjury(e.injuryVO)
+		else
+			view:setInjuries(gInjuryModel.injuries)
 		end
 	end
 	

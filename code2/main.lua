@@ -105,6 +105,12 @@ local function main()
 		gInjuryModel:addInjury(LacerationVO:new())
 		gInjuryModel:addInjury(BiteVO:new())
 
+		local injuryTimer = function(e)
+			print("********** weeee")
+			gInjuryModel:addInjury(LacerationVO:new())
+		end
+		timer.performWithDelay(2000, injuryTimer)
+
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"
