@@ -6,7 +6,7 @@ function LacerationVO:new()
 	-- applyInterval, injuryType, amount, lifetime
 	-- local cut = InjuryVO:new(500, constants.INJURY_LACERATION, -1, 60 * 1000)
 	-- local lifetimeVariance = (13 * 1000) + math.round(math.random() * 5)
-	local cut = InjuryVO:new("Laceration", 6 * 1000, constants.INJURY_LACERATION, -4, -1)
+	local cut = InjuryVO:new("Laceration", 6 * 1000, constants.INJURY_LACERATION, -4, 5 * 60 * 1000)
 
 	cut.usedSuture = false
 	cut.usedBandage = false
@@ -34,6 +34,22 @@ function LacerationVO:new()
 		end
 		print("and set lifetime:", self.lifetime)
 	end
+
+	-- function bite:getInfected()
+	-- 	local num = math.round(math.random() * 100)
+	-- 	if self.usedSuture == true then
+	-- 		num = num - 60
+	-- 	end
+	-- 	if self.usedBandage == true then
+	-- 		num = num - 20
+	-- 	end
+
+	-- 	if num > 20 then
+	-- 		return true
+	-- 	else
+	-- 		return false
+	-- 	end
+	-- end
 
 	function cut:getStatus()
 		local str = ""

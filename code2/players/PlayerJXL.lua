@@ -9,6 +9,7 @@ require "players.states.JumpRightState"
 require "players.states.ClimbLadderState"
 require "players.states.ClimbLedgeState"
 require "players.states.RestState"
+require "players.states.AttackState"
 
 PlayerJXL = {}
 
@@ -44,7 +45,9 @@ function PlayerJXL:new()
 	player.startRestTime = nil
 	player.elapsedRestTime = nil
 	player.oldRestTime = nil
-
+	player.grapplers = nil
+	player.ATTACK_STAMINA_COST = 2
+	
 	function player:init()
 		self.spriteHolder = display.newGroup()
 		self:insert(self.spriteHolder)
@@ -108,6 +111,7 @@ function PlayerJXL:new()
 		fsm:addState2(JumpRightState:new())
 		fsm:addState2(ClimbLadderState:new())
 		fsm:addState2(ClimbLedgeState:new())
+		fsm:addState2(AttackState:new())
 		fsm:setInitialState("ready")
 
 		Runtime:addEventListener("onPlayerLadderCollisionBegan", self)
@@ -192,7 +196,7 @@ function PlayerJXL:new()
 	end
 
 	function player:setHealth(value)
-		print("PlayerJXL::setHealth, value:", value)
+		-- print("PlayerJXL::setHealth, value:", value)
 		assert(value ~= nil, "value cannot be nil.")
 		local oldValue = self.health
 		self.health = value

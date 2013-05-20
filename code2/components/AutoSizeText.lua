@@ -75,6 +75,14 @@ function AutoSizeText:new(parentGroup)
 		end
 		self._width = w
 		self._height = h
+		-- [jwarden 5.18.2013] Corona bitches and whines if you set a field to some
+		-- value not divisble evenly by 4. #fixed
+		local oldH = h
+		self._height = getDivisibleBy4(self._height)
+		local difference = oldH - self._height
+		if difference > 0 then
+			self._height = self._height + 4
+		end
 		if dirty then
 			self:setText(self._text, true)
 		end

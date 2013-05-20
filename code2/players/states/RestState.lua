@@ -18,6 +18,7 @@ function RestState:new()
 		Runtime:addEventListener("onJumpLeftStarted", self)
 		Runtime:addEventListener("onClimbUpStarted", self)
 		Runtime:addEventListener("onClimbDownStarted", self)
+		Runtime:addEventListener("onAttackStarted", self)
 	end
 	
 	function state:onExitState(event)
@@ -32,6 +33,7 @@ function RestState:new()
 		Runtime:removeEventListener("onJumpLeftStarted", self)
 		Runtime:removeEventListener("onClimbUpStarted", self)
 		Runtime:removeEventListener("onClimbDownStarted", self)
+		Runtime:removeEventListener("onAttackStarted", self)
 	end
 	
 	function state:tick(time)
@@ -78,6 +80,10 @@ function RestState:new()
 	function state:onClimbDownStarted(event)
 		self.entity.climbDirection = "down"
 		self.stateMachine:changeStateToAtNextTick("climbLadder")
+	end
+
+	function state:onAttackStarted(event)
+		self.stateMachine:changeStateToAtNextTick("attack")
 	end
 	
 	return state

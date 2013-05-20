@@ -1,3 +1,5 @@
+require "utils.StateMachine"
+
 InjuryVO = {}
 
 function InjuryVO:new(name, applyInterval, injuryType, amount, lifetime)
@@ -30,6 +32,16 @@ function InjuryVO:new(name, applyInterval, injuryType, amount, lifetime)
 
 	injury.icon 				= nil
 
+	-- local fsm 					= StateMachine:new()
+	-- self.fsm					= fsm
+	-- fsm:addState("injured", {from="*"})
+	-- fsm:addState("infected", {from="injured"})
+	-- fsm:addState("healing", {from="*"})
+	-- fsm:addEventListener("onStateMachineStateChanged", self)
+
+	-- function injury:onStateMachineStateChanged(event)
+
+	-- end
 	
 
 

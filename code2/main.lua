@@ -17,8 +17,8 @@ local function main()
 
 	local function setupPhysics()
 		require("physics")
-		-- physics.setDrawMode("hybrid")
-		physics.setDrawMode("normal")
+		physics.setDrawMode("hybrid")
+		-- physics.setDrawMode("normal")
 		physics.start()
 		physics.setGravity(0, 9.8)
 		physics.setPositionIterations( 10 )
@@ -27,6 +27,17 @@ local function main()
 	function round(num, idp)
 		local mult = 10^(idp or 0)
 		return math.floor(num * mult + 0.5) / mult
+	end
+
+	function getDivisibleBy4(num)
+		local value = num
+		if value % 4 == 0 then
+			return value
+		end
+		while (value % 4 ~= 0 and value > 4) do
+			value = value - 1
+		end
+		return value
 	end
 
 	function showProps(o)
@@ -106,11 +117,9 @@ local function main()
 		gInjuryModel:addInjury(BiteVO:new())
 
 		local injuryTimer = function(e)
-			print("********** weeee")
 			gInjuryModel:addInjury(LacerationVO:new())
 		end
 		timer.performWithDelay(2000, injuryTimer)
-
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"
@@ -118,6 +127,7 @@ local function main()
 		require "components.ButtonJumpLeft"
 		require "components.ButtonJumpRight"
 		require "components.ButtonHeal"
+		require "components.ButtonAttack"
 
 		local buttonLeft = ButtonLeft:new()
 		local buttonRight = ButtonRight:new()
@@ -125,6 +135,7 @@ local function main()
 		local buttonJumpLeft = ButtonJumpLeft:new()
 		local buttonJumpRight = ButtonJumpRight:new()
 		local buttonHeal = ButtonHeal:new()
+		local buttonAttack = ButtonAttack:new()
 
 		buttonLeft.x = 0
 		buttonLeft.y = stage.height - buttonLeft.height
@@ -141,8 +152,11 @@ local function main()
 		buttonRight.x = buttonJumpRight.x + buttonJumpRight.width + 8
 		buttonRight.y = buttonJumpRight.y
 
-		buttonHeal.x = buttonRight.x + buttonHeal.width * 2
-		buttonHeal.y = buttonRight.y
+		buttonAttack.x = buttonRight.x + buttonRight.width + 8
+		buttonAttack.y = buttonRight.y
+
+		buttonHeal.x = buttonAttack.x + buttonAttack.width * 2
+		buttonHeal.y = buttonAttack.y
 
 		local scroller = {}
 		function scroller:enterFrame(e)
@@ -198,20 +212,23 @@ local function main()
 		Runtime:addEventListener("onTreatInjury", treatListener)
 
 		local useFirstAidListener = function(e)
-			local injury = gTreatInjuryView.injuryVO
+			local injury   = gTreatInjuryView.injuryVO
 			local firstAid = e.firstAidVO
-			print("attempting to heal " .. injury.name .. " with " .. firstAid.name .. ", amount:" .. firstAid.amount)
 			if firstAid.amount >= 1 then
-				print("injury.injuryType:", injury.injuryType, ", firstAid.firstAidType: ", firstAid.firstAidType)
-				print("constants.INJURY_LACERATION:", constants.INJURY_LACERATION, ", constants.FIRST_AID_BANDAGE: ", constants.FIRST_AID_BANDAGE)
 				if injury.injuryType == constants.INJURY_LACERATION and firstAid.firstAidType == constants.FIRST_AID_BANDAGE then
-					print("injury.usedBandage:", injury.usedBandage)
 					if injury.usedBandage == false then
-						print("treated!")
 						firstAid.amount = firstAid.amount - 1
 						injury:setUsedBandage(true)
-					else
-						print("already used a bandage")
+					end
+				elseif injury.injuryType == constants.INJURY_BITE and firstAid.firstAidType == constants.FIRST_AID_OINTMENT then
+					if injury.usedOintment == false then
+						firstAid.amount = firstAid.amount - 1
+						injury:setUsedOintment(true)
+					end
+				elseif injury.injuryType == constants.INJURY_BITE and firstAid.firstAidType == constants.FIRST_AID_BANDAGE then
+					if injury.usedBandage == false then
+						firstAid.amount = firstAid.amount - 1
+						injury:setUsedBandage(true)
 					end
 				end
 			end
@@ -222,6 +239,13 @@ local function main()
 		local characterView = CharacterView:new()
 		characterView:setPlayer(jxl)
 
+		require "enemies.Zombie"
+		local zombie = Zombie:new()
+		zombie.x = 1500
+		zombie.y = 400
+		local targets = {}
+		table.insert(targets, jxl)
+		zombie.targets = targets
 	end
 
 	local function testFloatingText()
@@ -307,6 +331,17 @@ local function main()
 		objectA:dispatchEvent({name="onTest", data="example"})
 	end
 
+	local function testGetDivisibleBy4()
+		local value = 4
+		value = getDivisibleBy4(value)
+		print("value:", value)
+		
+		value = 543
+		value = getDivisibleBy4(value)
+		print("value:", value)
+
+	end
+
 
 	setupGlobals()
 	setupPhysics()
@@ -318,6 +353,7 @@ local function main()
 	-- testFirstAidViews()
 
 	-- testEventDispatcher()
+	-- testGetDivisibleBy4()
 end
 
 local function onError(e)
