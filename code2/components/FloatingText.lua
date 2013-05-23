@@ -8,11 +8,11 @@ function FloatingText:new()
 		-- convert from local to global coordinates, and back again
 		local targetX, targetY = event.textTarget:localToContent(event.x, event.y)
 		targetX, targetY = self:contentToLocal(targetX, targetY)
-		self:showText(targetX, targetY, event.amount, event.textType)
+		self:showText(targetX, targetY, event.amount, event.textType, event.text)
 	end
 
 
-	function floating:showText(targetX, targetY, amount, textType)
+	function floating:showText(targetX, targetY, amount, textType, text)
 		local field
 		if table.maxn(self.textPool) > 0 then
 			field = self.textPool[1]
@@ -20,6 +20,7 @@ function FloatingText:new()
 			table.remove(self.textPool, table.indexOf(self.textPool, field))
 			assert(field ~= nil, "After cleanup, field got nil.")
 		else
+			print("floatingtext")
 			field = display.newText("", 0, 0, 60, 60, native.systemFont, constants.FLOATING_TEXT_FONT_SIZE)
 			function field:onComplete(obj)
 				if self.tween then
@@ -39,24 +40,36 @@ function FloatingText:new()
 		field.x = targetX
 		field.y = targetY
 		field.alpha = 1
-		local amountText = tostring(amount)
-		if amount > 0 then
-			amountText = "+" .. amountText
+
+		local fieldText
+		if amount ~= nil then
+			local amountText = tostring(amount)
+			if amount > 0 then
+				amountText = "+" .. amountText
+			end
+
+			if textType == constants.TEXT_TYPE_STAMINA then
+				if amount > 0 then
+					field:setTextColor(unpack(constants.STAMINA_FIELD_POSITIVE_COLOR))
+				else
+					field:setTextColor(unpack(constants.STAMINA_FIELD_NEGATIVE_COLOR))
+				end
+			elseif textType == constants.TEXT_TYPE_HEALTH then
+				if amount > 0 then
+					field:setTextColor(unpack(constants.HEALTH_FIELD_POSITIVE_COLOR))
+				else
+					field:setTextColor(unpack(constants.HEALTH_FIELD_NEGATIVE_COLOR))
+				end
+			else
+				field:setTextColor(0, 0, 0)
+			end
+
+			fieldText = amountText
+		else
+			field:setTextColor(0, 0, 0)
+			fieldText = text
 		end
 
-		if textType == constants.TEXT_TYPE_STAMINA then
-			if amount > 0 then
-				field:setTextColor(unpack(constants.STAMINA_FIELD_POSITIVE_COLOR))
-			else
-				field:setTextColor(unpack(constants.STAMINA_FIELD_NEGATIVE_COLOR))
-			end
-		elseif textType == constants.TEXT_TYPE_HEALTH then
-			if amount > 0 then
-				field:setTextColor(unpack(constants.HEALTH_FIELD_POSITIVE_COLOR))
-			else
-				field:setTextColor(unpack(constants.HEALTH_FIELD_NEGATIVE_COLOR))
-			end
-		end
 			
 		field.text = amountText
 		local newTargetY = targetY - 40

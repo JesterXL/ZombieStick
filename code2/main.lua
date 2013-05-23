@@ -54,6 +54,7 @@ local function main()
 		rect:setReferencePoint(display.TopLeftReferencePoint)
 		rect:setFillColor(0, 0, 0, 240)
 
+		print("main.lua")	
 		local field = display.newText("x: ---\ny: ---\nledge: ---", 0, 0, 160, 160, native.systemFont, 21)
 		field:setReferencePoint(display.TopLeftReferencePoint)
 		field:setTextColor(255, 255, 255)
@@ -170,7 +171,8 @@ local function main()
 		end
 		Runtime:addEventListener("enterFrame", scroller)
 
-		setupPlayerDebug(jxl)
+		-- setupPlayerDebug(jxl)
+		-- setupMemoryDebug()
 
 		require "components.ButtonClimbUp"
 		require "components.ButtonClimbDown"
@@ -246,6 +248,13 @@ local function main()
 		local targets = {}
 		table.insert(targets, jxl)
 		zombie.targets = targets
+	end
+
+	function setupMemoryDebug()
+		require "utils.Stats"
+		local stats = Stats:new(90, 40)
+		stats.x = stage.width - 90
+		stats.y = 122
 	end
 
 	local function testFloatingText()

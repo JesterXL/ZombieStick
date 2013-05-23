@@ -41,9 +41,22 @@ function AutoSizeText:new(parentGroup)
 			fontName = native.systemFontBold
 		end
 		
+
 		if self._autoSize == true then
 			newField = display.newText(str, 0, 0, fontName, self._fontSize)
 		else
+			-- if self._width == nil then
+			-- 	self._width = 0
+			-- else
+			-- 	self._width = getDivisibleBy4(self._width)
+			-- end
+
+			-- if self._height == nil then
+			-- 	self._height = 0
+			-- else
+			-- 	self._height = getDivisibleBy4(self._height)
+			-- end
+			
 			newField = display.newText(str, 0, 0, self._width, self._height, fontName, self._fontSize)
 		end
 		
@@ -81,7 +94,7 @@ function AutoSizeText:new(parentGroup)
 		self._height = getDivisibleBy4(self._height)
 		local difference = oldH - self._height
 		if difference > 0 then
-			self._height = self._height + 4
+			self._height = self._height + 8
 		end
 		if dirty then
 			self:setText(self._text, true)

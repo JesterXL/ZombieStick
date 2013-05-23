@@ -316,6 +316,12 @@ function StateMachine:new(entity)
 		end	
 	end
 
+	function stateMachine:destroy()
+		self.states = nil
+		self.entity = nil
+		gameLoop:removeLoop(self)
+	end
+
 	gameLoop:addLoop(stateMachine)
 	
 	return stateMachine

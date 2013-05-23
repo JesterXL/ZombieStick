@@ -27,7 +27,7 @@ function InjuryModel:new()
 		end
 	end
 
-	function model:hasInjury(injuryType)
+	function model:hasInjuryType(injuryType)
 		assert(injuryType ~= nil, "You cannot pass a nil injuryType.")
 		local injuries = self.injuries
 		if injuries == nil then return false end
