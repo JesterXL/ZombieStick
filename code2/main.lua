@@ -113,14 +113,14 @@ local function main()
 		require "vo.LacerationVO"
 		require "vo.BiteVO"
 		-- jxl:addInjury(LacerationVO:new())
-		gInjuryModel:addInjury(LacerationVO:new())
-		gInjuryModel:addInjury(LacerationVO:new())
-		gInjuryModel:addInjury(BiteVO:new())
+		-- gInjuryModel:addInjury(LacerationVO:new())
+		-- gInjuryModel:addInjury(LacerationVO:new())
+		-- gInjuryModel:addInjury(BiteVO:new())
 
-		local injuryTimer = function(e)
-			gInjuryModel:addInjury(LacerationVO:new())
-		end
-		timer.performWithDelay(2000, injuryTimer)
+		-- local injuryTimer = function(e)
+		-- 	gInjuryModel:addInjury(LacerationVO:new())
+		-- end
+		-- timer.performWithDelay(2000, injuryTimer)
 
 		require "components.ButtonLeft"
 		require "components.ButtonRight"

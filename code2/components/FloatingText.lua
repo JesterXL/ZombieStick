@@ -71,7 +71,7 @@ function FloatingText:new()
 		end
 
 			
-		field.text = amountText
+		field.text = fieldText
 		local newTargetY = targetY - 40
 		field.tween = transition.to(field, {y=newTargetY, time=500, transition=easing.outExpo})
 		field.alphaTween = transition.to(field, {alpha=0, time=200, delay=300, onComplete=field})
