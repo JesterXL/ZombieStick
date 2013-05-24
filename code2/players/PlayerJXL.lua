@@ -211,6 +211,10 @@ function PlayerJXL:new()
 	end
 
 	function player:rechargeHealth()
+		if self.injuries and table.maxn(self.injuries) > 0 then
+			return false
+		end
+		
 		if self.health ~= self.maxHealth then
 			self:setHealth(self.health + 1)
 		end

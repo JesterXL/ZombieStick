@@ -13,6 +13,7 @@ function BiteVO:new()
 		if value == true then
 			self.currentTime = 0
 			self.amount = -1
+			self.applyInterval = 30 * 1000
 			self.lifetime = 1 * 60 * 1000
 		end
 	end
