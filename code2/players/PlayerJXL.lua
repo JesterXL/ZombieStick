@@ -10,6 +10,7 @@ require "players.states.ClimbLadderState"
 require "players.states.ClimbLedgeState"
 require "players.states.RestState"
 require "players.states.AttackState"
+require "players.states.GrappledState"
 
 PlayerJXL = {}
 
@@ -112,6 +113,7 @@ function PlayerJXL:new()
 		fsm:addState2(ClimbLadderState:new())
 		fsm:addState2(ClimbLedgeState:new())
 		fsm:addState2(AttackState:new())
+		fsm:addState2(GrappledState:new())
 		fsm:setInitialState("ready")
 
 		Runtime:addEventListener("onPlayerLadderCollisionBegan", self)
@@ -214,7 +216,7 @@ function PlayerJXL:new()
 		if self.injuries and table.maxn(self.injuries) > 0 then
 			return false
 		end
-		
+
 		if self.health ~= self.maxHealth then
 			self:setHealth(self.health + 1)
 		end
@@ -269,6 +271,15 @@ function PlayerJXL:new()
 		-- if #grapplers > 0 then targetSpeed = self.grappledSpeed end
 		if self.stamina <= 1 then targetSpeed = self.tiredSpeed end
 		self:setSpeed(targetSpeed)
+	end
+
+	function player:canBeGrappled()
+		local fsm = self.fsm
+		local state = fsm.state
+		if state == "climbLedge" or state == "idle" then
+			return false
+		end
+		return true
 	end
 
 	function player:onPlayerLadderCollisionBegan(event)

@@ -1,6 +1,7 @@
 require "enemies.states.IdleState"
 require "enemies.states.ReadyState"
 require "enemies.states.GrabPlayerState"
+require "enemies.states.StunnedState"
 require "components.AutoSizeText"
 
 Zombie = {}
@@ -61,8 +62,9 @@ function Zombie:new()
 		self.fsm:addState2(ReadyState:new())
 		-- zombie.fsm:addState2(EatPlayerState:new())
 		-- zombie.fsm:addState2(TemporarilyInjuredState:new())
-		zombie.fsm:addState2(GrabPlayerState:new())
+		self.fsm:addState2(GrabPlayerState:new())
 		-- zombie.fsm:addState2(KnockedProneState:new())
+		self.fsm:addState2(StunnedState:new())
 		self.fsm:setInitialState("ready", zombie)
 
 		local stateField = AutoSizeText:new(self)
@@ -203,6 +205,11 @@ function Zombie:new()
 
 	function zombie:onHit(damage)
 		self:setHealth(self.health - damage)
+	end
+
+	-- [jwarden 6.23.2012] TODO: add type of defeat, like throw down or push back
+	function zombie:onGrappleDefeated()
+		self:dispatchEvent({name="onZombieGrabDefeated", target=self})
 	end
 
 	function zombie:destroy()

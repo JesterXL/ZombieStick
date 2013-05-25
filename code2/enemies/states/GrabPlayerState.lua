@@ -11,7 +11,7 @@ function GrabPlayerState:new()
 	function state:onEnterState(event)
 		print("GrabPlayerState::onEnterState")
 		local zombie = self.entity
-
+		zombie:addEventListener("onZombieGrabDefeated", self)
 		self.startTime = 0
 		self:exitIfPlayerLost()
 	end
@@ -19,6 +19,8 @@ function GrabPlayerState:new()
 	function state:onExitState(event)
 		print("GrabPlayerState::onExitState")
 		local zombie = self.entity
+		zombie:removeEventListener("onZombieGrabDefeated", self)
+		gGrapplerModel:removeGrappler(self)
 	end
 
 	function state:exitIfPlayerLost()
@@ -66,26 +68,18 @@ function GrabPlayerState:new()
 		if self.startTime >= self.MUNCH_TIME then
 			local zombie = self.entity
 			local player = zombie.targetPlayer
-			print("Zombie bit player...")
+			-- print("Zombie bit player...")
 			player:setHealth(player.health - self.DAMAGE)
 			if gInjuryModel:hasInjuryType(constants.INJURY_BITE) == false then
-				print("... and added bite injury.")
+				-- print("... and added bite injury.")
 				gInjuryModel:addInjury(BiteVO:new())
 			end
 			self.startTime = 0
 		end
 	end
 
-	function state:onZombieHit(event)
-		self.stateMachine:changeStateToAtNextTick("temporarilyInjured")
-	end
-
 	function state:onZombieGrabDefeated(event)
-		self.stateMachine:changeStateToAtNextTick("knockedProne")
-	end
-
-	function state:onTargetPlayerRemoved(event)
-		self.stateMachine:changeStateToAtNextTick("idle")
+		self.stateMachine:changeStateToAtNextTick("stunned")
 	end
 
 	return state

@@ -109,6 +109,10 @@ function StateMachine:new(entity)
 		--print("StateMachine::canChageStateTo for " .. self.entity.classType .. " stateName: ", stateName)
 		--print("StateMachine::canChangeStateTo: ", stateName, ", currentState: ", self.state)
 		local theState = self.states[stateName]
+		if theState == nil then
+			error("State '" .. stateName .. "' cannot be found.")
+			return false
+		end
 		local score = 0
 		local win = 2
 		
@@ -183,8 +187,13 @@ function StateMachine:new(entity)
 	function stateMachine:changeStateToAtNextTick(stateTo)
 		assert(stateTo ~= nil, "stateTo must be a String and not nil.")
 		assert(type(stateTo) == "string", "stateTo is supposed to be a String.")
-		self:setStateToChangeTo(stateTo)
-		self.changeStateAtTick = true
+		if self:canChangeStateTo(stateTo) then
+			self:setStateToChangeTo(stateTo)
+			self.changeStateAtTick = true
+			return true
+		else
+			return false
+		end
 	end
 	
 	function stateMachine:setStateToChangeTo(value)

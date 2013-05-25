@@ -351,7 +351,14 @@ local function main()
 
 	end
 
+	local function testAccelerometer()
+		local function onAccelerate( event )
+		    print(event.deltaTime)
+		end
 
+		Runtime:addEventListener("accelerometer", onAccelerate)
+	end
+	
 	setupGlobals()
 	setupPhysics()
 
@@ -363,6 +370,8 @@ local function main()
 
 	-- testEventDispatcher()
 	-- testGetDivisibleBy4()
+	-- testAccelerometer()
+	
 end
 
 local function onError(e)

@@ -45,6 +45,24 @@ function GrapplerModel:new()
 		end
 	end
 
+	function model:removeLatestGrappler()
+		local grapplers = self.grapplers
+		if grapplers and #grapplers > 0 then
+			local index = #grapplers
+			local removedGrappler = self.grapplers[index]
+			table.remove(self.grapplers)
+			Runtime:dispatchEvent({
+				name="GrapplerModel_onChange",
+				kind="remove",
+				index=index,
+				grappler=removedGrappler
+			})
+			return removedGrappler
+		else
+			return false
+		end
+	end
+
 
 	return model
 

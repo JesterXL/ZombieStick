@@ -62,10 +62,14 @@ function ReadyState:new()
 			for i=1,#hits do
 				local obj = hits[i].object
 				if obj.classType == "PlayerJXL" then
-					zombie.targetPlayer = obj
-					self.stateMachine:changeStateToAtNextTick("grabPlayer")
-					gGrapplerModel:addGrappler(self)
-					return true
+					-- [jwarden 5.25.2013] TODO: figure out the rules for adding a grappler only if player
+					-- is in a state in which he can be grappled.
+					if obj:canBeGrappled() then
+						zombie.targetPlayer = obj
+						self.stateMachine:changeStateToAtNextTick("grabPlayer")
+						gGrapplerModel:addGrappler(zombie)
+						return true
+					end
 				end
 			end
 		end
